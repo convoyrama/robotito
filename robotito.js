@@ -4,6 +4,7 @@ const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const { DateTime } = require('luxon');
 const axios = require('axios');
 const crypto = require('crypto');
+const http = require('http');
 
 const client = new Client({
     intents: [
@@ -652,3 +653,13 @@ client.login(process.env.DISCORD_TOKEN)
         console.error('❌ Error al conectar con Discord:', error.message);
         process.exit(1);
     });
+
+// Keep-alive server
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Bot is alive!\n');
+});
+
+server.listen(process.env.PORT || 3000, () => {
+    console.log(`Keep-alive server running on port ${process.env.PORT || 3000}`);
+});
