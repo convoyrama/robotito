@@ -256,7 +256,15 @@ client.on('interactionCreate', async interaction => {
         case 'tirainfo':
             {
                 const readmeDescription = 'Esta es una recopilación de la *Tira Ecol* publicada entre diciembre de 2001 y el 18 de octubre de 2010 (tiraecol.net).';
-                const interviewSnippet = '1.  *¿Quien eres tu? (informacion personal que quieras dar)*\n\n    Nací hace unos 28 años en Valencia, y desde entonces vengo haciendo cosas sin\n    parar. Por lo visto soy una persona inquieta. Demasiado. Fui al colegio hasta\n    que hubo que salir de allí y luego, por algún extraño motivo que aún estoy\n    ponderando, acabé estudiando ingeniería industrial. Cuando digo que lo mejor\n    que me sucedió allí fue escribir y dibujar en la revista de la escuela, te\n    puedes hacer una idea de lo que fue mi paso por aquella santa institución.\n';
+                const interviewSnippet = '1.  *¿Quien eres tu? (informacion personal que quieras dar)*
+
+    Nací hace unos 28 años en Valencia, y desde entonces vengo haciendo cosas sin
+    parar. Por lo visto soy una persona inquieta. Demasiado. Fui al colegio hasta
+    que hubo que salir de allí y luego, por algún extraño motivo que aún estoy
+    ponderando, acabé estudiando ingeniería industrial. Cuando digo que lo mejor
+    que me sucedió allí fue escribir y dibujar en la revista de la escuela, te
+    puedes hacer una idea de lo que fue mi paso por aquella santa institución.
+';
                 const embed = new EmbedBuilder()
                     .setColor(0x4E5D94)
                     .setTitle('Información sobre Tira Ecol')
@@ -343,7 +351,8 @@ ${verificationCode}
                     if (jokeData.type === 'single') {
                         jokeText = jokeData.joke;
                     } else {
-                        jokeText = `${jokeData.setup}\n*${jokeData.delivery}*`;
+                        jokeText = `${jokeData.setup}
+*${jokeData.delivery}*`;
                     }
                     const embed = new EmbedBuilder().setColor(0x9B59B6).setTitle('Tito cuenta un chiste...').setDescription(jokeText);
                     await interaction.editReply({ embeds: [embed] });
@@ -477,17 +486,20 @@ ${verificationCode}
                         return;
                     }
                     referenceCity = foundCity.name;
-                    description = `**Si en ${referenceCity} son las ${referenceTime.toFormat('HH:mm')}, entonces:**\n`;
+                    description = `**Si en ${referenceCity} son las ${referenceTime.toFormat('HH:mm')}, entonces:**
+`;
                 } else if (!timeString && !cityName) {
                     referenceTime = userLocalTime;
-                    description = `**Horas actuales en Zonas Latinas:**\n`;
+                    description = `**Horas actuales en Zonas Latinas:**
+`;
                 } else {
                     await interaction.editReply('Uso incorrecto. Intenta `/hora` para horas actuales, o `/hora tiempo:HH:MM ciudad:[Ciudad]`');
                     return;
                 }
                 LATAM_TIMEZONES.forEach(tz => {
                     const timeInZone = referenceTime.setZone(tz.zone);
-                    description += `• **${tz.name}:** ${timeInZone.toFormat('HH:mm:ss')}\n`;
+                    description += `• **${tz.name}:** ${timeInZone.toFormat('HH:mm:ss')}
+`;
                 });
                 const embed = new EmbedBuilder().setColor(0x00FF00).setTitle('🌎 Horas en Zonas Latinas').setDescription(description).setFooter({ text: 'Horas basadas en la zona horaria del bot.' });
                 await interaction.editReply({ embeds: [embed] });
@@ -540,9 +552,12 @@ ${verificationCode}
                     .setTitle(`📅 Próximo Evento: ${nextEvent.name}`)
                     .setURL(nextEvent.url)
                     .setDescription(
-                        `**Descripción:** ${nextEvent.description || 'Sin descripción.'}\n` + 
-                        `**Inicio:** <t:${Math.floor(nextEvent.scheduledStartTimestamp / 1000)}:F> (<t:${Math.floor(nextEvent.scheduledStartTimestamp / 1000)}:R>)\n` + 
-                        `**Ubicación:** ${nextEvent.entityMetadata?.location || nextEvent.channel?.name || 'N/A'}\n` + 
+                        `**Descripción:** ${nextEvent.description || 'Sin descripción.'}
+` + 
+                        `**Inicio:** <t:${Math.floor(nextEvent.scheduledStartTimestamp / 1000)}:F> (<t:${Math.floor(nextEvent.scheduledStartTimestamp / 1000)}:R>)
+` + 
+                        `**Ubicación:** ${nextEvent.entityMetadata?.location || nextEvent.channel?.name || 'N/A'}
+` + 
                         `**Creador:** ${nextEvent.creator?.tag || 'Desconocido'}`
                     )
                     .setFooter({ text: '¡No te lo pierdas!' });
@@ -569,7 +584,10 @@ ${verificationCode}
                 const embed = new EmbedBuilder().setColor(0x8A2BE2).setTitle('📅 Próximos Eventos de la Semana');
                 let description = '';
                 upcomingWeekEvents.forEach(event => {
-                    description += `**[${event.name}](${event.url})**\n` + `Inicia: <t:${Math.floor(event.scheduledStartTimestamp / 1000)}:F> (<t:${Math.floor(event.scheduledStartTimestamp / 1000)}:R>)\n\n`;
+                    description += `**[${event.name}](${event.url})**
+` + `Inicia: <t:${Math.floor(event.scheduledStartTimestamp / 1000)}:F> (<t:${Math.floor(event.scheduledStartTimestamp / 1000)}:R>)
+
+`;
                 });
                 embed.setDescription(description);
                 await interaction.editReply({ embeds: [embed] });
@@ -581,7 +599,8 @@ ${verificationCode}
                 const embed = new EmbedBuilder().setColor(0x008000).setTitle('🚚 Comunidad');
                 const VTCS_DATA = []; 
                 VTCS_DATA.forEach(countryData => {
-                    const vtcList = countryData.vtcs.map(vtc => vtc.discord ? `[${vtc.name}](${vtc.discord})` : vtc.name).join('\n');
+                    const vtcList = countryData.vtcs.map(vtc => vtc.discord ? `[${vtc.name}](${vtc.discord})` : vtc.name).join('
+');
                     if (vtcList) embed.addFields({ name: countryData.country, value: vtcList, inline: true });
                 });
                 await interaction.editReply({ embeds: [embed] });
@@ -595,7 +614,9 @@ ${verificationCode}
                     const servers = response.data.response;
                     const embed = new EmbedBuilder().setColor(0x00FF00).setTitle('Estado de los Servidores de TruckersMP');
                     servers.forEach(server => {
-                        embed.addFields({ name: `${server.name} (${server.shortname})`, value: `**Jugadores:** ${server.players} / ${server.maxplayers}\n**En cola:** ${server.queue}\n**Estado:** ${server.online ? 'Online' : 'Offline'}`, inline: true });
+                        embed.addFields({ name: `${server.name} (${server.shortname})`, value: `**Jugadores:** ${server.players} / ${server.maxplayers}
+**En cola:** ${server.queue}
+**Estado:** ${server.online ? 'Online' : 'Offline'}`, inline: true });
                     });
                     await interaction.editReply({ embeds: [embed] });
                 } catch (error) {
@@ -633,7 +654,7 @@ ${verificationCode}
                             return;
                         }
                         const membersResponse = await axios.get(`${TRUCKERSMP_API_BASE_URL}/vtc/${vtcId}/members`);
-                        const membersData = membersResponse.data.response.members;
+                        const membersData = membersResponse.data.response?.members || [];
                         const bannedMembers = membersData.filter(member => member.banned);
                         const newsResponse = await axios.get(`${TRUCKERSMP_API_BASE_URL}/vtc/${vtcId}/news`);
                         const newsData = newsResponse.data.response;
@@ -695,7 +716,8 @@ client.login(process.env.DISCORD_TOKEN)
 // Keep-alive server
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Bot is alive!\n');
+    res.end('Bot is alive!
+');
 });
 
 server.listen(process.env.PORT || 3000, () => {
