@@ -95,8 +95,8 @@ const BASE_IMAGE_URL = 'https://convoyrama.github.io/robotito/img/';
 const POSITIVE_STATES = ['admirando.png', 'alegre.png', 'enlaluna.png', 'fiesta.png', 'sorprendido.png', 'volando.png'];
 const NEGATIVE_STATES = ['desesperado.png', 'durmiendo.png', 'enojado.png', 'impaciente.png', 'pensando.png'];
 
-const FAREWELL_MESSAGE_OWN = "LAG'S SPEED les agradece sinceramente su participación. Ha sido una ruta excelente gracias a la compañía de cada uno de ustedes, y un placer compartir este gran momento. ¡Esperamos seguir contando con su presencia en futuras aventuras! Saludos y muy buena ruta a todos.";
-const FAREWELL_MESSAGE_EXTERNAL = "LAG'S SPEED agradece la invitación a este convoy. Ha sido un placer compartir la ruta con todos. ¡Esperamos coincidir de nuevo en el camino! Saludos y muy buena ruta.";
+const FAREWELL_MESSAGE_OWN = "LAG\'S SPEED les agradece sinceramente su participación. Ha sido una ruta excelente gracias a la compañía de cada uno de ustedes, y un placer compartir este gran momento. ¡Esperamos seguir contando con su presencia en futuras aventuras! Saludos y muy buena ruta a todos.";
+const FAREWELL_MESSAGE_EXTERNAL = "LAG\'S SPEED agradece la invitación a este convoy. Ha sido un placer compartir la ruta con todos. ¡Esperamos coincidir de nuevo en el camino! Saludos y muy buena ruta.";
 
 const TRUCKERSMP_API_BASE_URL = 'https://api.truckersmp.com/v2';
 
@@ -256,7 +256,7 @@ client.on('interactionCreate', async interaction => {
         case 'tirainfo':
             {
                 const readmeDescription = 'Esta es una recopilación de la *Tira Ecol* publicada entre diciembre de 2001 y el 18 de octubre de 2010 (tiraecol.net).';
-                const interviewSnippet = '1.  *¿Quien eres tu? (informacion personal que quieras dar)*
+                const interviewSnippet = `1.  *¿Quien eres tu? (informacion personal que quieras dar)*
 
     Nací hace unos 28 años en Valencia, y desde entonces vengo haciendo cosas sin
     parar. Por lo visto soy una persona inquieta. Demasiado. Fui al colegio hasta
@@ -264,7 +264,7 @@ client.on('interactionCreate', async interaction => {
     ponderando, acabé estudiando ingeniería industrial. Cuando digo que lo mejor
     que me sucedió allí fue escribir y dibujar en la revista de la escuela, te
     puedes hacer una idea de lo que fue mi paso por aquella santa institución.
-';
+`;
                 const embed = new EmbedBuilder()
                     .setColor(0x4E5D94)
                     .setTitle('Información sobre Tira Ecol')
@@ -324,16 +324,15 @@ client.on('interactionCreate', async interaction => {
                         .setTitle('✅ Código de Verificación Generado')
                         .setDescription('¡Tu código está listo! Cópialo y pégalo en el campo correspondiente del generador de licencias.')
                         .addFields(
-                            { name: 'Usuario de TruckersMP', value: playerData.name, inline: true },
-                            { name: 'Fecha de Registro Verificada', value: DateTime.fromISO(playerData.joinDate.replace(' ', 'T')).toFormat('dd/MM/yyyy'), inline: true }
+                            { name: 'Tu Código de Verificación', value: `
+${verificationCode}
+` },
+                            { name: '¿Dónde usar este código?', value: '[Haz clic aquí para ir al Generador de ID](https://convoyrama.github.io/id.html)' }
                         )
                         .setFooter({ text: 'Este código vincula tu licencia a tu fecha de registro real.' });
                     if (vtcDataForEmbed) {
                         embed.addFields({ name: 'VTC Procesada', value: `${vtcDataForEmbed.name}`, inline: true });
                     }
-                    embed.addFields({ name: 'Tu Código de Verificación', value: `
-${verificationCode}
-` });
                     await interaction.editReply({ embeds: [embed] });
                 } catch (error) {
                     console.error('Error durante la verificación:', error);
@@ -677,7 +676,7 @@ ${verificationCode}
                             const bannedMembersList = bannedMembers.map(member => member.username).join(', ');
                             embed.addFields({ name: 'Miembros Baneados', value: bannedMembersList });
                         }
-                        if (newsData.news && newsData.news.length > 0) {
+                        if (newsData && newsData.news && newsData.news.length > 0) {
                             const latestNews = newsData.news[0];
                             embed.addFields({ name: 'Última Noticia', value: `[${latestNews.title}](https://truckersmp.com/vtc/${vtcId}/news/${latestNews.id})` });
                         }
