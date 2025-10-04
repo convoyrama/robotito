@@ -598,7 +598,7 @@ ${verificationCode}
                 const embed = new EmbedBuilder().setColor(0x008000).setTitle('🚚 Comunidad');
                 const VTCS_DATA = []; 
                 VTCS_DATA.forEach(countryData => {
-                    const vtcList = countryData.vtcs.map(vtc => vtc.discord ? `[${vtc.name}](${vtc.discord})` : vtc.name).join('
+                    const vtcList = countryData.vtcs.map(vtc => vtc.discord ? `[${vtc.name}](${vtc.discord})` : vtc.name).join('\n');
 ');
                     if (vtcList) embed.addFields({ name: countryData.country, value: vtcList, inline: true });
                 });
