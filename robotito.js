@@ -35,6 +35,7 @@ const LATAM_TIMEZONES = [
     { name: 'Uruguay (Montevideo)', zone: 'America/Montevideo' },
     { name: 'Brasil (Brasilia)', zone: 'America/Sao_Paulo' },
     { name: 'España (Madrid)', zone: 'Europe/Madrid' },
+    { name: 'Portugal (Lisboa)', zone: 'Europe/Lisbon' },
 ];
 
 const SPAM_TEXTS = [
@@ -76,10 +77,13 @@ client.once('clientReady', () => {
 
 function parseInputTime(timeString, referenceDate) {
     let parsedTime = null;
+
     const timeMatch24 = timeString.match(/^(\d{1,2}):(\d{2})$/);
     if (timeMatch24) {
         parsedTime = referenceDate.set({ hour: parseInt(timeMatch24[1]), minute: parseInt(timeMatch24[2]), second: 0, millisecond: 0 });
+        return parsedTime && parsedTime.isValid ? parsedTime : null;
     }
+
     const timeMatchAMPM = timeString.match(/^(\d{1,2})(am|pm)$/i);
     if (timeMatchAMPM) {
         let hour = parseInt(timeMatchAMPM[1]);
@@ -87,8 +91,16 @@ function parseInputTime(timeString, referenceDate) {
         if (ampm === 'pm' && hour < 12) hour += 12;
         if (ampm === 'am' && hour === 12) hour = 0;
         parsedTime = referenceDate.set({ hour: hour, minute: 0, second: 0, millisecond: 0 });
+        return parsedTime && parsedTime.isValid ? parsedTime : null;
     }
-    return parsedTime && parsedTime.isValid ? parsedTime : null;
+
+    const timeMatchHHMM = timeString.match(/^(\d{2})(\d{2})$/);
+    if (timeMatchHHMM) {
+        parsedTime = referenceDate.set({ hour: parseInt(timeMatchHHMM[1]), minute: parseInt(timeMatchHHMM[2]), second: 0, millisecond: 0 });
+        return parsedTime && parsedTime.isValid ? parsedTime : null;
+    }
+
+    return null;
 }
 
 function getGameTime(realDateTime) {
@@ -166,7 +178,7 @@ client.on('interactionCreate', async interaction => {
                         { name: '/estado', value: 'Muestra el estado de ánimo diario de Robotito.' },
                         { name: '/logo', value: 'Muestra el logo oficial de la comunidad.' },
                         { name: '/link', value: 'Muestra enlaces útiles de Convoyrama y el Discord.' },
-                        { name: '/ingame [tiempo]', value: 'Muestra la hora actual in-game, o calcula la hora in-game para un tiempo específico.' },
+                        { name: '/ingame [tiempo] [ciudad]', value: 'Calcula la hora in-game para una hora y zona horaria específicas.' },
                         { name: '/hora [tiempo] [ciudad]', value: 'Muestra la hora actual en varias zonas horarias o calcula esas horas.' },
                         { name: '/despedida [tipo]', value: 'Envía un mensaje de despedida de convoy (propio o ajeno).' },
                         { name: '/spam', value: 'Envía un mensaje aleatorio de la lista de textos predefinidos.' },
@@ -174,13 +186,23 @@ client.on('interactionCreate', async interaction => {
                         { name: '/evento7', value: 'Muestra los eventos programados para los próximos 7 días.' },
                         { name: '/vtc', value: 'Muestra la lista de VTCs de la comunidad.' },
                         { name: '/servers', value: 'Muestra el estado de los servidores de TruckersMP.' },
-                        { name: '/infou [id_usuario]', value: 'Muestra información de un usuario de TruckersMP por ID.' },
-                        { name: '/infov [id_vtc]', value: 'Muestra información de una VTC de TruckersMP por ID.' },
                         { name: '/info [enlace_o_alias]', value: 'Muestra información de un usuario o VTC de TruckersMP.' },
                         { name: '/verificar', value: 'Genera un código para verificar tu cuenta y, opcionalmente, tu VTC.' }
                     )
                     .setFooter({ text: '¡Usa los comandos con el prefijo /' });
                 await interaction.reply({ embeds: [embed], flags: 64 });
+                break;
+            }
+        case 'tira':
+            {
+                const embed = new EmbedBuilder()
+                    .setColor(0x5865F2)
+                    .setTitle('ECOL-39: Aparición estelar de Robotito')
+                    .setURL('https://biloynano.com/')
+                    .setDescription('Puedes leer más tiras cómicas en [biloynano.com](https://biloynano.com/)')
+                    .setImage('https://convoyrama.github.io/robotito/img/ecol-39.png')
+                    .setFooter({ text: 'Tira cómica por Bilo y Nano' });
+                await interaction.reply({ embeds: [embed] });
                 break;
             }
         case 'verificar':
@@ -234,7 +256,9 @@ client.on('interactionCreate', async interaction => {
                     if (vtcDataForEmbed) {
                         embed.addFields({ name: 'VTC Procesada', value: `${vtcDataForEmbed.name}`, inline: true });
                     }
-                    embed.addFields({ name: 'Tu Código de Verificación', value: `\`\`\`\n${verificationCode}\n\`\`\`` });
+                    embed.addFields({ name: 'Tu Código de Verificación', value: `
+${verificationCode}
+` });
                     await interaction.editReply({ embeds: [embed] });
                 } catch (error) {
                     console.error('Error durante la verificación:', error);
@@ -335,22 +359,35 @@ client.on('interactionCreate', async interaction => {
             {
                 await interaction.deferReply();
                 const timeString = interaction.options.getString('tiempo');
-                let inputTime, responseDescription = '';
-                const userLocalTime = DateTime.local();
-                if (timeString) {
-                    inputTime = parseInputTime(timeString, userLocalTime);
-                    if (!inputTime) {
-                        await interaction.editReply('Formato de tiempo inválido. Intenta `/ingame tiempo:HH:MM` o `/ingame tiempo:Ham/pm`.');
+                const cityName = interaction.options.getString('ciudad');
+                let referenceDate = DateTime.local();
+                let responseDescription = 'Ahora mismo';
+                let inputTime;
+
+                if (cityName) {
+                    const foundCity = LATAM_TIMEZONES.find(tz => tz.name.toLowerCase().includes(cityName.toLowerCase()));
+                    if (!foundCity) {
+                        await interaction.editReply('Ciudad no encontrada. Por favor, usa una de las capitales de la lista o un nombre reconocible.');
                         return;
                     }
-                    responseDescription = `Si en tu zona son las **${inputTime.toFormat('HH:mm')}**`;
-                } else {
-                    inputTime = userLocalTime;
-                    responseDescription = `Ahora mismo`;
+                    referenceDate = DateTime.local().setZone(foundCity.zone);
                 }
+
+                if (timeString) {
+                    inputTime = parseInputTime(timeString, referenceDate);
+                    if (!inputTime) {
+                        await interaction.editReply('Formato de tiempo inválido. Intenta con `HH:MM`, `HHMM` (ej: 2200) o `Ham/pm` (ej: 8pm).');
+                        return;
+                    }
+                    responseDescription = cityName ? `Si en ${foundCity.name} son las **${inputTime.toFormat('HH:mm')}**` : `Si en la zona horaria del bot son las **${inputTime.toFormat('HH:mm')}**`;
+                } else {
+                    inputTime = referenceDate;
+                    responseDescription = cityName ? `Ahora mismo en ${foundCity.name}` : 'Ahora mismo';
+                }
+
                 const ingameTime = getGameTime(inputTime);
                 const ingameEmoji = getDetailedDayNightIcon(ingameTime.hour);
-                const embed = new EmbedBuilder().setColor(0x0099FF).setTitle('⏰ Hora In-Game').setDescription(`${responseDescription}, la hora in-game sería: **${ingameTime.toFormat('HH:mm:ss')} ${ingameEmoji}**`);
+                const embed = new EmbedBuilder().setColor(0x0099FF).setTitle('⏰ Hora In-Game').setDescription(`${responseDescription}, la hora in-game es: **${ingameTime.toFormat('HH:mm:ss')} ${ingameEmoji}**`);
                 await interaction.editReply({ embeds: [embed] });
                 break;
             }
@@ -496,72 +533,6 @@ client.on('interactionCreate', async interaction => {
                     await interaction.editReply({ embeds: [embed] });
                 } catch (error) {
                     console.error('Error al obtener datos de los servidores de TruckersMP:', error);
-                    if (error.response) {
-                        await interaction.editReply(`Error al consultar la API de TruckersMP: ${error.response.status} ${error.response.statusText}`);
-                    } else {
-                        await interaction.editReply('Lo siento, hubo un error al consultar la API de TruckersMP.');
-                    }
-                }
-                break;
-            }
-        case 'infou':
-            {
-                const userId = interaction.options.getString('id_usuario');
-                if (!userId) {
-                    await interaction.reply({ content: 'Por favor, proporciona un ID de usuario de TruckersMP.', flags: 64 });
-                    return;
-                }
-                const profileUrl = `https://truckersmp.com/user/${userId}`;
-                await handlePlayerInfo(interaction, userId, profileUrl);
-                break;
-            }
-        case 'infov':
-            {
-                await interaction.deferReply({ flags: 64 });
-                const vtcId = interaction.options.getString('id_vtc');
-                if (!vtcId) {
-                    await interaction.editReply('Por favor, proporciona un ID de VTC de TruckersMP.');
-                    return;
-                }
-                const vtcUrl = `https://truckersmp.com/vtc/${vtcId}`;
-                try {
-                    const vtcResponse = await axios.get(`${TRUCKERSMP_API_BASE_URL}/vtc/${vtcId}`);
-                    const vtcData = vtcResponse.data.response;
-                    if (!vtcData) {
-                        await interaction.editReply('No se encontró información para esa VTC de TruckersMP.');
-                        return;
-                    }
-                    const membersResponse = await axios.get(`${TRUCKERSMP_API_BASE_URL}/vtc/${vtcId}/members`);
-                    const membersData = membersResponse.data.response.members;
-                    const bannedMembers = membersData.filter(member => member.banned);
-                    const newsResponse = await axios.get(`${TRUCKERSMP_API_BASE_URL}/vtc/${vtcId}/news`);
-                    const newsData = newsResponse.data.response;
-                    const embed = new EmbedBuilder()
-                        .setColor(0x0077B6)
-                        .setTitle(`🚚 Perfil de VTC: ${vtcData.name}`)
-                        .setURL(vtcUrl)
-                        .setThumbnail(vtcData.avatar || null)
-                        .addFields(
-                            { name: 'ID de VTC', value: vtcData.id ? `${vtcData.id}` : 'N/A', inline: true },
-                            { name: 'Tag', value: vtcData.tag || 'N/A', inline: true },
-                            { name: 'Miembros', value: vtcData.members_count ? `${vtcData.members_count}` : 'N/A', inline: true },
-                            { name: 'Creada', value: vtcData.creation_date ? DateTime.fromISO(vtcData.creation_date.replace(' ', 'T')).toFormat('dd/MM/yyyy') : 'N/A', inline: true },
-                            { name: 'Reclutamiento', value: vtcData.recruitment_status || 'N/A', inline: true },
-                            { name: 'Verificada', value: vtcData.verified ? 'Sí' : 'No', inline: true }
-                        )
-                        .setFooter({ text: 'Datos obtenidos de la API de TruckersMP.' });
-                    if (vtcData.slogan) embed.setDescription(vtcData.slogan);
-                    if (bannedMembers.length > 0) {
-                        const bannedMembersList = bannedMembers.map(member => member.username).join(', ');
-                        embed.addFields({ name: 'Miembros Baneados', value: bannedMembersList });
-                    }
-                    if (newsData.news && newsData.news.length > 0) {
-                        const latestNews = newsData.news[0];
-                        embed.addFields({ name: 'Última Noticia', value: `[${latestNews.title}](https://truckersmp.com/vtc/${vtcId}/news/${latestNews.id})` });
-                    }
-                    await interaction.editReply({ embeds: [embed] });
-                } catch (error) {
-                    console.error('Error al obtener datos de TruckersMP API:', error);
                     if (error.response) {
                         await interaction.editReply(`Error al consultar la API de TruckersMP: ${error.response.status} ${error.response.statusText}`);
                     } else {

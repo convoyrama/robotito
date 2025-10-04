@@ -28,11 +28,17 @@ const commands = [
     },
     {
         name: 'ingame',
-        description: 'Muestra la hora actual in-game, o calcula la hora in-game para un tiempo específico.',
+        description: 'Calcula la hora in-game para una hora y zona horaria específicas.',
         options: [
             {
                 name: 'tiempo',
-                description: 'Hora en formato HH:MM o Ham/pm (ej: 22:00 o 5pm).',
+                description: 'Hora en formato HH:MM, HHMM o Ham/pm (ej: 22:00, 2200 o 5pm).',
+                type: 3, // STRING
+                required: false,
+            },
+            {
+                name: 'ciudad',
+                description: 'Ciudad/País para la zona horaria de referencia (ej: Montevideo).',
                 type: 3, // STRING
                 required: false,
             },
@@ -93,30 +99,6 @@ const commands = [
         description: 'Muestra el estado de los servidores de TruckersMP.',
     },
     {
-        name: 'infou',
-        description: 'Muestra información de un usuario de TruckersMP por ID.',
-        options: [
-            {
-                name: 'id_usuario',
-                description: 'ID del usuario de TruckersMP.',
-                type: 3, // STRING
-                required: true,
-            },
-        ],
-    },
-    {
-        name: 'infov',
-        description: 'Muestra información de una VTC de TruckersMP por ID.',
-        options: [
-            {
-                name: 'id_vtc',
-                description: 'ID de la VTC de TruckersMP.',
-                type: 3, // STRING
-                required: true,
-            },
-        ],
-    },
-    {
         name: 'info',
         description: 'Muestra información de un usuario o VTC de TruckersMP por URL o alias.',
         options: [
@@ -145,6 +127,10 @@ const commands = [
                 required: false,
             },
         ],
+    },
+    {
+        name: 'tira',
+        description: 'Muestra una tira cómica donde aparece Robotito.',
     },
 ];
 
