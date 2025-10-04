@@ -669,7 +669,7 @@ client.login(process.env.DISCORD_TOKEN)
 // Keep-alive server
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Bot is alive!
+    res.end('Bot is alive!\n');
 ');
 });
 
