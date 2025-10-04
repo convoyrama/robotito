@@ -427,9 +427,10 @@ ${verificationCode}
                 let referenceDate = DateTime.local();
                 let responseDescription = 'Ahora mismo';
                 let inputTime;
+                let foundCity = null;
 
                 if (cityName) {
-                    const foundCity = LATAM_TIMEZONES.find(tz => tz.name.toLowerCase().includes(cityName.toLowerCase()));
+                    foundCity = LATAM_TIMEZONES.find(tz => tz.name.toLowerCase().includes(cityName.toLowerCase()));
                     if (!foundCity) {
                         await interaction.editReply('Ciudad no encontrada. Por favor, usa una de las capitales de la lista o un nombre reconocible.');
                         return;
