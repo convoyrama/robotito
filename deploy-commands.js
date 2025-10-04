@@ -132,6 +132,10 @@ const commands = [
         name: 'tira',
         description: 'Muestra una tira cómica donde aparece Robotito.',
     },
+    {
+        name: 'tirainfo',
+        description: 'Muestra información sobre las tiras cómicas de ECOL y sus autores.',
+    },
 ];
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN);

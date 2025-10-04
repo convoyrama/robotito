@@ -5,6 +5,8 @@ const { DateTime } = require('luxon');
 const axios = require('axios');
 const crypto = require('crypto');
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 const client = new Client({
     intents: [
@@ -174,6 +176,8 @@ client.on('interactionCreate', async interaction => {
                     .setDescription('Aquí tienes una lista de lo que puedo hacer:')
                     .addFields(
                         { name: '/ayuda', value: 'Muestra esta lista de comandos.' },
+                        { name: '/tira', value: 'Muestra una tira cómica aleatoria de ECOL.' },
+                        { name: '/tirainfo', value: 'Muestra información sobre las tiras cómicas de ECOL.' },
                         { name: '/tito', value: 'Tito te cuenta un dato inútil y absurdo.' },
                         { name: '/estado', value: 'Muestra el estado de ánimo diario de Robotito.' },
                         { name: '/logo', value: 'Muestra el logo oficial de la comunidad.' },
@@ -195,14 +199,61 @@ client.on('interactionCreate', async interaction => {
             }
         case 'tira':
             {
-                const embed = new EmbedBuilder()
-                    .setColor(0x5865F2)
-                    .setTitle('ECOL-39: Aparición estelar de Robotito')
-                    .setURL('https://biloynano.com/')
-                    .setDescription('Puedes leer más tiras cómicas en [biloynano.com](https://biloynano.com/)')
-                    .setImage('https://convoyrama.github.io/robotito/img/ecol-39.png')
-                    .setFooter({ text: 'Tira cómica por Bilo y Nano' });
-                await interaction.reply({ embeds: [embed] });
+                try {
+                    const tiraDir = path.join(__dirname, 'tira-ecol-master', 'tira');
+                    const files = fs.readdirSync(tiraDir);
+                    const images = files.filter(f => f.endsWith('.png') || f.endsWith('.jpg') || f.endsWith('.gif'));
+                    if (images.length === 0) {
+                        await interaction.reply({ content: 'No se encontraron imágenes de tiras cómicas.', flags: 64 });
+                        return;
+                    }
+                    const randomImage = images[Math.floor(Math.random() * images.length)];
+                    const imageUrl = `https://convoyrama.github.io/robotito/img/tira-ecol-master/tira/${randomImage}`;
+
+                    const embed = new EmbedBuilder()
+                        .setColor(0x5865F2)
+                        .setTitle('Tira Cómica de ECOL')
+                        .setURL('https://biloynano.com/')
+                        .setImage(imageUrl)
+                        .setFooter({ text: 'Tira por Javier Malonda (Bilo y Nano) | Usa /tirainfo para más detalles.' });
+
+                    await interaction.reply({ embeds: [embed] });
+                } catch (error) {
+                    console.error('Error en el comando /tira:', error);
+                    await interaction.reply({ content: 'Hubo un error al intentar mostrar la tira cómica.', flags: 64 });
+                }
+                break;
+            }
+        case 'tirainfo':
+            {
+                try {
+                    const readmePath = path.join(__dirname, 'tira-ecol-master', 'README.org');
+                    const interviewPath = path.join(__dirname, 'tira-ecol-master', 'Entrevista-Javier-Malonda.org');
+
+                    const readmeContent = fs.readFileSync(readmePath, 'utf-8');
+                    const interviewContent = fs.readFileSync(interviewPath, 'utf-8');
+
+                    const readmeDescription = readmeContent.split('\n')[2]; // "Esta es una recopilación..."
+                    const interviewSnippet = interviewContent.substring(interviewContent.indexOf('1.  *¿Quien eres tu?*'), interviewContent.indexOf('2.  *Un poco de historia:*'));
+
+                    const embed = new EmbedBuilder()
+                        .setColor(0xINFO)
+                        .setTitle('Información sobre Tira Ecol')
+                        .setURL('https://biloynano.com/')
+                        .setDescription(readmeDescription)
+                        .addFields(
+                            { name: 'Autor', value: 'Javier Malonda' },
+                            { name: 'Licencia', value: '[Creative Commons BY-NC-ND 4.0](http://creativecommons.org/licenses/by-nc-nd/4.0/)' },
+                            { name: 'Extracto de la Entrevista (2004)', value: interviewSnippet.substring(0, 1020) + '...' },
+                            { name: 'Leer más', value: '[Entrevista Completa](https://convoyrama.github.io/robotito/tira-ecol-master/Entrevista-Javier-Malonda.org) | [Sitio Web](https://biloynano.com/)' }
+                        )
+                        .setFooter({ text: 'Todo el crédito para Javier Malonda.' });
+
+                    await interaction.reply({ embeds: [embed] });
+                } catch (error) {
+                    console.error('Error en el comando /tirainfo:', error);
+                    await interaction.reply({ content: 'Hubo un error al mostrar la información de la tira cómica.', flags: 64 });
+                }
                 break;
             }
         case 'verificar':
