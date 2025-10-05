@@ -696,6 +696,9 @@ if (!process.env.DISCORD_TOKEN) {
     process.exit(1);
 }
 
+const token = process.env.DISCORD_TOKEN;
+console.log(`Verificando token. Comienza con: "${token.substring(0, 5)}", termina con: "${token.slice(-5)}"`);
+
 console.log('Iniciando sesión con el token...');
 client.login(process.env.DISCORD_TOKEN)
     .then(() => {
