@@ -105,6 +105,7 @@ const vtcAliases = {
 // --- FIN CONFIGURACIÓN PERSONALIZABLE ---
 
 client.once('clientReady', () => {
+    console.log('Evento clientReady disparado.');
     console.log(`¡Bot Robotito conectado como ${client.user.tag}!`);
     client.user.setActivity('Convoyrama', { type: 3 });
 });
@@ -695,7 +696,11 @@ if (!process.env.DISCORD_TOKEN) {
     process.exit(1);
 }
 
+console.log('Iniciando sesión con el token...');
 client.login(process.env.DISCORD_TOKEN)
+    .then(() => {
+        console.log('¡Inicio de sesión exitoso!');
+    })
     .catch(error => {
         console.error('❌ Error al conectar con Discord:', error.message);
         process.exit(1);
