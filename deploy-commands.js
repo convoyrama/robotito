@@ -1,9 +1,5 @@
-require('dotenv').config();
 const { REST, Routes } = require('discord.js');
-
-// SOLUCIÓN TEMPORAL: CLIENT_ID hardcodeado para el registro de comandos.
-// Esto NO es una buena práctica para el código principal del bot.
-const CLIENT_ID = '1423340697913917521'; 
+const { clientId, guildId, token } = require('./config.json');
 
 const commands = [
     {
@@ -138,16 +134,14 @@ const commands = [
     },
 ];
 
-const rest = new REST().setToken(process.env.DISCORD_TOKEN);
+const rest = new REST().setToken(token);
 
 (async () => {
     try {
-        console.log(`Iniciando el registro de ${commands.length} comandos de aplicación.`);
+        console.log(`Iniciando el registro de ${commands.length} comandos para el servidor: ${guildId}.`);
 
-        // The put method is used to fully refresh all commands in the guild with the current set
         const data = await rest.put(
-            Routes.applicationCommands(CLIENT_ID), // Usamos la constante CLIENT_ID hardcodeada
-            // Routes.applicationGuildCommands(CLIENT_ID, process.env.GUILD_ID), // Para comandos específicos de un servidor (más rápido para pruebas)
+            Routes.applicationGuildCommands(clientId, guildId),
             { body: commands },
         );
 
