@@ -200,12 +200,19 @@ async function handlePlayerInfo(interaction, userId, profileUrl) {
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
+    console.log(`[${new Date().toISOString()}] Interaction received: ${interaction.commandName}`);
+
     const { commandName, user, guild } = interaction;
 
     console.log(`[${new Date().toISOString()}] Comando '/${commandName}' ejecutado por '${user.tag}' en el servidor '${guild.name}'`);
 
     try {
         switch (commandName) {
+            case 'ping':
+                {
+                    await interaction.reply({ content: 'Pong!', ephemeral: true });
+                    break;
+                }
             case 'ayuda':
                 {
                     const embed = new EmbedBuilder()
@@ -213,6 +220,7 @@ client.on('interactionCreate', async interaction => {
                         .setTitle('🤖 Comandos de Robotito')
                         .setDescription('Aquí tienes una lista de lo que puedo hacer:')
                         .addFields(
+                            { name: '/ping', value: 'Comprueba si el bot está respondiendo.' },
                             { name: '/ayuda', value: 'Muestra esta lista de comandos.' },
                             { name: '/tira', value: 'Muestra una tira cómica aleatoria de ECOL.' },
                             { name: '/tirainfo', value: 'Muestra información sobre las tiras cómicas de ECOL.' },
@@ -724,6 +732,10 @@ ${verificationCode}
     }
 });
 
+process.on('uncaughtException', error => {
+    console.error('❌ Uncaught exception:', error);
+});
+
 process.on('unhandledRejection', error => {
     console.error('❌ Unhandled promise rejection:', error);
 });
@@ -753,6 +765,7 @@ const server = http.createServer((req, res) => {
     res.end('Bot is alive!\n');
 });
 
-server.listen(process.env.PORT || 3000, () => {
-    console.log(`Keep-alive server running on port ${process.env.PORT || 3000}`);
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`Keep-alive server running on port ${PORT}`);
 });
