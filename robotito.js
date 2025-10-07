@@ -210,7 +210,7 @@ client.on('interactionCreate', async interaction => {
         switch (commandName) {
             case 'ping':
                 {
-                    await interaction.reply({ content: 'Pong!', ephemeral: true });
+                    await interaction.reply({ content: 'Pong!', flags: 64 });
                     break;
                 }
             case 'ayuda':
@@ -259,9 +259,9 @@ client.on('interactionCreate', async interaction => {
                             } catch (error) {
                                 console.error(`[${new Date().toISOString()}] Error en el comando /tira:`, error);
                                 if (interaction.deferred || interaction.replied) {
-                                    await interaction.followUp({ content: 'Hubo un error al mostrar la tira cómica.', ephemeral: true });
+                                    await interaction.followUp({ content: 'Hubo un error al mostrar la tira cómica.', flags: 64 });
                                 } else {
-                                    await interaction.reply({ content: 'Hubo un error al mostrar la tira cómica.', ephemeral: true });
+                                    await interaction.reply({ content: 'Hubo un error al mostrar la tira cómica.', flags: 64 });
                                 }
                             }
                             break;
@@ -335,9 +335,7 @@ client.on('interactionCreate', async interaction => {
                             .setTitle('✅ Código de Verificación Generado')
                             .setDescription('¡Tu código está listo! Cópialo y pégalo en el campo correspondiente del generador de licencias.')
                             .addFields(
-                                { name: 'Tu Código de Verificación', value: `
-${verificationCode}
-` },
+                                { name: 'Tu Código de Verificación', value: '```\n' + verificationCode + '\n```' },
                                 { name: '¿Dónde usar este código?', value: '[Haz clic aquí para ir al Generador de ID](https://convoyrama.github.io/id.html)' }
                             )
                             .setFooter({ text: 'Este código vincula tu licencia a tu fecha de registro real.' });
@@ -607,7 +605,56 @@ ${verificationCode}
                 {
                     await interaction.deferReply();
                     const embed = new EmbedBuilder().setColor(0x008000).setTitle('🚚 Comunidad');
-                    const VTCS_DATA = [];
+                    const VTCS_DATA = [
+    {
+        country: 'Argentina',
+        vtcs: [
+            { name: 'Logística Norte', discord: 'https://discord.gg/9NCXZEez8F' },
+            { name: 'Nova Era Transportes', discord: 'https://discord.gg/tQRBR6FFQe' },
+            { name: 'Los Andes Unidos', discord: 'https://discord.gg/YWmkYYpdtF' },
+            { name: 'Rutiando', discord: 'https://discord.gg/mYgeuBxgrR' },
+            { name: 'EXPRESO AMERICANO', discord: 'https://discord.gg/ZHbK5gSkRd' },
+            { name: 'Aires del Sur', discord: 'https://discord.gg/2zshSNgzrT' },
+            { name: 'Convoy Nocturno - La Noche', discord: 'https://discord.gg/yS4PQuCkwy' }
+        ]
+    },
+    {
+        country: 'Chile',
+        vtcs: [
+            { name: 'Logística Coordillera VTC', discord: 'https://discord.gg/yNn7vTcjc4' },
+            { name: 'Lunar', discord: 'https://discord.gg/bN8ys3ywQw' },
+            { name: 'Forestal El Conquistador', discord: 'https://discord.gg/bN8ys3ywQw' },
+            { name: 'Titanes', discord: 'https://discord.gg/XBg4V4kmnF' }
+        ]
+    },
+    {
+        country: 'Colombia',
+        vtcs: [
+            { name: 'Sin Fronteras Cargo', discord: 'https://discord.gg/FdgK9eBMEA' }
+        ]
+    },
+    {
+        country: 'Costa Rica',
+        vtcs: [
+            { name: 'Transportes Costa Sudamericana', discord: 'https://discord.gg/PrHd3pA6Ev' },
+            { name: 'ChatoCR / Correcaminos', discord: 'https://discord.com/invite/nWHrdUEqFr' }
+        ]
+    },
+    {
+        country: 'Ecuador',
+        vtcs: [
+            { name: 'Traileros Latinos', discord: 'https://discord.gg/WawQC8zc5x' }
+        ]
+    },
+    {
+        country: 'México',
+        vtcs: [
+            { name: 'POLAR EXPRESS', discord: 'https://discord.gg/7C59DQ65pT' },
+            { name: 'Castores Trucking', discord: 'https://discord.gg/cTtV44CE9J' },
+            { name: 'Chapulines VTC ·REAL·', discord: 'https://discord.gg/UY42pmqvnw' }
+        ]
+    }
+];
                     VTCS_DATA.forEach(countryData => {
                         const vtcList = countryData.vtcs.map(vtc => vtc.discord ? `[${vtc.name}](${vtc.discord})` : vtc.name).join('\n');
                         if (vtcList) embed.addFields({ name: countryData.country, value: vtcList, inline: true });
@@ -725,9 +772,9 @@ ${verificationCode}
     } catch (error) {
         console.error(`[${new Date().toISOString()}] Error al ejecutar el comando '/${commandName}':`, error);
         if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({ content: 'Hubo un error al ejecutar este comando.', ephemeral: true });
+            await interaction.followUp({ content: 'Hubo un error al ejecutar este comando.', flags: 64 });
         } else {
-            await interaction.reply({ content: 'Hubo un error al ejecutar este comando.', ephemeral: true });
+            await interaction.reply({ content: 'Hubo un error al ejecutar este comando.', flags: 64 });
         }
     }
 });
