@@ -3,6 +3,10 @@ const { clientId, guildId, token } = require('./config.json');
 
 const commands = [
     {
+        name: 'ping',
+        description: 'Comprueba si el bot está respondiendo.',
+    },
+    {
         name: 'ayuda',
         description: 'Muestra la lista de comandos de Robotito.',
     },
