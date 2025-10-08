@@ -213,18 +213,18 @@ client.on('interactionCreate', async interaction => {
                         .addFields(
                             { name: '/ping', value: 'Comprueba si el bot está respondiendo.' },
                             { name: '/ayuda', value: 'Muestra esta lista de comandos.' },
+                            { name: '/clima [ciudad]', value: 'Muestra el clima actual de una ciudad.' },
                             { name: '/tira', value: 'Muestra una tira cómica aleatoria de ECOL.' },
                             { name: '/tirainfo', value: 'Muestra información sobre las tiras cómicas de ECOL.' },
                             { name: '/tito', value: 'Tito te cuenta un dato inútil y absurdo.' },
                             { name: '/estado', value: 'Muestra el estado de ánimo diario de Robotito.' },
-                            { name: '/logo', value: 'Muestra el logo oficial de la comunidad.' },
+                            { name: '/logo [opcion]', value: 'Muestra una de las 3 variantes del logo de la comunidad.' },
                             { name: '/link', value: 'Muestra enlaces útiles de Convoyrama y el Discord.' },
                             { name: '/ingame [tiempo] [ciudad]', value: 'Calcula la hora in-game para una hora y zona horaria específicas.' },
                             { name: '/hora [tiempo] [ciudad]', value: 'Muestra la hora actual en varias zonas horarias o calcula esas horas.' },
                             { name: '/despedida [tipo]', value: 'Envía un mensaje de despedida de convoy (propio o ajeno).' },
                             { name: '/spam', value: 'Envía un mensaje aleatorio de la lista de textos predefinidos.' },
-                            { name: '/evento', value: 'Muestra el próximo evento programado en este servidor.' },
-                            { name: '/evento7', value: 'Muestra los eventos programados para los próximos 7 días.' },
+                            { name: '/evento [periodo]', value: 'Muestra los eventos (próximo, semana, mes).' },
                             { name: '/vtc', value: 'Muestra la lista de VTCs de la comunidad.' },
                             { name: '/servers', value: 'Muestra el estado de los servidores de TruckersMP.' },
                             { name: '/info [enlace_o_alias]', value: 'Muestra información de un usuario o VTC de TruckersMP.' },
@@ -447,7 +447,17 @@ client.on('interactionCreate', async interaction => {
             case 'logo':
                 {
                     await interaction.deferReply();
-                    const embed = new EmbedBuilder().setColor(0xF1C40F).setTitle('Logo Oficial de LAG\'S SPEED').setImage(`${BASE_IMAGE_URL}LS/logotLS.png`);
+                    const opcion = interaction.options.getString('opcion') || '1';
+                    let logoFile = 'logotLS.png'; // Default logo
+                    switch (opcion) {
+                        case '2':
+                            logoFile = 'logowLS.png';
+                            break;
+                        case '3':
+                            logoFile = 'logoLS.png';
+                            break;
+                    }
+                    const embed = new EmbedBuilder().setColor(0xF1C40F).setTitle('Logo Oficial de LAG\'S SPEED').setImage(`${BASE_IMAGE_URL}LS/${logoFile}`);
                     await interaction.editReply({ embeds: [embed] });
                     break;
                 }

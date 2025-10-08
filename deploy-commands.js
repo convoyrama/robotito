@@ -25,6 +25,19 @@ const commands = [
     {
         name: 'logo',
         description: 'Muestra el logo oficial de la comunidad.',
+        options: [
+            {
+                name: 'opcion',
+                description: 'Elige una de las 3 variantes del logo.',
+                type: 3, // STRING
+                required: false,
+                choices: [
+                    { name: 'Logo 1 (Default)', value: '1' },
+                    { name: 'Logo 2 (White)', value: '2' },
+                    { name: 'Logo 3 (Black)', value: '3' },
+                ],
+            },
+        ],
     },
     {
         name: 'link',
