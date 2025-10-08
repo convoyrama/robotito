@@ -1,5 +1,9 @@
+require('dotenv').config();
 const { REST, Routes } = require('discord.js');
-const { clientId, guildId, token } = require('./config.json');
+
+const token = process.env.DISCORD_TOKEN;
+const clientId = process.env.CLIENT_ID;
+const guildId = process.env.GUILD_ID;
 
 const commands = [
     {
@@ -84,11 +88,20 @@ const commands = [
     },
     {
         name: 'evento',
-        description: 'Muestra el próximo evento programado en este servidor.',
-    },
-    {
-        name: 'evento7',
-        description: 'Muestra los eventos programados para los próximos 7 días.',
+        description: 'Muestra los próximos eventos programados.',
+        options: [
+            {
+                name: 'periodo',
+                description: 'El periodo de tiempo para mostrar los eventos.',
+                type: 3, // STRING
+                required: false,
+                choices: [
+                    { name: 'próximo', value: 'proximo' },
+                    { name: 'semana', value: 'semana' },
+                    { name: 'mes', value: 'mes' },
+                ],
+            },
+        ],
     },
     {
         name: 'vtc',
@@ -135,6 +148,18 @@ const commands = [
     {
         name: 'tirainfo',
         description: 'Muestra información sobre las tiras cómicas de ECOL y sus autores.',
+    },
+    {
+        name: 'clima',
+        description: 'Muestra el clima actual de una ciudad.',
+        options: [
+            {
+                name: 'ciudad',
+                description: 'La ciudad para la que quieres saber el clima.',
+                type: 3, // STRING
+                required: true,
+            },
+        ],
     },
 ];
 

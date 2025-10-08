@@ -5,6 +5,7 @@ const { DateTime } = require('luxon');
 const axios = require('axios');
 const crypto = require('crypto');
 const http = require('http');
+const fs = require('fs');
 
 const client = new Client({
     intents: [
@@ -17,6 +18,7 @@ const client = new Client({
 
 // --- CONFIGURACIÓN PERSONALIZABLE ---
 const HMAC_SECRET_KEY = process.env.HMAC_SECRET_KEY;
+const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
 
 const GAME_TIME_ANCHOR_UTC_MINUTES = 20 * 60 + 40;
 const TIME_SCALE = 6;
@@ -38,39 +40,7 @@ const LATAM_TIMEZONES = [
     { name: 'Portugal (Lisboa)', zone: 'Europe/Lisbon' },
 ];
 
-const TIRA_ECOL_FILES = [
-    'tiraecol-001.jpg', 'tiraecol-002.png', 'tiraecol-003.jpg', 'tiraecol-004.jpg', 'tiraecol-005.jpg', 'tiraecol-006.jpg', 'tiraecol-007.jpg', 'tiraecol-008.gif', 'tiraecol-009.gif', 'tiraecol-010.gif',
-    'tiraecol-011.png', 'tiraecol-012.png', 'tiraecol-013.png', 'tiraecol-014.png', 'tiraecol-015.png', 'tiraecol-016.png', 'tiraecol-017.png', 'tiraecol-018.png', 'tiraecol-019.png', 'tiraecol-020.png',
-    'tiraecol-021.png', 'tiraecol-022.png', 'tiraecol-023.png', 'tiraecol-024.png', 'tiraecol-025.png', 'tiraecol-026.png', 'tiraecol-027.png', 'tiraecol-028.png', 'tiraecol-029.png', 'tiraecol-030.png',
-    'tiraecol-031.png', 'tiraecol-032.png', 'tiraecol-033.png', 'tiraecol-034.png', 'tiraecol-035.png', 'tiraecol-036.png', 'tiraecol-037.png', 'tiraecol-038.png', 'tiraecol-039.png', 'tiraecol-040.png',
-    'tiraecol-041.png', 'tiraecol-042.png', 'tiraecol-043.png', 'tiraecol-044.png', 'tiraecol-045.png', 'tiraecol-046.png', 'tiraecol-047.png', 'tiraecol-048.png', 'tiraecol-049.png', 'tiraecol-050.png',
-    'tiraecol-051.png', 'tiraecol-052.png', 'tiraecol-053.png', 'tiraecol-054.png', 'tiraecol-055.png', 'tiraecol-056.png', 'tiraecol-057.png', 'tiraecol-058.png', 'tiraecol-059.png', 'tiraecol-060.png',
-    'tiraecol-061.png', 'tiraecol-062.png', 'tiraecol-063.png', 'tiraecol-064.png', 'tiraecol-065.png', 'tiraecol-066.png', 'tiraecol-067.png', 'tiraecol-068.png', 'tiraecol-069.png', 'tiraecol-070.png',
-    'tiraecol-071.png', 'tiraecol-072.png', 'tiraecol-073.png', 'tiraecol-074.png', 'tiraecol-075.png', 'tiraecol-076.png', 'tiraecol-077.png', 'tiraecol-078.png', 'tiraecol-079.png', 'tiraecol-080.png',
-    'tiraecol-081.png', 'tiraecol-082.png', 'tiraecol-083.png', 'tiraecol-084.png', 'tiraecol-085.png', 'tiraecol-086.png', 'tiraecol-087.png', 'tiraecol-088.png', 'tiraecol-089.png', 'tiraecol-090.png',
-    'tiraecol-091.png', 'tiraecol-092.png', 'tiraecol-093.png', 'tiraecol-094.png', 'tiraecol-095.png', 'tiraecol-096.png', 'tiraecol-097.png', 'tiraecol-098.png', 'tiraecol-099.png', 'tiraecol-2.jpg',
-    'tiraecol-200.png', 'tiraecol-201.png', 'tiraecol-202.png', 'tiraecol-203.png', 'tiraecol-204.png', 'tiraecol-205.png', 'tiraecol-206.png', 'tiraecol-207.png', 'tiraecol-208.png', 'tiraecol-209.png',
-    'tiraecol-210.png', 'tiraecol-211.png', 'tiraecol-212.png', 'tiraecol-213.png', 'tiraecol-214.png', 'tiraecol-215.png', 'tiraecol-216.png', 'tiraecol-217.png', 'tiraecol-218.png', 'tiraecol-219.png',
-    'tiraecol-220.png', 'tiraecol-221.png', 'tiraecol-222.png', 'tiraecol-223.png', 'tiraecol-224.png', 'tiraecol-225.png', 'tiraecol-226.png', 'tiraecol-227.png', 'tiraecol-228.png', 'tiraecol-229.png',
-    'tiraecol-230.png', 'tiraecol-231.png', 'tiraecol-232.png', 'tiraecol-233.png', 'tiraecol-234.png', 'tiraecol-235.png', 'tiraecol-236.png', 'tiraecol-237.png', 'tiraecol-238.png', 'tiraecol-239.png',
-    'tiraecol-240.png', 'tiraecol-241.png', 'tiraecol-242.png', 'tiraecol-243.png', 'tiraecol-244.png', 'tiraecol-245.png', 'tiraecol-246.png', 'tiraecol-247.png', 'tiraecol-248.png', 'tiraecol-249.png',
-    'tiraecol-250.png', 'tiraecol-251.png', 'tiraecol-252.png', 'tiraecol-253.png', 'tiraecol-254.png', 'tiraecol-255.png', 'tiraecol-256.png', 'tiraecol-257.png', 'tiraecol-258.png', 'tiraecol-259.png',
-    'tiraecol-260.png', 'tiraecol-261.png', 'tiraecol-262.png', 'tiraecol-263.png', 'tiraecol-264.png', 'tiraecol-265.png', 'tiraecol-266.png', 'tiraecol-267.png', 'tiraecol-268.png', 'tiraecol-269.png',
-    'tiraecol-270.png', 'tiraecol-271.png', 'tiraecol-272.png', 'tiraecol-273.png', 'tiraecol-274.png', 'tiraecol-275.png', 'tiraecol-276.png', 'tiraecol-277.png', 'tiraecol-278.png', 'tiraecol-279.png',
-    'tiraecol-280.png', 'tiraecol-281.png', 'tiraecol-282.png', 'tiraecol-283.png', 'tiraecol-284.png', 'tiraecol-285.png', 'tiraecol-286.png', 'tiraecol-287.png', 'tiraecol-288.png', 'tiraecol-289.png',
-    'tiraecol-290.png', 'tiraecol-291.png', 'tiraecol-292.png', 'tiraecol-293.png', 'tiraecol-294.png', 'tiraecol-295.png', 'tiraecol-296.png', 'tiraecol-297.png', 'tiraecol-298.png', 'tiraecol-299.png',
-    'tiraecol-300.png', 'tiraecol-301.png', 'tiraecol-302.png', 'tiraecol-303.png', 'tiraecol-304.png', 'tiraecol-305.png', 'tiraecol-306.png', 'tiraecol-307.png', 'tiraecol-308.png', 'tiraecol-309.png',
-    'tiraecol-310.png', 'tiraecol-311.png', 'tiraecol-312.png', 'tiraecol-313.png', 'tiraecol-314.png', 'tiraecol-315.png', 'tiraecol-316.png', 'tiraecol-317.png', 'tiraecol-318.png', 'tiraecol-319.png',
-    'tiraecol-320.png', 'tiraecol-321.png', 'tiraecol-322.png', 'tiraecol-323.png', 'tiraecol-324.png', 'tiraecol-325.png', 'tiraecol-326.png', 'tiraecol-327.png', 'tiraecol-328.png', 'tiraecol-329.png',
-    'tiraecol-330.png', 'tiraecol-331.png', 'tiraecol-332.jpg', 'tiraecol-332.png', 'tiraecol-333.png', 'tiraecol-334.jpg', 'tiraecol-334.png', 'tiraecol-335.png', 'tiraecol-336.png', 'tiraecol-337.png',
-    'tiraecol-338.png', 'tiraecol-339.png', 'tiraecol-340.png', 'tiraecol-341.jpg', 'tiraecol-341.png', 'tiraecol-342.png', 'tiraecol-343.png', 'tiraecol-344.png', 'tiraecol-345.png', 'tiraecol-346.png',
-    'tiraecol-347.png', 'tiraecol-348.png', 'tiraecol-349.png', 'tiraecol-350.png', 'tiraecol-351.png', 'tiraecol-352.png', 'tiraecol-353.png', 'tiraecol-354.png', 'tiraecol-355.png', 'tiraecol-356.png',
-    'tiraecol-357.png', 'tiraecol-358.png', 'tiraecol-359.png', 'tiraecol-360.png', 'tiraecol-361.png', 'tiraecol-362.png', 'tiraecol-363.png', 'tiraecol-364.png', 'tiraecol-365.png', 'tiraecol-366.png',
-    'tiraecol-367.jpg', 'tiraecol-368.png', 'tiraecol-369.png', 'tiraecol-370.png', 'tiraecol-371.png', 'tiraecol-372.png', 'tiraecol-373.png', 'tiraecol-374.png', 'tiraecol-375.png', 'tiraecol-376.png',
-    'tiraecol-377.png', 'tiraecol-378.png', 'tiraecol-379.png', 'tiraecol-380.png', 'tiraecol-381.png', 'tiraecol-382.png', 'tiraecol-383.png', 'tiraecol-384.png', 'tiraecol-385.png', 'tiraecol-386.png',
-    'tiraecol-387.png', 'tiraecol-388.png', 'tiraecol-389.png', 'tiraecol-390.png', 'tiraecol-391.png', 'tiraecol-392.png', 'tiraecol-393.png', 'tiraecol-394.png', 'tiraecol-395.png', 'tiraecol-396.png',
-    'tiraecol-397.png', 'tiraecol-398.png', 'tiraecol-399.png', 'tiraecol-400.png'
-];
+
 
 const SPAM_TEXTS = [
     'LAG\'S SPEED en la zona. Si vamos despacio no es por la carga, es que el ping no nos deja correr.',
@@ -158,9 +128,30 @@ function getDetailedDayNightIcon(hours) {
     return '🌙';
 }
 
+async function getUpcomingEvents(guild, daysLimit = 0) {
+    if (!guild) return [];
+
+    const scheduledEvents = await guild.scheduledEvents.fetch();
+    const now = Date.now();
+    let timeLimit = 0;
+
+    if (daysLimit > 0) {
+        timeLimit = now + daysLimit * 24 * 60 * 60 * 1000;
+    }
+
+    const upcomingEvents = scheduledEvents.filter(event => {
+        const startTime = event.scheduledStartTimestamp;
+        if (daysLimit > 0) {
+            return startTime > now && startTime < timeLimit;
+        }
+        return startTime > now;
+    }).sort((a, b) => a.scheduledStartTimestamp - b.scheduledStartTimestamp);
+
+    return upcomingEvents;
+}
+
 async function handlePlayerInfo(interaction, userId, profileUrl) {
     try {
-        await interaction.deferReply({ flags: 64 });
         const response = await axios.get(`${TRUCKERSMP_API_BASE_URL}/player/${userId}`);
         const playerData = response.data.response;
         if (!playerData) {
@@ -243,11 +234,53 @@ client.on('interactionCreate', async interaction => {
                     await interaction.reply({ embeds: [embed], flags: 64 });
                     break;
                 }
+            case 'clima':
+                {
+                    await interaction.deferReply();
+                    const ciudad = interaction.options.getString('ciudad');
+                    const apiKey = process.env.OPENWEATHER_API_KEY;
+                    if (!apiKey) {
+                        await interaction.editReply('La clave de la API de OpenWeatherMap no está configurada.');
+                        return;
+                    }
+                    const url = `https://api.openweathermap.org/data/2.5/weather?q=${ciudad}&appid=${apiKey}&units=metric&lang=es`;
+
+                    try {
+                        const response = await axios.get(url);
+                        const weather = response.data;
+
+                        const embed = new EmbedBuilder()
+                            .setColor(0x0099FF)
+                            .setTitle(`Clima en ${weather.name}`)
+                            .setThumbnail(`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`)
+                            .addFields(
+                                { name: 'Temperatura', value: `${weather.main.temp}°C`, inline: true },
+                                { name: 'Sensación térmica', value: `${weather.main.feels_like}°C`, inline: true },
+                                { name: 'Humedad', value: `${weather.main.humidity}%`, inline: true },
+                                { name: 'Viento', value: `${weather.wind.speed} m/s`, inline: true },
+                                { name: 'Descripción', value: weather.weather[0].description, inline: true },
+                            )
+                            .setFooter({ text: 'Datos proporcionados por OpenWeatherMap' });
+
+                        await interaction.editReply({ embeds: [embed] });
+
+                    } catch (error) {
+                        if (error.response && error.response.status === 404) {
+                            await interaction.editReply(`No se pudo encontrar la ciudad "${ciudad}".`);
+                        } else {
+                            console.error('Error al obtener datos de OpenWeatherMap:', error);
+                            await interaction.editReply('Hubo un error al consultar el clima.');
+                        }
+                    }
+                    break;
+                }
                     case 'tira':
                         {
                             try {
                                 await interaction.deferReply();
-                                const randomImage = TIRA_ECOL_FILES[Math.floor(Math.random() * TIRA_ECOL_FILES.length)];
+                                const randomNumber = Math.floor(Math.random() * 400) + 1;
+                                const formattedNumber = String(randomNumber).padStart(3, '0');
+                                const randomImage = `tiraecol-${formattedNumber}.png`;
                                 const imageUrl = `https://convoyrama.github.io/robotito/img/tira-ecol-master/tira/${randomImage}`;
                                 const embed = new EmbedBuilder()
                                     .setColor(0x5865F2)
@@ -547,115 +580,71 @@ client.on('interactionCreate', async interaction => {
                         await interaction.editReply('Este comando solo funciona en un servidor.');
                         return;
                     }
-                    const scheduledEvents = await interaction.guild.scheduledEvents.fetch();
-                    const now = Date.now();
-                    const upcomingEvents = scheduledEvents.filter(event => event.scheduledStartTimestamp > now).sort((a, b) => a.scheduledStartTimestamp - b.scheduledStartTimestamp);
-                    if (upcomingEvents.size === 0) {
-                        await interaction.editReply('Lo siento, no hay eventos programados próximos en este servidor.');
-                        return;
-                    }
-                    const nextEvent = upcomingEvents.first();
-                    const embed = new EmbedBuilder()
-                        .setColor(0x8A2BE2)
-                        .setTitle(`📅 Próximo Evento: ${nextEvent.name}`)
-                        .setURL(nextEvent.url)
-                        .setDescription(
-                            `**Descripción:** ${nextEvent.description || 'Sin descripción.'}
-` +
-                            `**Inicio:** <t:${Math.floor(nextEvent.scheduledStartTimestamp / 1000)}:F> (<t:${Math.floor(nextEvent.scheduledStartTimestamp / 1000)}:R>)
-` +
-                            `**Ubicación:** ${nextEvent.entityMetadata?.location || nextEvent.channel?.name || 'N/A'}
-` +
-                            `**Creador:** ${nextEvent.creator?.tag || 'Desconocido'}`
-                        )
-                        .setFooter({ text: '¡No te lo pierdas!' });
-                    const coverImage = nextEvent.coverImageURL();
-                    if (coverImage) embed.setThumbnail(coverImage);
-                    await interaction.editReply({ embeds: [embed] });
-                    break;
-                }
-            case 'evento7':
-                {
-                    await interaction.deferReply();
-                    if (!interaction.guild) {
-                        await interaction.editReply('Este comando solo funciona en un servidor.');
-                        return;
-                    }
-                    const scheduledEvents = await interaction.guild.scheduledEvents.fetch();
-                    const now = Date.now();
-                    const sevenDaysFromNow = now + 7 * 24 * 60 * 60 * 1000;
-                    const upcomingWeekEvents = scheduledEvents.filter(event => event.scheduledStartTimestamp > now && event.scheduledStartTimestamp < sevenDaysFromNow).sort((a, b) => a.scheduledStartTimestamp - b.scheduledStartTimestamp);
-                    if (upcomingWeekEvents.size === 0) {
-                        await interaction.editReply('No hay eventos programados para esta semana.');
-                        return;
-                    }
-                    const embed = new EmbedBuilder().setColor(0x8A2BE2).setTitle('📅 Próximos Eventos de la Semana');
-                    let description = '';
-                    upcomingWeekEvents.forEach(event => {
-                        description += `**[${event.name}](${event.url})**
-` + `Inicia: <t:${Math.floor(event.scheduledStartTimestamp / 1000)}:F> (<t:${Math.floor(event.scheduledStartTimestamp / 1000)}:R>)
 
-`;
-                    });
-                    embed.setDescription(description);
-                    await interaction.editReply({ embeds: [embed] });
+                    const periodo = interaction.options.getString('periodo') || 'proximo';
+                    let daysLimit = 0;
+                    let title = '';
+
+                    switch (periodo) {
+                        case 'semana':
+                            daysLimit = 7;
+                            title = '📅 Próximos Eventos de la Semana';
+                            break;
+                        case 'mes':
+                            daysLimit = 30;
+                            title = '📅 Próximos Eventos del Mes';
+                            break;
+                        default: // proximo
+                            daysLimit = 0;
+                            break;
+                    }
+
+                    const upcomingEvents = await getUpcomingEvents(interaction.guild, daysLimit);
+
+                    if (upcomingEvents.size === 0) {
+                        let message = 'Lo siento, no hay eventos programados próximos en este servidor.';
+                        if (periodo === 'semana') {
+                            message = 'No hay eventos programados para esta semana.';
+                        } else if (periodo === 'mes') {
+                            message = 'No hay eventos programados para este mes.';
+                        }
+                        await interaction.editReply(message);
+                        return;
+                    }
+
+                    if (periodo === 'proximo') {
+                        const nextEvent = upcomingEvents.first();
+                        const embed = new EmbedBuilder()
+                            .setColor(0x8A2BE2)
+                            .setTitle(`📅 Próximo Evento: ${nextEvent.name}`)
+                            .setURL(nextEvent.url)
+                            .setDescription(
+                                `**Descripción:** ${nextEvent.description || 'Sin descripción.'}\n` +
+                                `**Inicio:** <t:${Math.floor(nextEvent.scheduledStartTimestamp / 1000)}:F> (<t:${Math.floor(nextEvent.scheduledStartTimestamp / 1000)}:R>)\n` +
+                                `**Ubicación:** ${nextEvent.entityMetadata?.location || nextEvent.channel?.name || 'N/A'}\n` +
+                                `**Creador:** ${nextEvent.creator?.tag || 'Desconocido'}`
+                            )
+                            .setFooter({ text: '¡No te lo pierdas!' });
+                        const coverImage = nextEvent.coverImageURL();
+                        if (coverImage) embed.setThumbnail(coverImage);
+                        await interaction.editReply({ embeds: [embed] });
+                    } else {
+                        const embed = new EmbedBuilder().setColor(0x8A2BE2).setTitle(title);
+                        let description = '';
+                        upcomingEvents.forEach(event => {
+                            description += `**[${event.name}](${event.url})**\n` + `Inicia: <t:${Math.floor(event.scheduledStartTimestamp / 1000)}:F> (<t:${Math.floor(event.scheduledStartTimestamp / 1000)}:R>)\n\n`;
+                        });
+                        embed.setDescription(description);
+                        await interaction.editReply({ embeds: [embed] });
+                    }
                     break;
                 }
             case 'vtc':
                 {
                     await interaction.deferReply();
                     const embed = new EmbedBuilder().setColor(0x008000).setTitle('🚚 Comunidad');
-                    const VTCS_DATA = [
-    {
-        country: 'Argentina',
-        vtcs: [
-            { name: 'Logística Norte', discord: 'https://discord.gg/9NCXZEez8F' },
-            { name: 'Nova Era Transportes', discord: 'https://discord.gg/tQRBR6FFQe' },
-            { name: 'Los Andes Unidos', discord: 'https://discord.gg/YWmkYYpdtF' },
-            { name: 'Rutiando', discord: 'https://discord.gg/mYgeuBxgrR' },
-            { name: 'EXPRESO AMERICANO', discord: 'https://discord.gg/ZHbK5gSkRd' },
-            { name: 'Aires del Sur', discord: 'https://discord.gg/2zshSNgzrT' },
-            { name: 'Convoy Nocturno - La Noche', discord: 'https://discord.gg/yS4PQuCkwy' }
-        ]
-    },
-    {
-        country: 'Chile',
-        vtcs: [
-            { name: 'Logística Coordillera VTC', discord: 'https://discord.gg/yNn7vTcjc4' },
-            { name: 'Lunar', discord: 'https://discord.gg/bN8ys3ywQw' },
-            { name: 'Forestal El Conquistador', discord: 'https://discord.gg/bN8ys3ywQw' },
-            { name: 'Titanes', discord: 'https://discord.gg/XBg4V4kmnF' }
-        ]
-    },
-    {
-        country: 'Colombia',
-        vtcs: [
-            { name: 'Sin Fronteras Cargo', discord: 'https://discord.gg/FdgK9eBMEA' }
-        ]
-    },
-    {
-        country: 'Costa Rica',
-        vtcs: [
-            { name: 'Transportes Costa Sudamericana', discord: 'https://discord.gg/PrHd3pA6Ev' },
-            { name: 'ChatoCR / Correcaminos', discord: 'https://discord.com/invite/nWHrdUEqFr' }
-        ]
-    },
-    {
-        country: 'Ecuador',
-        vtcs: [
-            { name: 'Traileros Latinos', discord: 'https://discord.gg/WawQC8zc5x' }
-        ]
-    },
-    {
-        country: 'México',
-        vtcs: [
-            { name: 'POLAR EXPRESS', discord: 'https://discord.gg/7C59DQ65pT' },
-            { name: 'Castores Trucking', discord: 'https://discord.gg/cTtV44CE9J' },
-            { name: 'Chapulines VTC ·REAL·', discord: 'https://discord.gg/UY42pmqvnw' }
-        ]
-    }
-];
-                    VTCS_DATA.forEach(countryData => {
+                    const vtcData = JSON.parse(fs.readFileSync('./vtcs.json', 'utf8'));
+                    vtcData.forEach(countryData => {
                         const vtcList = countryData.vtcs.map(vtc => vtc.discord ? `[${vtc.name}](${vtc.discord})` : vtc.name).join('\n');
                         if (vtcList) embed.addFields({ name: countryData.country, value: vtcList, inline: true });
                     });
@@ -718,8 +707,6 @@ client.on('interactionCreate', async interaction => {
                                 console.error(`[${new Date().toISOString()}] Error fetching VTC members for VTC ID ${vtcId}:`, membersError.message);
                             }
 
-                            const bannedMembers = membersData.filter(member => member.banned);
-
                             let newsData = null;
                             try {
                                 const newsResponse = await axios.get(`${TRUCKERSMP_API_BASE_URL}/vtc/${vtcId}/news`);
@@ -727,8 +714,7 @@ client.on('interactionCreate', async interaction => {
                             } catch (newsError) {
                                 console.error(`[${new Date().toISOString()}] Error fetching VTC news for VTC ID ${vtcId}:`, newsError.message);
                             }
-
-                            const embed = new EmbedBuilder()
+                                                    const embed = new EmbedBuilder()
                                 .setColor(0x0077B6)
                                 .setTitle(`🚚 Perfil de VTC: ${vtcData.name}`)
                                 .setURL(vtcUrl)
@@ -743,10 +729,7 @@ client.on('interactionCreate', async interaction => {
                                 )
                                 .setFooter({ text: 'Datos obtenidos de la API de TruckersMP.' });
                             if (vtcData.slogan) embed.setDescription(vtcData.slogan);
-                            if (bannedMembers.length > 0) {
-                                const bannedMembersList = bannedMembers.map(member => member.username).join(', ');
-                                embed.addFields({ name: 'Miembros Baneados', value: bannedMembersList });
-                            }
+
                             if (newsData && newsData.news && newsData.news.length > 0) {
                                 const latestNews = newsData.news[0];
                                 embed.addFields({ name: 'Última Noticia', value: `[${latestNews.title}](https://truckersmp.com/vtc/${vtcId}/news/${latestNews.id})` });
