@@ -1,9 +1,5 @@
-require('dotenv').config();
 const { REST, Routes } = require('discord.js');
-
-const token = process.env.DISCORD_TOKEN;
-const clientId = process.env.CLIENT_ID;
-const guildId = process.env.GUILD_ID;
+const { clientId, guildId, token } = require('./config.json');
 
 const commands = [
     {
@@ -121,7 +117,37 @@ const commands = [
         description: 'Muestra la lista de VTCs de la comunidad.',
     },
     {
-        name: 'servers',
+        name: 'trafico',
+        description: 'Muestra el estado del tráfico de un servidor de TruckersMP.',
+        options: [
+            {
+                name: 'servidor',
+                description: 'El nombre o shortname del servidor (ej: Simulation 1, sim1).',
+                type: 3, // STRING
+                required: true,
+            },
+        ],
+    },
+    {
+        name: 'galeria',
+        description: 'Muestra una imagen de la galería de World of Trucks.',
+        options: [
+            {
+                name: 'categoria',
+                description: 'La categoría de imágenes a mostrar.',
+                type: 3, // STRING
+                required: true,
+                choices: [
+                    { name: 'Aleatoria', value: 'random' },
+                    { name: 'Elección del Editor', value: 'editorspick' },
+                    { name: 'Mejor Valorada', value: 'bestrated' },
+                    { name: 'Más Vista', value: 'mostviewed' },
+                ],
+            },
+        ],
+    },
+    {
+        name: 'servidores',
         description: 'Muestra el estado de los servidores de TruckersMP.',
     },
     {
@@ -156,11 +182,18 @@ const commands = [
     },
     {
         name: 'tira',
-        description: 'Muestra una tira cómica donde aparece Robotito.',
-    },
-    {
-        name: 'tirainfo',
-        description: 'Muestra información sobre las tiras cómicas de ECOL y sus autores.',
+        description: 'Muestra una tira cómica o información sobre ellas.',
+        options: [
+            {
+                name: 'accion',
+                description: 'Elige una acción.',
+                type: 3, // STRING
+                required: false,
+                choices: [
+                    { name: 'info', value: 'info' },
+                ],
+            },
+        ],
     },
     {
         name: 'clima',

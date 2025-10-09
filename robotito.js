@@ -1,44 +1,35 @@
-require('dotenv').config();
-
-const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder, ActivityType } = require('discord.js');
 const { DateTime } = require('luxon');
 const axios = require('axios');
 const crypto = require('crypto');
 const http = require('http');
 const fs = require('fs');
+const TruckyServicesClient = require('@dowmeister/trucky-services-client');
+
+let config = {};
+try {
+    config = require('./config.json');
+} catch (error) {
+    // config.json not found, using .env
+}
+
+const token = config.token || process.env.DISCORD_TOKEN;
+const HMAC_SECRET_KEY = config.HMAC_SECRET_KEY || process.env.HMAC_SECRET_KEY;
+const OPENWEATHER_API_KEY = config.OPENWEATHER_API_KEY || process.env.OPENWEATHER_API_KEY;
+
+const trucky = new TruckyServicesClient();
 
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildScheduledEvents,
-    ],
+        GatewayIntentBits.GuildScheduledEvents
+    ]
 });
-
-// --- CONFIGURACIÓN PERSONALIZABLE ---
-const HMAC_SECRET_KEY = process.env.HMAC_SECRET_KEY;
-const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
 
 const GAME_TIME_ANCHOR_UTC_MINUTES = 20 * 60 + 40;
 const TIME_SCALE = 6;
 
-const LATAM_TIMEZONES = [
-    { name: 'Argentina (Buenos Aires)', zone: 'America/Argentina/Buenos_Aires' },
-    { name: 'México (Ciudad de México)', zone: 'America/Mexico_City' },
-    { name: 'Chile (Santiago)', zone: 'America/Santiago' },
-    { name: 'Colombia (Bogotá)', zone: 'America/Bogota' },
-    { name: 'Perú (Lima)', zone: 'America/Lima' },
-    { name: 'Venezuela (Caracas)', zone: 'America/Caracas' },
-    { name: 'Panamá (Ciudad de Panamá)', zone: 'America/Panama' },
-    { name: 'Costa Rica (San José)', zone: 'America/Costa_Rica' },
-    { name: 'Paraguay (Asunción)', zone: 'America/Asuncion' },
-    { name: 'Ecuador (Guayaquil)', zone: 'America/Guayaquil' },
-    { name: 'Uruguay (Montevideo)', zone: 'America/Montevideo' },
-    { name: 'Brasil (Brasilia)', zone: 'America/Sao_Paulo' },
-    { name: 'España (Madrid)', zone: 'Europe/Madrid' },
-    { name: 'Portugal (Lisboa)', zone: 'Europe/Lisbon' },
-];
+const timezones = require('./timezones.json');
 
 
 
@@ -74,10 +65,10 @@ const vtcAliases = {
 
 // --- FIN CONFIGURACIÓN PERSONALIZABLE ---
 
-client.once('clientReady', () => {
+client.once('ready', () => {
     console.log('Evento clientReady disparado.');
     console.log(`¡Bot Robotito conectado como ${client.user.tag}!`);
-    client.user.setActivity('Convoyrama', { type: 3 });
+    client.user.setActivity('Convoyrama', { type: ActivityType.Watching });
 });
 
 function parseInputTime(timeString, referenceDate) {
@@ -214,8 +205,7 @@ client.on('interactionCreate', async interaction => {
                             { name: '/ping', value: 'Comprueba si el bot está respondiendo.' },
                             { name: '/ayuda', value: 'Muestra esta lista de comandos.' },
                             { name: '/clima [ciudad]', value: 'Muestra el clima actual de una ciudad.' },
-                            { name: '/tira', value: 'Muestra una tira cómica aleatoria de ECOL.' },
-                            { name: '/tirainfo', value: 'Muestra información sobre las tiras cómicas de ECOL.' },
+                            { name: '/tira [accion]', value: 'Muestra una tira cómica o información sobre ellas.' },
                             { name: '/tito', value: 'Tito te cuenta un dato inútil y absurdo.' },
                             { name: '/estado', value: 'Muestra el estado de ánimo diario de Robotito.' },
                             { name: '/logo [opcion]', value: 'Muestra una de las 3 variantes del logo de la comunidad.' },
@@ -226,7 +216,9 @@ client.on('interactionCreate', async interaction => {
                             { name: '/spam', value: 'Envía un mensaje aleatorio de la lista de textos predefinidos.' },
                             { name: '/evento [periodo]', value: 'Muestra los eventos (próximo, semana, mes).' },
                             { name: '/vtc', value: 'Muestra la lista de VTCs de la comunidad.' },
-                            { name: '/servers', value: 'Muestra el estado de los servidores de TruckersMP.' },
+                            { name: '/servidores', value: 'Muestra el estado de los servidores de TruckersMP.' },
+                            { name: '/trafico [servidor]', value: 'Muestra el estado del tráfico de un servidor de TruckersMP.' },
+                            { name: '/galeria [categoria]', value: 'Muestra una imagen de la galería de World of Trucks.' },
                             { name: '/info [enlace_o_alias]', value: 'Muestra información de un usuario o VTC de TruckersMP.' },
                             { name: '/verificar', value: 'Genera un código para verificar tu cuenta y, opcionalmente, tu VTC.' }
                         )
@@ -252,7 +244,7 @@ client.on('interactionCreate', async interaction => {
                         const embed = new EmbedBuilder()
                             .setColor(0x0099FF)
                             .setTitle(`Clima en ${weather.name}`)
-                            .setThumbnail(`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`)
+                            .setThumbnail(`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`)
                             .addFields(
                                 { name: 'Temperatura', value: `${weather.main.temp}°C`, inline: true },
                                 { name: 'Sensación térmica', value: `${weather.main.feels_like}°C`, inline: true },
@@ -274,54 +266,48 @@ client.on('interactionCreate', async interaction => {
                     }
                     break;
                 }
-                    case 'tira':
-                        {
-                            try {
-                                await interaction.deferReply();
-                                const randomNumber = Math.floor(Math.random() * 400) + 1;
-                                const formattedNumber = String(randomNumber).padStart(3, '0');
-                                const randomImage = `tiraecol-${formattedNumber}.png`;
-                                const imageUrl = `https://convoyrama.github.io/robotito/img/tira-ecol-master/tira/${randomImage}`;
-                                const embed = new EmbedBuilder()
-                                    .setColor(0x5865F2)
-                                    .setTitle('Tira Cómica de ECOL')
-                                    .setURL('https://biloynano.com/')
-                                    .setImage(imageUrl)
-                                    .setFooter({ text: 'Tira por Javier Malonda (Bilo y Nano) | Usa /tirainfo para más detalles.' });
-                                await interaction.editReply({ embeds: [embed] });
-                            } catch (error) {
-                                console.error(`[${new Date().toISOString()}] Error en el comando /tira:`, error);
-                                if (interaction.deferred || interaction.replied) {
-                                    await interaction.followUp({ content: 'Hubo un error al mostrar la tira cómica.', flags: 64 });
-                                } else {
-                                    await interaction.reply({ content: 'Hubo un error al mostrar la tira cómica.', flags: 64 });
-                                }
-                            }
-                            break;
-                        }            case 'tirainfo':
+            case 'tira':
                 {
-                    const readmeDescription = 'Esta es una recopilación de la *Tira Ecol* publicada entre diciembre de 2001 y el 18 de octubre de 2010 (tiraecol.net).';
-                    const interviewSnippet = `1.  *¿Quien eres tu? (informacion personal que quieras dar)*
-
-    Nací hace unos 28 años en Valencia, y desde entonces vengo haciendo cosas sin
-    parar. Por lo visto soy una persona inquieta. Demasiado. Fui al colegio hasta
-    que hubo que salir de allí y luego, por algún extraño motivo que aún estoy
-    ponderando, acabé estudiando ingeniería industrial. Cuando digo que lo mejor
-    que me sucedió allí fue escribir y dibujar en la revista de la escuela, te
-    puedes hacer una idea de lo que fue mi paso por aquella santa institución.`;
-                    const embed = new EmbedBuilder()
-                        .setColor(0x4E5D94)
-                        .setTitle('Información sobre Tira Ecol')
-                        .setURL('https://biloynano.com/')
-                        .setDescription(readmeDescription)
-                        .addFields(
-                            { name: 'Autor', value: 'Javier Malonda' },
-                            { name: 'Licencia', value: '[Creative Commons BY-NC-ND 4.0](http://creativecommons.org/licenses/by-nc-nd/4.0/)' },
-                            { name: 'Extracto de la Entrevista (2004)', value: interviewSnippet + '...' },
-                            { name: 'Leer más', value: '[Entrevista Completa](https://convoyrama.github.io/robotito/img/tira-ecol-master/Entrevista-Javier-Malonda.org) | [Sitio Web](https://biloynano.com/)' }
-                        )
-                        .setFooter({ text: 'Todo el crédito para Javier Malonda.' });
-                    await interaction.reply({ embeds: [embed] });
+                    const accion = interaction.options.getString('accion');
+                    if (accion === 'info') {
+                        const readmeDescription = 'Esta es una recopilación de la *Tira Ecol* publicada entre diciembre de 2001 y el 18 de octubre de 2010 (tiraecol.net).';
+                        const interviewSnippet = `1.  *¿Quien eres tu? (informacion personal que quieras dar)*\n\n    Nací hace unos 28 años en Valencia, y desde entonces vengo haciendo cosas sin\n    parar. Por lo visto soy una persona inquieta. Demasiado. Fui al colegio hasta\n    que hubo que salir de allí y luego, por algún extraño motivo que aún estoy\n    ponderando, acabé estudiando ingeniería industrial. Cuando digo que lo mejor\n    que me sucedió allí fue escribir y dibujar en la revista de la escuela, te\n    puedes hacer una idea de lo que fue mi paso por aquella santa institución.`;
+                        const embed = new EmbedBuilder()
+                            .setColor(0x4E5D94)
+                            .setTitle('Información sobre Tira Ecol')
+                            .setURL('https://biloynano.com/')
+                            .setDescription(readmeDescription)
+                            .addFields(
+                                { name: 'Autor', value: 'Javier Malonda' },
+                                { name: 'Licencia', value: '[Creative Commons BY-NC-ND 4.0](http://creativecommons.org/licenses/by-nc-nd/4.0/)' },
+                                { name: 'Extracto de la Entrevista (2004)', value: interviewSnippet + '...' },
+                                { name: 'Leer más', value: '[Entrevista Completa](https://convoyrama.github.io/robotito/img/tira-ecol-master/Entrevista-Javier-Malonda.txt) | [Sitio Web](https://biloynano.com/)' }
+                            )
+                            .setFooter({ text: 'Todo el crédito para Javier Malonda.' });
+                        await interaction.reply({ embeds: [embed] });
+                    } else {
+                        try {
+                            await interaction.deferReply();
+                            const randomNumber = Math.floor(Math.random() * 400) + 1;
+                            const formattedNumber = String(randomNumber).padStart(3, '0');
+                            const randomImage = `tiraecol-${formattedNumber}.png`;
+                            const imageUrl = `https://convoyrama.github.io/robotito/img/tira-ecol-master/tira/${randomImage}`;
+                            const embed = new EmbedBuilder()
+                                .setColor(0x5865F2)
+                                .setTitle('Tira Cómica de ECOL')
+                                .setURL('https://biloynano.com/')
+                                .setImage(imageUrl)
+                                .setFooter({ text: 'Tira por Javier Malonda (Bilo y Nano) | Usa /tira info para más detalles.' });
+                            await interaction.editReply({ embeds: [embed] });
+                        } catch (error) {
+                            console.error(`[${new Date().toISOString()}] Error en el comando /tira:`, error);
+                            if (interaction.deferred || interaction.replied) {
+                                await interaction.followUp({ content: 'Hubo un error al mostrar la tira cómica.', flags: 64 });
+                            } else {
+                                await interaction.reply({ content: 'Hubo un error al mostrar la tira cómica.', flags: 64 });
+                            }
+                        }
+                    }
                     break;
                 }
             case 'verificar':
@@ -472,7 +458,7 @@ client.on('interactionCreate', async interaction => {
                             { name: 'Generador de Eventos', value: '[Convoyrama Eventos](https://convoyrama.github.io/event.html)' },
                             { name: 'Creador de ID', value: '[Convoyrama ID](https://convoyrama.github.io/id.html)' },
                             { name: 'Generador de Imagen de Perfil', value: '[Convoyrama Perfil](https://convoyrama.github.io/pc.html)' },
-                            { name: 'Invitación a nuestro Discord', value: '[Únete a la Comunidad](https://discord.gg/hjJcyREthH)' },
+                            { name: 'Invitación a nuestro Discord', value: '`hjJcyREthH`' },
                             { name: 'TruckersMP', value: '[Sitio Oficial](https://truckersmp.com/)' },
                             { name: 'LAG\'S SPEED en TruckersMP', value: '[Perfil VTC](https://truckersmp.com/vtc/78865)' },
                             { name: 'LAG\'S SPEED en TrucksBook', value: '[Perfil de Empresa](https://trucksbook.eu/company/212761)' },
@@ -493,7 +479,7 @@ client.on('interactionCreate', async interaction => {
                     let foundCity = null;
 
                                     if (cityName) {
-                                        foundCity = LATAM_TIMEZONES.find(tz => tz.name.toLowerCase().includes(cityName.toLowerCase()));
+                                        foundCity = timezones.find(tz => tz.name.toLowerCase().includes(cityName.toLowerCase()));
                                         if (!foundCity) {
                                             await interaction.editReply('Ciudad no encontrada. Por favor, usa una de las capitales de la lista o un nombre reconocible.');
                                             return;
@@ -526,7 +512,7 @@ client.on('interactionCreate', async interaction => {
                     let referenceTime, referenceCity, description = '';
                     const userLocalTime = DateTime.local();
                     if (timeString && cityName) {
-                        const foundCity = LATAM_TIMEZONES.find(tz => tz.name.toLowerCase().includes(cityName.toLowerCase()));
+                        const foundCity = timezones.find(tz => tz.name.toLowerCase().includes(cityName.toLowerCase()));
                         if (!foundCity) {
                             await interaction.editReply('Ciudad no encontrada en la lista de capitales latinas. Intenta con `/hora` para ver las horas actuales o `/hora tiempo:HH:MM ciudad:[Ciudad]` con una ciudad válida.');
                             return;
@@ -547,7 +533,7 @@ client.on('interactionCreate', async interaction => {
                         await interaction.editReply('Uso incorrecto. Intenta `/hora` para horas actuales, o `/hora tiempo:HH:MM ciudad:[Ciudad]`');
                         return;
                     }
-                    LATAM_TIMEZONES.forEach(tz => {
+                    timezones.forEach(tz => {
                         const timeInZone = referenceTime.setZone(tz.zone);
                         description += `• **${tz.name}:** ${timeInZone.toFormat('HH:mm:ss')}
 `;
@@ -652,16 +638,22 @@ client.on('interactionCreate', async interaction => {
             case 'vtc':
                 {
                     await interaction.deferReply();
-                    const embed = new EmbedBuilder().setColor(0x008000).setTitle('🚚 Comunidad');
-                    const vtcData = JSON.parse(fs.readFileSync('./vtcs.json', 'utf8'));
-                    vtcData.forEach(countryData => {
-                        const vtcList = countryData.vtcs.map(vtc => vtc.discord ? `[${vtc.name}](${vtc.discord})` : vtc.name).join('\n');
-                        if (vtcList) embed.addFields({ name: countryData.country, value: vtcList, inline: true });
-                    });
-                    await interaction.editReply({ embeds: [embed] });
+                    try {
+                        const embed = new EmbedBuilder().setColor(0x008000).setTitle('🚚 Comunidad');
+                        const vtcFileContent = await fs.promises.readFile('./vtcs.json', 'utf8');
+                        const vtcData = JSON.parse(vtcFileContent);
+                        vtcData.forEach(countryData => {
+                            const vtcList = countryData.vtcs.map(vtc => vtc.discord ? `[${vtc.name}](${vtc.discord})` : vtc.name).join('\n');
+                            if (vtcList) embed.addFields({ name: countryData.country, value: vtcList, inline: true });
+                        });
+                        await interaction.editReply({ embeds: [embed] });
+                    } catch (error) {
+                        console.error('Error reading or parsing vtcs.json:', error);
+                        await interaction.editReply('Hubo un error al cargar la lista de VTCs.');
+                    }
                     break;
                 }
-            case 'servers':
+            case 'servidores':
                 {
                     await interaction.deferReply();
                     try {
@@ -681,6 +673,89 @@ client.on('interactionCreate', async interaction => {
                         } else {
                             await interaction.editReply('Lo siento, hubo un error al consultar la API de TruckersMP.');
                         }
+                    }
+                    break;
+                }
+            case 'trafico':
+                {
+                    await interaction.deferReply();
+                    const serverName = interaction.options.getString('servidor');
+
+                    try {
+                        const servers = await trucky.truckersMP.getServers();
+                        const server = servers.find(s => s.name.toLowerCase() === serverName.toLowerCase() || s.shortname.toLowerCase() === serverName.toLowerCase());
+
+                        if (!server) {
+                            await interaction.editReply(`No se encontró el servidor "${serverName}".`);
+                            return;
+                        }
+
+                        const traffic = await trucky.truckersMP.getTraffic({ server: server.name, game: server.game });
+
+                        const embed = new EmbedBuilder()
+                            .setColor(0x0099FF)
+                            .setTitle(`Tráfico en ${server.name}`)
+                            .setImage(traffic.mapUrl)
+                            .addFields(
+                                { name: 'Jugadores', value: `${server.players}`, inline: true },
+                                { name: 'En cola', value: `${server.queue}`, inline: true },
+                            )
+                            .setFooter({ text: 'Datos proporcionados por Trucky App' });
+
+                        if (traffic.roads && traffic.roads.length > 0) {
+                            const topRoads = traffic.roads.slice(0, 5);
+                            const roadsString = topRoads.map(r => `${r.name} (${r.players} jugadores)`).join('\n');
+                            embed.addFields({ name: 'Rutas más concurridas', value: roadsString });
+                        }
+
+                        await interaction.editReply({ embeds: [embed] });
+
+                    } catch (error) {
+                        console.error('Error al obtener datos de tráfico:', error);
+                        await interaction.editReply('Hubo un error al consultar la API de Trucky.');
+                    }
+                    break;
+            case 'galeria':
+                {
+                    await interaction.deferReply();
+                    const category = interaction.options.getString('categoria');
+
+                    try {
+                        let response;
+                        switch (category) {
+                            case 'random':
+                                response = await trucky.worldOfTrucks.getRandomImage();
+                                break;
+                            case 'editorspick':
+                                response = await trucky.worldOfTrucks.getEditorsPick();
+                                break;
+                            case 'bestrated':
+                                response = await trucky.worldOfTrucks.getBestRated();
+                                break;
+                            case 'mostviewed':
+                                response = await trucky.worldOfTrucks.getMostViewed();
+                                break;
+                        }
+
+                        if (!response || response.length === 0) {
+                            await interaction.editReply('No se encontraron imágenes en la categoría seleccionada.');
+                            return;
+                        }
+
+                        const image = response[0];
+
+                        const embed = new EmbedBuilder()
+                            .setColor(0x0099FF)
+                            .setTitle(image.title || 'Imagen de World of Trucks')
+                            .setURL(image.url)
+                            .setImage(image.image_url)
+                            .setFooter({ text: `Autor: ${image.author}` });
+
+                        await interaction.editReply({ embeds: [embed] });
+
+                    } catch (error) {
+                        console.error('Error al obtener imagen de la galería:', error);
+                        await interaction.editReply('Hubo un error al consultar la API de Trucky.');
                     }
                     break;
                 }
@@ -707,14 +782,6 @@ client.on('interactionCreate', async interaction => {
                             if (!vtcData) {
                                 await interaction.editReply('No se encontró información para esa VTC de TruckersMP.');
                                 return;
-                            }
-
-                            let membersData = [];
-                            try {
-                                const membersResponse = await axios.get(`${TRUCKERSMP_API_BASE_URL}/vtc/${vtcId}/members`);
-                                membersData = membersResponse.data.response?.members || [];
-                            } catch (membersError) {
-                                console.error(`[${new Date().toISOString()}] Error fetching VTC members for VTC ID ${vtcId}:`, membersError.message);
                             }
 
                             let newsData = null;
@@ -780,17 +847,13 @@ process.on('unhandledRejection', error => {
     console.error('❌ Unhandled promise rejection:', error);
 });
 
-if (!process.env.DISCORD_TOKEN) {
-    console.error('❌ Error: DISCORD_TOKEN no está configurado en las variables de entorno');
-    console.error('Por favor, configura tu token de Discord en los Secrets de Replit o en tu entorno de hosting.');
+if (!token) {
+    console.error('❌ Error: DISCORD_TOKEN no está configurado en las variables de entorno o en config.json');
     process.exit(1);
 }
 
-const token = process.env.DISCORD_TOKEN;
-console.log(`Verificando token. Comienza con: "${token.substring(0, 5)}", termina con: "${token.slice(-5)}"`);
-
 console.log('Iniciando sesión con el token...');
-client.login(process.env.DISCORD_TOKEN)
+client.login(token)
     .then(() => {
         console.log('¡Inicio de sesión exitoso!');
     })

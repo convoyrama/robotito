@@ -24,6 +24,7 @@
     "axios": "^1.12.2",
     "discord.js": "^14.15.3",
     "dotenv": "^17.2.3",
+    "@dowmeister/trucky-services-client": "github:dowmeister/trucky-services-client-node",
     "luxon": "^3.7.2"
   }
 }

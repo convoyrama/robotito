@@ -11,3 +11,7 @@ npm-debug.log*
 
 # Optional ESLint cache
 .eslintcache
+config.json
+
+# Backups
+robotito.v*.js
