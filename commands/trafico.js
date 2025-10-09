@@ -16,18 +16,17 @@ module.exports = {
             await interaction.editReply('No tengo permiso para enviar mensajes incrustados (Embeds) en este canal. Por favor, contacta a un administrador.');
             return;
         }
-        const serverName = interaction.options.getString('servidor');
-
-        try {
-            const servers = await trucky.getServers();
-            const server = servers.find(s => s.name.toLowerCase() === serverName.toLowerCase() || s.shortname.toLowerCase() === serverName.toLowerCase());
-
+                        const serverName = interaction.options.getString('servidor');
+        
+                        try {
+                            const servers = await trucky.servers();
+                            const server = servers.find(s => s.name.toLowerCase() === serverName.toLowerCase() || s.shortname.toLowerCase() === serverName.toLowerCase());
             if (!server) {
                 await interaction.editReply(`No se encontró el servidor "${serverName}".`);
                 return;
             }
 
-            const traffic = await trucky.truckersMP.getTraffic({ server: server.name, game: server.game });
+            const traffic = await trucky.traffic({ server: server.name, game: server.game });
 
             const embed = new EmbedBuilder()
                 .setColor(0x0099FF)
@@ -55,7 +54,7 @@ module.exports = {
     async autocomplete(interaction) {
         const focusedValue = interaction.options.getFocused();
         try {
-            const servers = await trucky.getServers();
+            const servers = await trucky.servers();
             const choices = servers.map(s => ({ name: s.name, value: s.name }));
             const filtered = choices.filter(choice => choice.name.toLowerCase().startsWith(focusedValue.toLowerCase())).slice(0, 25);
             await interaction.respond(filtered);

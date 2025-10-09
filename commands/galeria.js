@@ -23,16 +23,16 @@ module.exports = {
             let response;
             switch (category) {
                 case 'random':
-                    response = await trucky.getRandomImage();
+                    response = await trucky.wot_gallery_random();
                     break;
                 case 'editorspick':
-                    response = await trucky.getEditorsPick();
+                    response = await trucky.wot_gallery_editorspick();
                     break;
                 case 'bestrated':
-                    response = await trucky.getBestRated();
+                    response = await trucky.wot_gallery_bestrated();
                     break;
                 case 'mostviewed':
-                    response = await trucky.getMostViewed();
+                    response = await trucky.wot_gallery_mostviewed();
                     break;
             }
 
