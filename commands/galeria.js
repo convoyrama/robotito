@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const TruckyServicesClient = require('@dowmeister/trucky-services-client');
-const trucky = new TruckyServicesClient();
+const { trucky } = require('../utils/apiClients');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -24,16 +23,16 @@ module.exports = {
             let response;
             switch (category) {
                 case 'random':
-                    response = await trucky.worldOfTrucks.getRandomImage();
+                    response = await trucky.getRandomImage();
                     break;
                 case 'editorspick':
-                    response = await trucky.worldOfTrucks.getEditorsPick();
+                    response = await trucky.getEditorsPick();
                     break;
                 case 'bestrated':
-                    response = await trucky.worldOfTrucks.getBestRated();
+                    response = await trucky.getBestRated();
                     break;
                 case 'mostviewed':
-                    response = await trucky.worldOfTrucks.getMostViewed();
+                    response = await trucky.getMostViewed();
                     break;
             }
 

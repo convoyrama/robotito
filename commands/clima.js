@@ -12,6 +12,10 @@ module.exports = {
                 .setRequired(true)),
     async execute(interaction) {
         await interaction.deferReply();
+        if (!interaction.channel.permissionsFor(interaction.client.user).has('EmbedLinks')) {
+            await interaction.editReply('No tengo permiso para enviar mensajes incrustados (Embeds) en este canal. Por favor, contacta a un administrador.');
+            return;
+        }
         const ciudad = interaction.options.getString('ciudad');
         if (!openWeatherApiKey) {
             await interaction.editReply('La clave de la API de OpenWeatherMap no está configurada.');

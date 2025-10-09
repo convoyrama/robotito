@@ -17,6 +17,10 @@ module.exports = {
                 .setRequired(false)),
     async execute(interaction) {
         await interaction.deferReply({ flags: 64 });
+        if (!interaction.channel.permissionsFor(interaction.client.user).has('EmbedLinks')) {
+            await interaction.editReply({ content: 'No tengo permiso para enviar mensajes incrustados (Embeds) en este canal. Por favor, contacta a un administrador.', flags: 64 });
+            return;
+        }
         const userUrl = interaction.options.getString('url');
         const vtcUrl = interaction.options.getString('url_vtc');
         const userUrlMatch = userUrl.match(/truckersmp\.com\/(?:user|profile)\/(\d+)/);

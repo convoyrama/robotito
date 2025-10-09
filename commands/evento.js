@@ -16,6 +16,10 @@ module.exports = {
                 )),
     async execute(interaction) {
         await interaction.deferReply();
+        if (!interaction.channel.permissionsFor(interaction.client.user).has('EmbedLinks')) {
+            await interaction.editReply('No tengo permiso para enviar mensajes incrustados (Embeds) en este canal. Por favor, contacta a un administrador.');
+            return;
+        }
         if (!interaction.guild) {
             await interaction.editReply('Este comando solo funciona en un servidor.');
             return;

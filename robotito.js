@@ -44,7 +44,7 @@ client.on('interactionCreate', async interaction => {
     try {
         await command.execute(interaction);
     } catch (error) {
-        console.error(error);
+        console.error(`Error ejecutando el comando '${interaction.commandName}':`, error);
         if (interaction.replied || interaction.deferred) {
             await interaction.followUp({ content: '¡Hubo un error al ejecutar este comando!', ephemeral: true });
         } else {
