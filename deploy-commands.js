@@ -1,219 +1,27 @@
 const { REST, Routes } = require('discord.js');
-const { clientId, guildId, token } = require('./config.json');
+const { clientId, guildId, token } = require('./config.js');
+const fs = require('node:fs');
+const path = require('node:path');
 
-const commands = [
-    {
-        name: 'ping',
-        description: 'Comprueba si el bot está respondiendo.',
-    },
-    {
-        name: 'ayuda',
-        description: 'Muestra la lista de comandos de Robotito.',
-    },
-    {
-        name: 'tito',
-        description: 'Tito te cuenta un dato inútil y absurdo.',
-    },
-    {
-        name: 'estado',
-        description: 'Muestra el estado de ánimo diario de Robotito.',
-    },
-    {
-        name: 'logo',
-        description: 'Muestra el logo oficial de la comunidad.',
-        options: [
-            {
-                name: 'opcion',
-                description: 'Elige una de las 3 variantes del logo.',
-                type: 3, // STRING
-                required: false,
-                choices: [
-                    { name: 'Logo 1 (Default)', value: '1' },
-                    { name: 'Logo 2 (White)', value: '2' },
-                    { name: 'Logo 3 (Black)', value: '3' },
-                ],
-            },
-        ],
-    },
-    {
-        name: 'link',
-        description: 'Muestra enlaces útiles de Convoyrama y el Discord.',
-    },
-    {
-        name: 'ingame',
-        description: 'Calcula la hora in-game para una hora y zona horaria específicas.',
-        options: [
-            {
-                name: 'tiempo',
-                description: 'Hora en formato HH:MM, HHMM o Ham/pm (ej: 22:00, 2200 o 5pm).',
-                type: 3, // STRING
-                required: false,
-            },
-            {
-                name: 'ciudad',
-                description: 'Ciudad/País para la zona horaria de referencia (ej: Montevideo).',
-                type: 3, // STRING
-                required: false,
-            },
-        ],
-    },
-    {
-        name: 'hora',
-        description: 'Muestra la hora actual en varias zonas horarias o calcula esas horas.',
-        options: [
-            {
-                name: 'tiempo',
-                description: 'Hora en formato HH:MM o Ham/pm (ej: 20:00 o 8pm).',
-                type: 3, // STRING
-                required: false,
-            },
-            {
-                name: 'ciudad',
-                description: 'Ciudad de referencia (ej: Montevideo).',
-                type: 3, // STRING
-                required: false,
-            },
-        ],
-    },
-    {
-        name: 'despedida',
-        description: 'Envía un mensaje de despedida de convoy (propio o ajeno).',
-        options: [
-            {
-                name: 'tipo',
-                description: 'Tipo de despedida (propia o ajena).',
-                type: 3, // STRING
-                required: false,
-                choices: [
-                    { name: 'propia', value: 'propia' },
-                    { name: 'ajena', value: 'ajena' },
-                ],
-            },
-        ],
-    },
-    {
-        name: 'spam',
-        description: 'Envía un mensaje aleatorio de la lista de textos predefinidos.',
-    },
-    {
-        name: 'evento',
-        description: 'Muestra los próximos eventos programados.',
-        options: [
-            {
-                name: 'periodo',
-                description: 'El periodo de tiempo para mostrar los eventos.',
-                type: 3, // STRING
-                required: false,
-                choices: [
-                    { name: 'próximo', value: 'proximo' },
-                    { name: 'semana', value: 'semana' },
-                    { name: 'mes', value: 'mes' },
-                ],
-            },
-        ],
-    },
-    {
-        name: 'vtc',
-        description: 'Muestra la lista de VTCs de la comunidad.',
-    },
-    {
-        name: 'trafico',
-        description: 'Muestra el estado del tráfico de un servidor de TruckersMP.',
-        options: [
-            {
-                name: 'servidor',
-                description: 'El nombre o shortname del servidor (ej: Simulation 1, sim1).',
-                type: 3, // STRING
-                required: true,
-            },
-        ],
-    },
-    {
-        name: 'galeria',
-        description: 'Muestra una imagen de la galería de World of Trucks.',
-        options: [
-            {
-                name: 'categoria',
-                description: 'La categoría de imágenes a mostrar.',
-                type: 3, // STRING
-                required: true,
-                choices: [
-                    { name: 'Aleatoria', value: 'random' },
-                    { name: 'Elección del Editor', value: 'editorspick' },
-                    { name: 'Mejor Valorada', value: 'bestrated' },
-                    { name: 'Más Vista', value: 'mostviewed' },
-                ],
-            },
-        ],
-    },
-    {
-        name: 'servidores',
-        description: 'Muestra el estado de los servidores de TruckersMP.',
-    },
-    {
-        name: 'info',
-        description: 'Muestra información de un usuario o VTC de TruckersMP por URL o alias.',
-        options: [
-            {
-                name: 'enlace_o_alias',
-                description: 'Enlace de perfil de TruckersMP (usuario o VTC) o alias de VTC.',
-                type: 3, // STRING
-                required: true,
-            },
-        ],
-    },
-    {
-        name: 'verificar',
-        description: 'Genera un código para verificar tu cuenta, y opcionalmente, tu VTC.',
-        options: [
-            {
-                name: 'url',
-                description: 'La URL completa de tu perfil de TruckersMP.',
-                type: 3, // STRING
-                required: true,
-            },
-            {
-                name: 'url_vtc',
-                description: 'Opcional: La URL de tu VTC para verificar propiedad y logo.',
-                type: 3, // STRING
-                required: false,
-            },
-        ],
-    },
-    {
-        name: 'tira',
-        description: 'Muestra una tira cómica o información sobre ellas.',
-        options: [
-            {
-                name: 'accion',
-                description: 'Elige una acción.',
-                type: 3, // STRING
-                required: false,
-                choices: [
-                    { name: 'info', value: 'info' },
-                ],
-            },
-        ],
-    },
-    {
-        name: 'clima',
-        description: 'Muestra el clima actual de una ciudad.',
-        options: [
-            {
-                name: 'ciudad',
-                description: 'La ciudad para la que quieres saber el clima.',
-                type: 3, // STRING
-                required: true,
-            },
-        ],
-    },
-];
+const commands = [];
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+    const filePath = path.join(commandsPath, file);
+    const command = require(filePath);
+    if ('data' in command && 'execute' in command) {
+        commands.push(command.data.toJSON());
+    } else {
+        console.log(`[ADVERTENCIA] Al comando en ${filePath} le falta una propiedad "data" o "execute" requerida.`);
+    }
+}
 
 const rest = new REST().setToken(token);
 
 (async () => {
     try {
-        console.log(`Iniciando el registro de ${commands.length} comandos para el servidor: ${guildId}.`);
+        console.log(`Iniciando el registro de ${commands.length} comandos de aplicación.`);
 
         const data = await rest.put(
             Routes.applicationGuildCommands(clientId, guildId),
