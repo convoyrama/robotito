@@ -10,7 +10,6 @@ module.exports = {
             .setTitle('🤖 Comandos de Robotito')
             .setDescription('Aquí tienes una lista de lo que puedo hacer:')
             .addFields(
-                { name: '/ping', value: 'Comprueba si el bot está respondiendo.' },
                 { name: '/ayuda', value: 'Muestra esta lista de comandos.' },
                 { name: '/clima [ciudad]', value: 'Muestra el clima actual de una ciudad.' },
                 { name: '/tira [accion]', value: 'Muestra una tira cómica o información sobre ellas.' },
@@ -25,8 +24,6 @@ module.exports = {
                 { name: '/evento [periodo]', value: 'Muestra los eventos (próximo, semana, mes).' },
                 { name: '/vtc', value: 'Muestra la lista de VTCs de la comunidad.' },
                 { name: '/servidores', value: 'Muestra el estado de los servidores de TruckersMP.' },
-                { name: '/trafico [servidor]', value: 'Muestra el estado del tráfico de un servidor de TruckersMP.' },
-                { name: '/galeria [categoria]', value: 'Muestra una imagen de la galería de World of Trucks.' },
                 { name: '/info [enlace_o_alias]', value: 'Muestra información de un usuario o VTC de TruckersMP.' },
                 { name: '/verificar', value: 'Genera un código para verificar tu cuenta y, opcionalmente, tu VTC.' }
             )
