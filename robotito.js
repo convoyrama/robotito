@@ -714,7 +714,8 @@ client.on('interactionCreate', async interaction => {
                         console.error('Error al obtener datos de tráfico:', error);
                         await interaction.editReply('Hubo un error al consultar la API de Trucky.');
                     }
-                    break;
+                }
+                break;
             case 'galeria':
                 {
                     await interaction.deferReply();
