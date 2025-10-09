@@ -1,4 +1,5 @@
-const { GAME_TIME_ANCHOR_UTC_MINUTES, TIME_SCALE } = require('../config');
+const { getTruckersMPGameTime } = require('./truckersmpAPI');
+const { DateTime } = require('luxon'); // Added this import as parseInputTime uses DateTime
 
 function parseInputTime(timeString, referenceDate) {
     let parsedTime = null;
@@ -28,17 +29,21 @@ function parseInputTime(timeString, referenceDate) {
     return null;
 }
 
-function getGameTime(realDateTime) {
-    const utcDateTime = realDateTime.toUTC();
-    const totalMinutesUTC = utcDateTime.hour * 60 + utcDateTime.minute;
-    let realMinutesSinceAnchor = totalMinutesUTC - GAME_TIME_ANCHOR_UTC_MINUTES;
-    if (realMinutesSinceAnchor < 0) { realMinutesSinceAnchor += 24 * 60; }
-    let gameMinutes = realMinutesSinceAnchor * TIME_SCALE;
-    gameMinutes = gameMinutes % 1440;
-    const gameHours = Math.floor(gameMinutes / 60);
-    const remainingMinutes = Math.floor(gameMinutes % 60);
-    const gameSeconds = Math.floor((utcDateTime.second * TIME_SCALE) % 60);
-    return utcDateTime.set({ hour: gameHours, minute: remainingMinutes, second: gameSeconds, millisecond: 0 });
+async function getGameTime(realDateTime) {
+    const apiGameTimeMinutes = await getTruckersMPGameTime();
+
+    if (apiGameTimeMinutes === null) {
+        console.warn('Could not fetch game time from API, returning null.');
+        return null;
+    }
+
+    const gameHours = Math.floor(apiGameTimeMinutes / 60);
+    const gameMinutes = Math.floor(apiGameTimeMinutes % 60);
+    const gameSeconds = 0; // API only provides minutes
+
+    // Create a DateTime object for the game time. We can use the realDateTime's date part
+    // and set the game time hours/minutes/seconds.
+    return realDateTime.set({ hour: gameHours, minute: gameMinutes, second: gameSeconds, millisecond: 0 });
 }
 
 module.exports = { parseInputTime, getGameTime };

@@ -11,10 +11,6 @@ module.exports = {
     hmacSecret: process.env.HMAC_SECRET_KEY,
     openWeatherApiKey: process.env.OPENWEATHER_API_KEY,
 
-    // Time constants
-    GAME_TIME_ANCHOR_UTC_MINUTES: 20 * 60 + 40,
-    TIME_SCALE: 6,
-
     // Bot constants
     SPAM_TEXTS: [
         'LAG\'S SPEED en la zona. Si vamos despacio no es por la carga, es que el ping no nos deja correr.',
