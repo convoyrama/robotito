@@ -1,0 +1,338 @@
+{
+  "error": false,
+  "response": {
+    "recent": [
+      {
+        "id": 83776,
+        "name": "Revontuli Cargo",
+        "owner_id": 6050270,
+        "owner_username": "snfx",
+        "slogan": "Logistics express services at your leasure.",
+        "tag": "RevontuliCARGO",
+        "website": null,
+        "socials": {
+          "twitter": null,
+          "facebook": null,
+          "twitch": null,
+          "discord": null,
+          "youtube": null
+        },
+        "games": {
+          "ats": false,
+          "ets": true
+        },
+        "dlcs": {
+          "304212": "Scandinavia",
+          "925580": "Beyond the Baltic Sea"
+        },
+        "members_count": 3,
+        "recruitment": "Open",
+        "language": "Finnish",
+        "verified": false,
+        "validated": false,
+        "created": "2025-10-14 23:51:42"
+      },
+      {
+        "id": 83775,
+        "name": "Transportes Canarios",
+        "owner_id": 6039117,
+        "owner_username": "TopoAA_",
+        "slogan": "BOCADILLO DE CHORIZO MESSI!!!!!!",
+        "tag": "Trans Canarios",
+        "website": null,
+        "socials": {
+          "twitter": null,
+          "facebook": null,
+          "twitch": null,
+          "discord": null,
+          "youtube": null
+        },
+        "games": {
+          "ats": false,
+          "ets": true
+        },
+        "dlcs": [],
+        "members_count": 4,
+        "recruitment": "Open",
+        "language": "Spanish",
+        "verified": false,
+        "validated": false,
+        "created": "2025-10-14 21:15:56"
+      },
+      {
+        "id": 83774,
+        "name": "Never Come An Trans",
+        "owner_id": 458244,
+        "owner_username": "[GER] Floster",
+        "slogan": "Wir kommen sicher NIE an!",
+        "tag": "NCAT",
+        "website": null,
+        "socials": {
+          "twitter": null,
+          "facebook": null,
+          "twitch": null,
+          "discord": null,
+          "youtube": null
+        },
+        "games": {
+          "ats": false,
+          "ets": true
+        },
+        "dlcs": [],
+        "members_count": 1,
+        "recruitment": "Open",
+        "language": "German",
+        "verified": false,
+        "validated": false,
+        "created": "2025-10-14 20:20:40"
+      },
+      {
+        "id": 83773,
+        "name": "Bharat Xpress",
+        "owner_id": 5929376,
+        "owner_username": "RaxGamzee",
+        "slogan": "One Nation. One Convoy.",
+        "tag": "BX IND",
+        "website": null,
+        "socials": {
+          "twitter": null,
+          "facebook": null,
+          "twitch": null,
+          "discord": null,
+          "youtube": null
+        },
+        "games": {
+          "ats": true,
+          "ets": true
+        },
+        "dlcs": [],
+        "members_count": 1,
+        "recruitment": "Open",
+        "language": "English",
+        "verified": false,
+        "validated": false,
+        "created": "2025-10-14 19:10:15"
+      }
+    ],
+    "featured": [
+      {
+        "id": 55250,
+        "name": "Los Andes Unidos VTC",
+        "owner_id": 2237770,
+        "owner_username": "SiberianCoffe",
+        "slogan": "Transporte sin fronteras",
+        "tag": "LOS ANDES VTC",
+        "website": "https://andesvtc.com/",
+        "socials": {
+          "twitter": "https://twitter.com/andesvtc",
+          "facebook": "https://www.facebook.com/Los-Andes-Unidos-VTC-111420934328164",
+          "twitch": "https://www.twitch.tv/siberiancoffe",
+          "discord": "https://discord.gg/YWmkYYpdtF",
+          "youtube": "https://www.youtube.com/channel/UC2aPVnV_I9-k_JlBoTQe2Ig"
+        },
+        "games": {
+          "ats": true,
+          "ets": true
+        },
+        "dlcs": [],
+        "members_count": 720,
+        "recruitment": "Open",
+        "language": "Spanish",
+        "verified": true,
+        "validated": false,
+        "created": "2022-06-03 05:36:41"
+      },
+      {
+        "id": 76386,
+        "name": "Baltrak Lojistik®",
+        "owner_id": 4506180,
+        "owner_username": ". Unknown .",
+        "slogan": "Geleceğe Öncülük Eder | Leads the Future",
+        "tag": "Bαltrαk®",
+        "website": "https://baltraklog.my.canva.site/home",
+        "socials": {
+          "twitter": null,
+          "facebook": null,
+          "twitch": null,
+          "discord": "https://discord.gg/k63mzpCtsc",
+          "youtube": "https://www.youtube.com/@BALTRAKLOJ%C4%B0ST%C4%B0K"
+        },
+        "games": {
+          "ats": false,
+          "ets": true
+        },
+        "dlcs": [],
+        "members_count": 106,
+        "recruitment": "Open",
+        "language": "English",
+        "verified": true,
+        "validated": false,
+        "created": "2024-12-14 21:54:40"
+      },
+      {
+        "id": 34966,
+        "name": "Nova Era Transportes",
+        "owner_id": 3134584,
+        "owner_username": "La Tóxica <3",
+        "slogan": "JUNTOS HACIA UN NUEVO HORIZONTE",
+        "tag": "NOVA ERA",
+        "website": "https://novaeravtc.wixsite.com/nova-era-transportes",
+        "socials": {
+          "twitter": null,
+          "facebook": "https://www.facebook.com/profile.php?id=100079963016970",
+          "twitch": null,
+          "discord": "https://discord.gg/YP7rqEpETt",
+          "youtube": "https://www.youtube.com/channel/UCr8lsWu1NTRJAopu_r5__Qg"
+        },
+        "games": {
+          "ats": true,
+          "ets": true
+        },
+        "dlcs": [],
+        "members_count": 102,
+        "recruitment": "Open",
+        "language": "Spanish",
+        "verified": true,
+        "validated": false,
+        "created": "2021-01-25 19:58:59"
+      },
+      {
+        "id": 387,
+        "name": "ETS2MCG",
+        "owner_id": 965017,
+        "owner_username": "[MCG] Kien Giang",
+        "slogan": "★ We Are Family ★",
+        "tag": "ETS2MCG",
+        "website": "https://www.ets2mcg.org/",
+        "socials": {
+          "twitter": "https://twitter.com/ets2mcg",
+          "facebook": "https://www.facebook.com/ETS2MCG/",
+          "twitch": null,
+          "discord": "https://discord.gg/vez83th",
+          "youtube": "https://www.youtube.com/c/ETS2MCGOfficial"
+        },
+        "games": {
+          "ats": true,
+          "ets": true
+        },
+        "dlcs": [],
+        "members_count": 919,
+        "recruitment": "Open",
+        "language": "English",
+        "verified": true,
+        "validated": false,
+        "created": "2019-07-14 15:50:29"
+      }
+    ],
+    "featured_cover": [
+      {
+        "id": 46880,
+        "name": "Aurora VTC",
+        "owner_id": 22931,
+        "owner_username": "Cevil",
+        "slogan": "Feel the Experience",
+        "tag": "Aurora",
+        "website": "https://auroravtc.com/",
+        "socials": {
+          "twitter": "https://twitter.com/auroravtc",
+          "facebook": null,
+          "twitch": null,
+          "discord": "https://discord.gg/auroravtc",
+          "youtube": null
+        },
+        "games": {
+          "ats": true,
+          "ets": true
+        },
+        "dlcs": [],
+        "members_count": 148,
+        "recruitment": "Open",
+        "language": "English",
+        "verified": true,
+        "validated": false,
+        "created": "2021-07-01 20:45:49"
+      },
+      {
+        "id": 5415,
+        "name": "Arab Transport VTC",
+        "owner_id": 1480149,
+        "owner_username": "Med Ali",
+        "slogan": "Happy Family",
+        "tag": "Arab Transport VTC",
+        "website": "https://arabtransportvtc.wordpress.com/",
+        "socials": {
+          "twitter": "https://twitter.com/ArabVtc",
+          "facebook": "https://www.facebook.com/Arab-Transport-VTC-103913451123073/",
+          "twitch": null,
+          "discord": "https://discord.com/invite/xRYmNqdR5n",
+          "youtube": "https://www.youtube.com/channel/UCC53A8QWle8HAcpxujy1FzA"
+        },
+        "games": {
+          "ats": true,
+          "ets": true
+        },
+        "dlcs": [],
+        "members_count": 408,
+        "recruitment": "Open",
+        "language": "Arabic",
+        "verified": true,
+        "validated": false,
+        "created": "2019-11-11 15:53:41"
+      },
+      {
+        "id": 64357,
+        "name": "IN AN OUT CARRIERS",
+        "owner_id": 4490402,
+        "owner_username": "001 Skhanda",
+        "slogan": "Time is kilometer 🛣",
+        "tag": "IN AN OUT",
+        "website": "https://www.inanoutcarriers.com/",
+        "socials": {
+          "twitter": null,
+          "facebook": null,
+          "twitch": "https://www.twitch.tv/inanout2023",
+          "discord": "https://discord.gg/5GExQX8zBs",
+          "youtube": "https://youtube.com/@INANOUTCARRIERS"
+        },
+        "games": {
+          "ats": true,
+          "ets": true
+        },
+        "dlcs": [],
+        "members_count": 58,
+        "recruitment": "Open",
+        "language": "English",
+        "verified": true,
+        "validated": false,
+        "created": "2023-07-12 12:57:14"
+      },
+      {
+        "id": 53543,
+        "name": "MT Logistica",
+        "owner_id": 3846818,
+        "owner_username": "moma13",
+        "slogan": "Sempre, ovunque",
+        "tag": "MT Logistica ITA",
+        "website": "https://mtlogistica.wordpress.com/",
+        "socials": {
+          "twitter": null,
+          "facebook": "https://www.facebook.com/groups/722560405349011",
+          "twitch": null,
+          "discord": "https://discord.gg/YAgtzCACeT",
+          "youtube": "https://www.youtube.com/channel/UCEQLsOObX9geX3PRDZfKDfA"
+        },
+        "games": {
+          "ats": true,
+          "ets": true
+        },
+        "dlcs": [],
+        "members_count": 262,
+        "recruitment": "Open",
+        "language": "Italian",
+        "verified": true,
+        "validated": false,
+        "created": "2022-03-15 08:39:24"
+      }
+    ]
+  }
+}
