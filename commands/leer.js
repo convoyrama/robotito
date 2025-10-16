@@ -29,7 +29,7 @@ module.exports = {
             const chunks = extract(buffer);
             const textChunks = chunks.filter(chunk => chunk.name === 'tEXt').map(chunk => text.decode(chunk.data));
 
-            const licenseChunk = textChunks.find(chunk => chunk.keyword === 'license-data');
+            const licenseChunk = textChunks.find(chunk => chunk.keyword === 'convoyrama-data');
 
             if (!licenseChunk) {
                 await interaction.editReply('No se encontraron datos de licencia en la imagen. Asegúrate de que la imagen fue generada por Convoyrama.');
