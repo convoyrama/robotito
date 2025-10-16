@@ -1,6 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const axios = require('axios');
-const { readMetadata } = require('png-metadata');
+const extract = require('png-chunks-extract');
+const text = require('png-chunk-text');
 const { DateTime } = require('luxon');
 
 module.exports = {
@@ -24,18 +25,20 @@ module.exports = {
         try {
             const response = await axios.get(attachment.url, { responseType: 'arraybuffer' });
             const buffer = Buffer.from(response.data, 'binary');
-            const metadata = readMetadata(buffer);
+            
+            const chunks = extract(buffer);
+            const textChunks = chunks.filter(chunk => chunk.name === 'tEXt').map(chunk => text.decode(chunk.data));
 
-            const licenseDataString = metadata.tEXt && metadata.tEXt['license-data'];
+            const licenseChunk = textChunks.find(chunk => chunk.keyword === 'license-data');
 
-            if (!licenseDataString) {
+            if (!licenseChunk) {
                 await interaction.editReply('No se encontraron datos de licencia en la imagen. Asegúrate de que la imagen fue generada por Convoyrama.');
                 return;
             }
 
             let licenseData;
             try {
-                licenseData = JSON.parse(licenseDataString);
+                licenseData = JSON.parse(licenseChunk.text);
             } catch (error) {
                 await interaction.editReply('Hubo un error al interpretar los datos de la licencia. El formato es inválido.');
                 console.error('Error parsing license JSON:', error);
@@ -52,6 +55,7 @@ module.exports = {
                     { name: 'Estado', value: licenseData.is_verified ? '✅ Verificada' : '❌ No Verificada', inline: true },
                     { name: 'Perfil de TruckersMP', value: `[Ver Perfil](${licenseData.truckersmp_link})`, inline: false },
                 )
+                .setImage(attachment.url)
                 .setFooter({ text: `Licencia generada el ${DateTime.fromISO(licenseData.generated_at).toFormat('dd/MM/yyyy HH:mm')}` });
 
             if (licenseData.vtc_link) {
@@ -61,7 +65,6 @@ module.exports = {
             if (licenseData.is_verified && licenseData.tmp_join_date) {
                 embed.addFields({ name: 'Miembro desde', value: DateTime.fromISO(licenseData.tmp_join_date.replace(' ', 'T')).toFormat('dd/MM/yyyy'), inline: false });
             }
-
 
             await interaction.editReply({ embeds: [embed] });
 

@@ -26,6 +26,7 @@
     "discord.js": "^14.15.3",
     "dotenv": "^17.2.3",
     "luxon": "^3.7.2",
-    "png-metadata": "^1.0.2"
+    "png-chunk-text": "^1.0.0",
+    "png-chunks-extract": "^1.0.0"
   }
 }
