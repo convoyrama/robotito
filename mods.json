@@ -1,0 +1,137 @@
+{
+  "mapas": {
+    "ets2": [
+      {
+        "nombre": "ProMods",
+        "descripcion": "Expansión masiva y mejora de Europa.",
+        "url": "https://www.promods.net/"
+      },
+      {
+        "nombre": "ProMods Middle-East Add-on",
+        "descripcion": "Extensión oficial de ProMods que añade países de Oriente Medio.",
+        "url": "https://www.promods.net/"
+      },
+      {
+        "nombre": "RusMap",
+        "descripcion": "Mapa de Rusia y Bielorrusia. Puede combinarse con ProMods.",
+        "url": "https://forum.scssoft.com/viewtopic.php?t=243183"
+      },
+      {
+        "nombre": "The Great Steppe",
+        "descripcion": "Añade partes de Kazajistán. Requiere ProMods.",
+        "url": "https://promods.net/viewtopic.php?t=18635"
+      },
+      {
+        "nombre": "Road to Asia",
+        "descripcion": "Mapa que se expande hacia el este, con el objetivo de llegar a Asia.",
+        "url": "https://terramaps.net/"
+      },
+      {
+        "nombre": "Southern Region",
+        "descripcion": "Mapa del sur de Rusia.",
+        "url": "https://forum.scssoft.com/viewtopic.php?t=212941"
+      },
+      {
+        "nombre": "Project Balkans",
+        "descripcion": "Expansión que detalla los países de los Balcanes.",
+        "url": "https://promods.net/viewtopic.php?f=42&t=18683"
+      },
+      {
+        "nombre": "Mapa EAA (Explorers & Adventurers)",
+        "descripcion": "El mapa más grande y antiguo de Brasil para ETS2.",
+        "url": "https://www.mapaeaa.com/"
+      },
+      {
+        "nombre": "AZGE (Azerbaijan-Georgia Add-on)",
+        "descripcion": "Añade Azerbaiyán y Georgia al mapa de Southern Region.",
+        "url": "https://forum.scssoft.com/viewtopic.php?t=292222"
+      },
+      {
+        "nombre": "SiberMap",
+        "descripcion": "Mapa de la región de Siberia.",
+        "url": "https://forum.scssoft.com/viewtopic.php?t=263427"
+      },
+      {
+        "nombre": "Mapa Ceibo",
+        "descripcion": "Mapa de Argentina con más de 90 localidades, tráfico y empresas locales.",
+        "url": "https://mapaceiboets2.com/"
+      },
+      {
+        "nombre": "Mapa RBR",
+        "descripcion": "Mapa de Brasil con más de 100 ciudades en 7 estados.",
+        "url": "https://maparbr.com.br/"
+      },
+      {
+        "nombre": "Clube Rotas",
+        "descripcion": "Comunidad y portal de mods (mapas, camiones, etc.) para ETS2/ATS.",
+        "url": "https://cluberotas.com/es"
+      },
+      {
+        "nombre": "Mapa BR Brasil",
+        "descripcion": "Mapa de Brasil para ETS2, con actualizaciones y comunicación a través de su canal oficial de YouTube.",
+        "url": "https://www.youtube.com/c/MAPABRBRASILETS2"
+      }
+    ],
+    "ats": [
+      {
+        "nombre": "Reforma",
+        "descripcion": "Expansión masiva de México y otras áreas de Norteamérica.",
+        "url": "https://reformaats.com/"
+      },
+      {
+        "nombre": "Coast to Coast",
+        "descripcion": "El objetivo es conectar las dos costas de Estados Unidos.",
+        "url": "https://forum.scssoft.com/viewtopic.php?t=202317"
+      },
+      {
+        "nombre": "CanaDream",
+        "descripcion": "Expansión que añade el territorio de Canadá.",
+        "url": "https://forum.scssoft.com/viewtopic.php?t=209876"
+      }
+    ],
+    "plataformas": [
+      {
+        "nombre": "Steam Workshop",
+        "descripcion": "La plataforma oficial de Steam para mods. Contiene cientos de mapas más pequeños y algunos grandes.",
+        "url_ets2": "https://steamcommunity.com/app/227300/workshop/",
+        "url_ats": "https://steamcommunity.com/app/270880/workshop/"
+      }
+    ]
+  },
+  "vehiculos": {
+    "tiendas": [
+      {
+        "nombre": "Mods FG (Fernando Gamer)",
+        "descripcion": "Tienda de mods de camiones y remolques virtuales.",
+        "url": "https://modsfg.com.br/"
+      },
+      {
+        "nombre": "Fabio Contier",
+        "descripcion": "Tienda de mods 3D personalizados, principalmente autobuses y camiones.",
+        "url": "https://www.fabiocontier.com/"
+      },
+      {
+        "nombre": "ModShop",
+        "descripcion": "Venta de modelos digitales, principalmente autobuses y camiones para juegos de simulación.",
+        "url": "https://modshop.com.br/"
+      }
+    ],
+    "portales": [
+      {
+        "nombre": "ModderHive",
+        "descripcion": "Ofrece mods para ETS2 y ATS, incluyendo camiones, autobuses, remolques y mapas.",
+        "url": "https://modderhive.com/"
+      },
+      {
+        "nombre": "ModLand",
+        "descripcion": "Comunidad de mods para una gran variedad de juegos, donde los usuarios comparten contenido.",
+        "url": "https://www.modland.net/"
+      },
+      {
+        "nombre": "ModHub",
+        "descripcion": "Comunidad que ofrece mods para diferentes juegos, como ETS2 y Farming Simulator.",
+        "url": "https://www.modhub.us/"
+      }
+    ]
+  }
+}
