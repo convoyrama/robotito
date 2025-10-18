@@ -7,7 +7,9 @@ const { token } = require('./config.js');
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildScheduledEvents
+        GatewayIntentBits.GuildScheduledEvents,
+        GatewayIntentBits.GuildMessages,      // Para leer mensajes
+        GatewayIntentBits.MessageContent      // Para leer el contenido del mensaje
     ]
 });
 
@@ -45,10 +47,45 @@ client.on('interactionCreate', async interaction => {
         await command.execute(interaction);
     } catch (error) {
         console.error(`Error ejecutando el comando '${interaction.commandName}':`, error);
+        const replyOptions = { content: '¡Hubo un error al ejecutar este comando!', flags: 64 };
         if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({ content: '¡Hubo un error al ejecutar este comando!', ephemeral: true });
+            await interaction.followUp(replyOptions);
         } else {
-            await interaction.reply({ content: '¡Hubo un error al ejecutar este comando!', ephemeral: true });
+            await interaction.reply(replyOptions);
+        }
+    }
+});
+
+// Lógica de respuesta a menciones
+client.on('messageCreate', message => {
+    if (message.author.bot) return;
+
+    if (message.mentions.has(client.user)) {
+        const messageContent = message.content.toLowerCase();
+        const greetingKeywords = ['hola', 'buenas', 'qué tal', 'saludos', 'tal', 'buen día', 'buenos días'];
+        const isGreeting = greetingKeywords.some(keyword => messageContent.includes(keyword));
+
+        if (isGreeting) {
+            const greetings = [
+                "¡Hola, hola! ✨",
+                "¡Buenas! ¿Todo en orden por aquí?",
+                "¡Qué tal! Aquí Robotito, listo para la acción (o para contarte un dato inútil con `/tito`).",
+                "¡Bip-burup! ¡Hola!",
+                "¡Hola! ¿Qué tal el día? Si quieres saber el tiempo que hace, siempre puedes usar `/clima [ciudad]`.",
+                "¡Buenas! Hoy me siento... bueno, mejor usa `/estado` para averiguarlo. 😉",
+                "¡Qué tal! ¿Buscando cosas nuevas? Tengo una lista de sitios de mods que puedes ver con `/mods`.",
+                "¡Hola! Espero que tu día vaya bien. Y si no, siempre nos quedará la ley de Murphy... `/murphy`.",
+                "¡Saludos! ¿Necesitas saber la hora en algún lugar del mundo? Pregúntame con `/hora`.",
+                "¡Hola! ¿Buscas los enlaces de la comunidad? Los tengo a mano con el comando `/link`.",
+                "¡Buenas! ¿Verificando si los servidores de TruckersMP están online? Puedes usar `/servidores` para eso.",
+                "¡Qué tal! ¿Con ganas de un convoy? Mira los próximos eventos con `/evento`.",
+                "01001000 01101111 01101100 01100001... ¡Ah, perdona! A veces pienso en binario. ¡Hola!",
+                "¡Hola! ¿Calculando la hora para el próximo convoy? Recuerda que puedes usar `/ingame` para saber la hora dentro del juego."
+            ];
+            const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+            message.reply(randomGreeting);
+        } else {
+            message.reply("¡Bip-bop! Me has llamado. Si necesitas algo, usa `/ayuda` para ver mi lista de comandos.");
         }
     }
 });
