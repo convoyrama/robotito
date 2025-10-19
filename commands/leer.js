@@ -93,7 +93,7 @@ module.exports = {
 
             if (licenseData.social_network && licenseData.social_link) {
                 const socialName = licenseData.social_network.charAt(0).toUpperCase() + licenseData.social_network.slice(1);
-                fields.push({ name: socialName, value: `[Ver Perfil](${licenseData.social_link})`, inline: false });
+                fields.push({ name: socialName, value: `[Ver Enlace](${licenseData.social_link})`, inline: false });
             }
             
             if (licenseData.is_verified && licenseData.tmp_join_date) {
