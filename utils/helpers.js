@@ -47,6 +47,7 @@ async function handlePlayerInfo(interaction, userId, profileUrl) {
             .setThumbnail(playerData.avatar || null)
             .addFields(
                 { name: 'ID de TruckersMP', value: `${playerData.id}`, inline: true },
+                { name: 'SteamID', value: `[${playerData.steamID}](https://steamcommunity.com/profiles/${playerData.steamID})`, inline: true },
                 { name: 'Registrado', value: playerData.joinDate ? DateTime.fromISO(playerData.joinDate.replace(' ', 'T')).toFormat('dd/MM/yyyy') : 'N/A', inline: true },
                 { name: 'Última Conexión', value: playerData.lastGameTime ? DateTime.fromISO(playerData.lastGameTime.replace(' ', 'T')).toRelative() : 'N/A', inline: true },
                 { name: 'Baneado', value: playerData.banned ? `Sí, hasta ${DateTime.fromISO(playerData.bannedUntil.replace(' ', 'T')).toFormat('dd/MM/yyyy HH:mm')}` : 'No', inline: true },
