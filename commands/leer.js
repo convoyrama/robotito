@@ -68,7 +68,7 @@ module.exports = {
                 .setTitle(`Licencia de Conducir: ${licenseData.name}`)
                 .setURL(licenseData.truckersmp_link)
                 .setImage(attachment.url)
-                .setFooter({ text: `Licencia generada el ${DateTime.fromISO(licenseData.generated_at).toFormat('dd/MM/yyyy HH:mm')}` });
+                .setFooter({ text: `Licencia generada el ${DateTime.fromISO(licenseData.generated_at).toFormat('dd/MM/yyyy HH:mm')}\n\nGenera tu licencia en [Convoyrama](https://convoyrama.github.io/)\nPara ser incluido en la [lista de ID](https://convoyrama.github.io/idlist.html), solicítalo por ticket en Discord.` });
 
             if (rankInfo) {
                 embed.setThumbnail(rankInfo.image);
