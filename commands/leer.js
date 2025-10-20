@@ -68,7 +68,7 @@ module.exports = {
                 .setTitle(`Licencia de Conducir: ${licenseData.name}`)
                 .setURL(licenseData.truckersmp_link)
                 .setImage(attachment.url)
-                .setFooter({ text: `Licencia generada el ${DateTime.fromISO(licenseData.generated_at).toFormat('dd/MM/yyyy HH:mm')}\n\nGenera tu licencia en [Convoyrama](https://convoyrama.github.io/)\nPara ser incluido en la [lista de ID](https://convoyrama.github.io/idlist.html), solicítalo por ticket en Discord.` });
+                .setFooter({ text: `Licencia generada el ${DateTime.fromISO(licenseData.generated_at).toFormat('dd/MM/yyyy HH:mm')}` });
 
             if (rankInfo) {
                 embed.setThumbnail(rankInfo.image);
@@ -99,6 +99,8 @@ module.exports = {
             if (licenseData.is_verified && licenseData.tmp_join_date) {
                 fields.push({ name: 'Miembro desde', value: DateTime.fromISO(licenseData.tmp_join_date.replace(' ', 'T')).toFormat('dd/MM/yyyy'), inline: false });
             }
+
+            fields.push({ name: 'Información Adicional', value: 'Genera tu licencia en [Convoyrama](https://convoyrama.github.io/).\nPara ser incluido en la [lista de ID](https://convoyrama.github.io/idlist.html), solicítalo por ticket en Discord.', inline: false });
 
             embed.addFields(fields);
 
