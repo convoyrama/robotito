@@ -24,9 +24,7 @@ module.exports = {
             title = '👋 ¡Hasta la Próxima Ruta!';
         }
 
-        const codeBlockMessage = `
-${farewellMessage}
-`;
+        const codeBlockMessage = "```\n" + farewellMessage + "\n```";
 
         const embed = createStyledEmbed({
             color: colors.primary,
