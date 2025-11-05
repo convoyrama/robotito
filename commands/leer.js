@@ -1,24 +1,10 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const axios = require('axios');
+const { SlashCommandBuilder } = require('discord.js');
 const extract = require('png-chunks-extract');
 const text = require('png-chunk-text');
 const { DateTime } = require('luxon');
-
-// Tabla de rangos para buscar la imagen
-const ranks = [
-    { id: 1, image: 'https://convoyrama.github.io/license_generator/rank/1.png' },
-    { id: 2, image: 'https://convoyrama.github.io/license_generator/rank/2.png' },
-    { id: 3, image: 'https://convoyrama.github.io/license_generator/rank/3.png' },
-    { id: 4, image: 'https://convoyrama.github.io/license_generator/rank/4.png' },
-    { id: 5, image: 'https://convoyrama.github.io/license_generator/rank/5.png' },
-    { id: 6, image: 'https://convoyrama.github.io/license_generator/rank/6.png' },
-    { id: 7, image: 'https://convoyrama.github.io/license_generator/rank/7.png' },
-    { id: 8, image: 'https://convoyrama.github.io/license_generator/rank/8.png' },
-    { id: 9, image: 'https://convoyrama.github.io/license_generator/rank/9.png' },
-    { id: 10, image: 'https://convoyrama.github.io/license_generator/rank/10.png' },
-    { id: 11, image: 'https://convoyrama.github.io/license_generator/rank/11.png' },
-    { id: 12, image: 'https://convoyrama.github.io/license_generator/rank/12.png' }
-];
+const { createStyledEmbed } = require('../utils/helpers');
+const { colors, ranks } = require('../config');
+const { fetchUrl } = require('../utils/apiClients');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -39,7 +25,7 @@ module.exports = {
         }
 
         try {
-            const response = await axios.get(attachment.url, { responseType: 'arraybuffer' });
+            const response = await fetchUrl(attachment.url, { responseType: 'arraybuffer' });
             const buffer = Buffer.from(response.data, 'binary');
             
             const chunks = extract(buffer);
@@ -63,18 +49,6 @@ module.exports = {
 
             const rankInfo = ranks.find(r => r.id === licenseData.rank);
 
-            const embed = new EmbedBuilder()
-                .setColor(licenseData.is_verified ? 0x57F287 : 0xED4245)
-                .setTitle(`Licencia de Conducir: ${licenseData.name}`)
-                .setURL(licenseData.truckersmp_link)
-                .setImage(attachment.url)
-                .setFooter({ text: `Licencia generada el ${DateTime.fromISO(licenseData.generated_at).toFormat('dd/MM/yyyy HH:mm')}` });
-
-            if (rankInfo) {
-                embed.setThumbnail(rankInfo.image);
-            }
-
-            // Construcción de campos
             const fields = [
                 { name: 'Nº de Licencia', value: licenseData.license_number, inline: true },
                 { name: 'País', value: `:flag_${licenseData.country.toLowerCase()}:`, inline: true },
@@ -102,13 +76,21 @@ module.exports = {
 
             fields.push({ name: 'Información Adicional', value: 'Genera tu licencia en [Convoyrama](https://convoyrama.github.io/).\nPara ser incluido en la [lista de ID](https://convoyrama.github.io/idlist.html), solicítalo por ticket en Discord.', inline: false });
 
-            embed.addFields(fields);
+            const embed = createStyledEmbed({
+                color: licenseData.is_verified ? colors.success : colors.error,
+                title: `Licencia de Conducir: ${licenseData.name}`,
+                url: licenseData.truckersmp_link,
+                thumbnail: rankInfo ? rankInfo.image : null,
+                image: attachment.url,
+                fields: fields,
+                footer: { text: `Licencia generada el ${DateTime.fromISO(licenseData.generated_at).toFormat('dd/MM/yyyy HH:mm')}` }
+            });
 
             await interaction.editReply({ embeds: [embed] });
 
         } catch (error) {
             console.error('Error processing license image:', error);
-            await interaction.editReply('Ocurrió un error al procesar la imagen de la licencia.');
+            throw error;
         }
     },
 };

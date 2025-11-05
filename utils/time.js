@@ -1,6 +1,12 @@
 const { GAME_TIME_ANCHOR_UTC_MINUTES, TIME_SCALE } = require('../config');
 const { DateTime } = require('luxon');
 
+/**
+ * Parses a time string (like '20:00', '8pm', or '2200') into a Luxon DateTime object.
+ * @param {string} timeString The time string to parse.
+ * @param {import('luxon').DateTime} referenceDate The reference date to use for the time.
+ * @returns {import('luxon').DateTime | null} A DateTime object or null if parsing fails.
+ */
 function parseInputTime(timeString, referenceDate) {
     let parsedTime = null;
 
@@ -29,6 +35,11 @@ function parseInputTime(timeString, referenceDate) {
     return null;
 }
 
+/**
+ * Converts a real-world DateTime object to the corresponding in-game time for ETS2/ATS.
+ * @param {import('luxon').DateTime} realDateTime The real-world date and time.
+ * @returns {import('luxon').DateTime} A DateTime object representing the in-game time.
+ */
 function getGameTime(realDateTime) {
     const utcDateTime = realDateTime.toUTC();
     const totalMinutesUTC = utcDateTime.hour * 60 + utcDateTime.minute;

@@ -1,5 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const axios = require('axios');
+const { SlashCommandBuilder } = require('discord.js');
+const { createStyledEmbed } = require('../utils/helpers');
+const { colors } = require('../config');
+const { jokeApi } = require('../utils/apiClients');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -8,7 +10,7 @@ module.exports = {
     async execute(interaction) {
         try {
             await interaction.deferReply();
-            const response = await axios.get('https://v2.jokeapi.dev/joke/Any?lang=es&blacklistFlags=nsfw,religious,political,racist,sexist,explicit');
+            const response = await jokeApi.get('/joke/Any?lang=es&blacklistFlags=nsfw,religious,political,racist,sexist,explicit');
             const jokeData = response.data;
             let jokeText;
             if (jokeData.type === 'single') {
@@ -16,7 +18,13 @@ module.exports = {
             } else {
                 jokeText = `${jokeData.setup}\n*${jokeData.delivery}*`;
             }
-            const embed = new EmbedBuilder().setColor(0x9B59B6).setTitle('Tito cuenta un chiste...').setDescription(jokeText);
+
+            const embed = createStyledEmbed({
+                color: colors.info,
+                title: '😂 Tito cuenta un chiste...',
+                description: jokeText
+            });
+
             await interaction.editReply({ embeds: [embed] });
         } catch (error) {
             console.error('Error al obtener chiste:', error);
@@ -24,4 +32,3 @@ module.exports = {
         }
     },
 };
-

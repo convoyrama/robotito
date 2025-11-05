@@ -1,5 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { getUpcomingEvents } = require('../utils/helpers');
+const { SlashCommandBuilder } = require('discord.js');
+const { getUpcomingEvents, createStyledEmbed } = require('../utils/helpers');
+const { colors } = require('../config');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -58,27 +59,34 @@ module.exports = {
 
         if (periodo === 'proximo') {
             const nextEvent = upcomingEvents.first();
-            const embed = new EmbedBuilder()
-                .setColor(0x8A2BE2)
-                .setTitle(`📅 Próximo Evento: ${nextEvent.name}`)
-                .setURL(nextEvent.url)
-                .setDescription(
-                    `**Descripción:** ${nextEvent.description || 'Sin descripción.'}\n` +
-                    `**Inicio:** <t:${Math.floor(nextEvent.scheduledStartTimestamp / 1000)}:F> (<t:${Math.floor(nextEvent.scheduledStartTimestamp / 1000)}:R>)\n` +
-                    `**Ubicación:** ${nextEvent.entityMetadata?.location || nextEvent.channel?.name || 'N/A'}\n` +
-                    `**Creador:** ${nextEvent.creator?.tag || 'Desconocido'}`
-                )
-                .setFooter({ text: '¡No te lo pierdas!' });
-            const coverImage = nextEvent.coverImageURL();
-            if (coverImage) embed.setThumbnail(coverImage);
+            const description = 
+                `**Descripción:** ${nextEvent.description || 'Sin descripción.'}\n` +
+                `**Inicio:** <t:${Math.floor(nextEvent.scheduledStartTimestamp / 1000)}:F> (<t:${Math.floor(nextEvent.scheduledStartTimestamp / 1000)}:R>)\n` +
+                `**Ubicación:** ${nextEvent.entityMetadata?.location || nextEvent.channel?.name || 'N/A'}\n` +
+                `**Creador:** ${nextEvent.creator?.tag || 'Desconocido'}`;
+
+            const embed = createStyledEmbed({
+                color: colors.info,
+                title: `📅 Próximo Evento: ${nextEvent.name}`,
+                url: nextEvent.url,
+                description: description,
+                thumbnail: nextEvent.coverImageURL() || null,
+                footer: { text: '¡No te lo pierdas!' }
+            });
+
             await interaction.editReply({ embeds: [embed] });
         } else {
-            const embed = new EmbedBuilder().setColor(0x8A2BE2).setTitle(title);
             let description = '';
             upcomingEvents.forEach(event => {
                 description += `**[${event.name}](${event.url})**\n` + `Inicia: <t:${Math.floor(event.scheduledStartTimestamp / 1000)}:F> (<t:${Math.floor(event.scheduledStartTimestamp / 1000)}:R>)\n\n`;
             });
-            embed.setDescription(description);
+
+            const embed = createStyledEmbed({
+                color: colors.info,
+                title: title,
+                description: description
+            });
+
             await interaction.editReply({ embeds: [embed] });
         }
     },

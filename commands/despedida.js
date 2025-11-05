@@ -1,5 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { FAREWELL_MESSAGE_OWN, FAREWELL_MESSAGE_EXTERNAL } = require('../config');
+const { SlashCommandBuilder } = require('discord.js');
+const { FAREWELL_MESSAGE_OWN, FAREWELL_MESSAGE_EXTERNAL, colors } = require('../config');
+const { createStyledEmbed } = require('../utils/helpers');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -22,7 +23,14 @@ module.exports = {
             farewellMessage = FAREWELL_MESSAGE_OWN;
             title = '👋 ¡Hasta la Próxima Ruta!';
         }
-        const embed = new EmbedBuilder().setColor(0x800080).setTitle(title).setDescription(farewellMessage).setFooter({ text: '¡Nos vemos en el camino!' });
+
+        const embed = createStyledEmbed({
+            color: colors.primary,
+            title: title,
+            description: farewellMessage,
+            footer: { text: '¡Nos vemos en el camino!' }
+        });
+
         await interaction.editReply({ embeds: [embed] });
     },
 };

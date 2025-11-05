@@ -1,8 +1,9 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const { DateTime } = require('luxon');
 const timezones = require('../timezones.json');
 const { parseInputTime, getGameTime } = require('../utils/time');
-const { getDetailedDayNightIcon } = require('../utils/helpers');
+const { getDetailedDayNightIcon, createStyledEmbed } = require('../utils/helpers');
+const { colors } = require('../config');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -47,7 +48,13 @@ module.exports = {
         }
         const ingameTime = getGameTime(inputTime);
         const ingameEmoji = getDetailedDayNightIcon(ingameTime.hour);
-        const embed = new EmbedBuilder().setColor(0x0099FF).setTitle('⏰ Hora In-Game').setDescription(`${responseDescription}, la hora in-game es: **${ingameTime.toFormat('HH:mm:ss')} ${ingameEmoji}**`);
+
+        const embed = createStyledEmbed({
+            color: colors.primary,
+            title: '⏰ Hora In-Game',
+            description: `${responseDescription}, la hora in-game es: **${ingameTime.toFormat('HH:mm:ss')} ${ingameEmoji}**`
+        });
+
         await interaction.editReply({ embeds: [embed] });
     },
 };

@@ -44,5 +44,42 @@ module.exports = {
         'cn': 81233,
         'lc': 63758,
         'titanes': 76975
-    }
+    },
+
+    // Embed Colors
+    colors: {
+        primary: '#3498DB',
+        success: '#2ECC71',
+        error: '#E74C3C',
+        warning: '#F1C40F',
+        info: '#9B59B6'
+    },
+
+    // License reader ranks
+    ranks: [
+        { id: 1, image: 'https://convoyrama.github.io/license_generator/rank/1.png' },
+        { id: 2, image: 'https://convoyrama.github.io/license_generator/rank/2.png' },
+        { id: 3, image: 'https://convoyrama.github.io/license_generator/rank/3.png' },
+        { id: 4, image: 'https://convoyrama.github.io/license_generator/rank/4.png' },
+        { id: 5, image: 'https://convoyrama.github.io/license_generator/rank/5.png' },
+        { id: 6, image: 'https://convoyrama.github.io/license_generator/rank/6.png' },
+        { id: 7, image: 'https://convoyrama.github.io/license_generator/rank/7.png' },
+        { id: 8, image: 'https://convoyrama.github.io/license_generator/rank/8.png' },
+        { id: 9, image: 'https://convoyrama.github.io/license_generator/rank/9.png' },
+        { id: 10, image: 'https://convoyrama.github.io/license_generator/rank/10.png' },
+        { id: 11, image: 'https://convoyrama.github.io/license_generator/rank/11.png' },
+        { id: 12, image: 'https://convoyrama.github.io/license_generator/rank/12.png' }
+    ],
+
+    // Useful Links for /link command
+    usefulLinks: [
+        { name: 'Generador de Eventos', value: '[Convoyrama Eventos](https://convoyrama.github.io/event.html)' },
+        { name: 'Creador de ID', value: '[Convoyrama ID](https://convoyrama.github.io/id.html)' },
+        { name: 'Generador de Imagen de Perfil', value: '[Convoyrama Perfil](https://convoyrama.github.io/pc.html)' },
+        { name: 'Invitación a nuestro Discord', value: '> https://discord.gg/hjJcyREthH' },
+        { name: 'TruckersMP', value: '[Sitio Oficial](https://truckersmp.com/)' },
+        { name: 'LAG\'S SPEED en TruckersMP', value: '[Perfil VTC](https://truckersmp.com/vtc/78865)' },
+        { name: 'LAG\'S SPEED en TrucksBook', value: '[Perfil de Empresa](https://trucksbook.eu/company/212761)' },
+        { name: 'LAG\'S SPEED en PickupVTM', value: '[Perfil de Empresa](https://pickupvtm.com/company/8203)' }
+    ]
 };

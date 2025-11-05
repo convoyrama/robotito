@@ -1,6 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const axios = require('axios');
-const { TRUCKERSMP_API_BASE_URL } = require('../config');
+const { SlashCommandBuilder } = require('discord.js');
+const { colors } = require('../config');
+const { createStyledEmbed } = require('../utils/helpers');
+const { truckersMP } = require('../utils/apiClients');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -9,20 +10,26 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply();
         try {
-            const response = await axios.get(`${TRUCKERSMP_API_BASE_URL}/servers`);
+            const response = await truckersMP.get('/servers');
             const servers = response.data.response;
-            const embed = new EmbedBuilder().setColor(0x00FF00).setTitle('Estado de los Servidores de TruckersMP');
-            servers.forEach(server => {
-                embed.addFields({ name: `${server.name} (${server.shortname})`, value: `**Jugadores:** ${server.players} / ${server.maxplayers}\n**En cola:** ${server.queue}\n**Estado:** ${server.online ? 'Online' : 'Offline'}`, inline: true });
+            
+            const fields = servers.map(server => ({
+                name: `${server.online ? '🟢' : '🔴'} ${server.name} (${server.shortname})`,
+                value: `**Jugadores:** ${server.players} / ${server.maxplayers}\n**En cola:** ${server.queue}`,
+                inline: true
+            }));
+
+            const embed = createStyledEmbed({
+                color: colors.success,
+                title: '📡 Estado de los Servidores de TruckersMP',
+                fields: fields,
+                footer: { text: 'Datos obtenidos de la API de TruckersMP' }
             });
+
             await interaction.editReply({ embeds: [embed] });
         } catch (error) {
             console.error('Error al obtener datos de los servidores de TruckersMP:', error);
-            if (error.response) {
-                await interaction.editReply(`Error al consultar la API de TruckersMP: ${error.response.status} ${error.response.statusText}`);
-            } else {
-                await interaction.editReply('Lo siento, hubo un error al consultar la API de TruckersMP.');
-            }
+            throw error;
         }
     },
 };

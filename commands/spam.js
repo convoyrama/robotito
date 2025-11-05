@@ -1,5 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { SPAM_TEXTS } = require('../config');
+const { SlashCommandBuilder } = require('discord.js');
+const { SPAM_TEXTS, colors } = require('../config');
+const { createStyledEmbed } = require('../utils/helpers');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -17,7 +18,14 @@ module.exports = {
         }
         const randomIndex = Math.floor(Math.random() * SPAM_TEXTS.length);
         const randomSpamText = SPAM_TEXTS[randomIndex];
-        const embed = new EmbedBuilder().setColor(0xFF0000).setTitle('🚨 Mensaje Aleatorio (SPAM)').setDescription(randomSpamText).setFooter({ text: '¡Copia y pega con responsabilidad!' });
+
+        const embed = createStyledEmbed({
+            color: colors.error,
+            title: '🚨 Mensaje Aleatorio (SPAM)',
+            description: randomSpamText,
+            footer: { text: '¡Copia y pega con responsabilidad!' }
+        });
+
         await interaction.editReply({ embeds: [embed] });
     },
 };

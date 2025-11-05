@@ -1,6 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
-const fs = require('fs');
+const { SlashCommandBuilder } = require('discord.js');
+const fs = require('fs').promises;
 const path = require('path');
+const { createStyledEmbed } = require('../utils/helpers');
+const { colors } = require('../config');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,13 +22,17 @@ module.exports = {
                 .setDescription('Muestra sitios de mods de vehículos y portales generales.')),
 
     async execute(interaction) {
+        await interaction.deferReply({ flags: 64 });
+
         try {
             const filePath = path.join(__dirname, '..', 'mods.json');
-            const modsData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+            const modsFileContent = await fs.readFile(filePath, 'utf8');
+            const modsData = JSON.parse(modsFileContent);
             const subcommand = interaction.options.getSubcommand();
 
-            const embed = new EmbedBuilder()
-                .setColor(0x1ABC9C);
+            const embedOptions = {
+                color: colors.info,
+            };
 
             const formatEntries = (entries) => entries.map(e => `[**${e.nombre}**](${e.url})\n*${e.descripcion}*`).join('\n\n');
             const formatPlatforms = (entries) => entries.map(e => {
@@ -36,11 +42,11 @@ module.exports = {
             }).join('\n\n');
 
             if (subcommand === 'ets2') {
-                embed.setTitle('🗺️ Lista de Mapas para ETS2');
+                embedOptions.title = '🗺️ Lista de Mapas para ETS2';
                 const ets2Maps = modsData.mapas.ets2;
+                const fields = [];
                 let ets2FieldValue = '';
                 let ets2Part = 1;
-                const fields = [];
 
                 for (const map of ets2Maps) {
                     const entryString = `[**${map.nombre}**](${map.url})\n*${map.descripcion}*\n\n`;
@@ -54,28 +60,30 @@ module.exports = {
                 if (ets2FieldValue) {
                     fields.push({ name: `Parte ${ets2Part}`, value: ets2FieldValue });
                 }
-                embed.addFields(fields);
+                embedOptions.fields = fields;
 
             } else if (subcommand === 'ats') {
-                embed.setTitle('🗺️ Lista de Mapas para ATS');
-                embed.addFields(
+                embedOptions.title = '🗺️ Lista de Mapas para ATS';
+                embedOptions.fields = [
                     { name: 'Mapas Principales', value: formatEntries(modsData.mapas.ats) || 'No disponible' },
                     { name: 'Otras Plataformas', value: formatPlatforms(modsData.mapas.plataformas) || 'No disponible' }
-                );
+                ];
 
             } else if (subcommand === 'vehiculos') {
-                embed.setTitle('🚚 Sitios de Mods de Vehículos y Portales');
-                embed.addFields(
+                embedOptions.title = '🚚 Sitios de Mods de Vehículos y Portales';
+                embedOptions.fields = [
                     { name: 'Tiendas de Creadores', value: formatEntries(modsData.vehiculos.tiendas) || 'No disponible' },
                     { name: 'Portales Generales', value: formatEntries(modsData.vehiculos.portales) || 'No disponible' }
-                );
+                ];
             }
 
-            await interaction.reply({ embeds: [embed], flags: 64 });
+            const embed = createStyledEmbed(embedOptions);
+            await interaction.editReply({ embeds: [embed] });
 
         } catch (error) {
-            console.error(`Error al procesar el comando /mods ${subcommand}:`, error);
-            await interaction.reply({ content: 'No se pudo obtener la lista de mods en este momento.', flags: 64 });
+            console.error(`Error al procesar el comando /mods:`, error);
+            // Re-throw to be handled by the global error handler
+            throw error;
         }
     },
 };

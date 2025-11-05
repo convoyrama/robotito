@@ -1,7 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const axios = require('axios');
+const { SlashCommandBuilder } = require('discord.js');
 const crypto = require('crypto');
-const { TRUCKERSMP_API_BASE_URL, hmacSecret } = require('../config');
+const { hmacSecret, colors } = require('../config');
+const { createStyledEmbed } = require('../utils/helpers');
+const { truckersMP } = require('../utils/apiClients');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -30,7 +31,7 @@ module.exports = {
         }
         const userId = userUrlMatch[1];
         try {
-            const playerResponse = await axios.get(`${TRUCKERSMP_API_BASE_URL}/player/${userId}`);
+            const playerResponse = await truckersMP.get(`/player/${userId}`);
             const playerData = playerResponse.data.response;
             if (!playerData || !playerData.joinDate) {
                 await interaction.editReply('No se pudo encontrar la fecha de registro para este usuario. El perfil podría ser privado o el ID incorrecto.');
@@ -43,7 +44,7 @@ module.exports = {
                 if (vtcUrlMatch && vtcUrlMatch[1]) {
                     const vtcId = vtcUrlMatch[1];
                     try {
-                        const vtcResponse = await axios.get(`${TRUCKERSMP_API_BASE_URL}/vtc/${vtcId}`);
+                        const vtcResponse = await truckersMP.get(`/vtc/${vtcId}`);
                         const vtcData = vtcResponse.data.response;
                         if (vtcData) {
                             payload += `|${vtcData.id}|${vtcData.owner_id}`;
@@ -51,28 +52,42 @@ module.exports = {
                         }
                     } catch (vtcError) {
                         console.error(`[${new Date().toISOString()}] Error fetching VTC data for VTC ID ${vtcId}:`, vtcError.message);
+                        await interaction.followUp({ 
+                            content: '⚠️ No se pudo procesar la URL de la VTC. Se generará el código solo con tu perfil de usuario. Verifica que la URL de la VTC sea correcta.',
+                            flags: 64 // Ephemeral
+                        });
                     }
                 }
             }
 
             const signature = crypto.createHmac('sha256', hmacSecret).update(payload).digest('hex');
             const verificationCode = `${Buffer.from(payload).toString('base64')}.${signature}`;
-            const embed = new EmbedBuilder()
-                .setColor(0x2ECC71)
-                .setTitle('✅ Código de Verificación Generado')
-                .setDescription('¡Tu código está listo! Cópialo y pégalo en el campo correspondiente del generador de licencias.')
-                .addFields(
-                    { name: 'Tu Código de Verificación', value: '```\n' + verificationCode + '\n```' },
-                    { name: '¿Dónde usar este código?', value: '[Haz clic aquí para ir al Generador de ID](https://convoyrama.github.io/id.html)' }
-                )
-                .setFooter({ text: 'Este código vincula tu licencia a tu fecha de registro real.' });
+
+            const fields = [
+                { name: 'Tu Código de Verificación', value: '```\n' + verificationCode + '\n```' },
+                { name: '¿Dónde usar este código?', value: '[Haz clic aquí para ir al Generador de ID](https://convoyrama.github.io/id.html)' }
+            ];
+
             if (vtcDataForEmbed) {
-                embed.addFields({ name: 'VTC Procesada', value: `${vtcDataForEmbed.name}`, inline: true });
+                fields.push({ name: 'VTC Procesada', value: `${vtcDataForEmbed.name}`, inline: true });
             }
+
+            const embed = createStyledEmbed({
+                color: colors.success,
+                title: '✅ Código de Verificación Generado',
+                description: '¡Tu código está listo! Cópialo y pégalo en el campo correspondiente del generador de licencias.',
+                fields: fields,
+                footer: { text: 'Este código vincula tu licencia a tu fecha de registro real.' }
+            });
+
             await interaction.editReply({ embeds: [embed] });
         } catch (error) {
-            console.error('Error durante la verificación:', error);
-            await interaction.editReply('Hubo un error al contactar la API de TruckersMP. Inténtalo de nuevo más tarde.');
+            if (error.response && error.response.status === 404) {
+                await interaction.editReply('No se pudo encontrar el perfil de TruckersMP. Verifica que la URL sea correcta y que el perfil no sea privado.');
+            } else {
+                // For other errors, re-throw to be caught by the global error handler
+                throw error;
+            }
         }
     },
 };

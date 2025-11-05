@@ -1,7 +1,9 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const { DateTime } = require('luxon');
 const timezones = require('../timezones.json');
 const { parseInputTime } = require('../utils/time');
+const { createStyledEmbed } = require('../utils/helpers');
+const { colors } = require('../config');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -45,7 +47,14 @@ module.exports = {
             const timeInZone = referenceTime.setZone(tz.zone);
             description += `• **${tz.name}:** ${timeInZone.toFormat('HH:mm:ss')}\n`;
         });
-        const embed = new EmbedBuilder().setColor(0x00FF00).setTitle('🌎 Horas en Zonas Latinas').setDescription(description).setFooter({ text: 'Horas basadas en la zona horaria del bot.' });
+
+        const embed = createStyledEmbed({
+            color: colors.info,
+            title: '🌎 Horas en Zonas Latinas',
+            description: description,
+            footer: { text: 'Horas basadas en la zona horaria del bot.' }
+        });
+
         await interaction.editReply({ embeds: [embed] });
     },
 };
