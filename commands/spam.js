@@ -19,10 +19,12 @@ module.exports = {
         const randomIndex = Math.floor(Math.random() * SPAM_TEXTS.length);
         const randomSpamText = SPAM_TEXTS[randomIndex];
 
+        const codeBlockMessage = "```\n" + randomSpamText + "\n```";
+
         const embed = createStyledEmbed({
             color: colors.error,
             title: '🚨 Mensaje Aleatorio (SPAM)',
-            description: `\`\`\`\\n${randomSpamText}\\n\`\`\``,
+            description: codeBlockMessage,
             footer: { text: '¡Copia y pega con responsabilidad!' }
         });
 

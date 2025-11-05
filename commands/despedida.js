@@ -19,7 +19,21 @@ module.exports = {
         const type = interaction.options.getString('tipo');
         let farewellMessage = FAREWELL_MESSAGE_EXTERNAL;
         let title = '👋 ¡Despedida de Convoy Externo!';
-        if (type && type.toLowerCase() === \'propia\') {\n            farewellMessage = FAREWELL_MESSAGE_OWN;\n            title = \'👋 ¡Hasta la Próxima Ruta!\';\n        }\n\n        const codeBlockMessage = `\`\`\`\\n${farewellMessage}\\n\`\`\``;\n\n        const embed = createStyledEmbed({\n            color: colors.primary,\n            title: title,\n            description: codeBlockMessage,\n            footer: { text: \'¡Nos vemos en el camino!\' }\n        });
+        if (type && type.toLowerCase() === 'propia') {
+            farewellMessage = FAREWELL_MESSAGE_OWN;
+            title = '👋 ¡Hasta la Próxima Ruta!';
+        }
+
+        const codeBlockMessage = `
+${farewellMessage}
+`;
+
+        const embed = createStyledEmbed({
+            color: colors.primary,
+            title: title,
+            description: codeBlockMessage,
+            footer: { text: '¡Nos vemos en el camino!' }
+        });
 
         await interaction.editReply({ embeds: [embed] });
     },
