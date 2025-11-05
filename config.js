@@ -48,11 +48,11 @@ module.exports = {
 
     // Embed Colors
     colors: {
-        primary: '#3498DB',
-        success: '#2ECC71',
+        primary: '#5AA519',
+        success: '#5AA519',
         error: '#E74C3C',
-        warning: '#F1C40F',
-        info: '#9B59B6'
+        warning: '#FFA500',
+        info: '#00A5A5'
     },
 
     // License reader ranks

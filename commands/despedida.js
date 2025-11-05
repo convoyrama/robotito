@@ -24,10 +24,12 @@ module.exports = {
             title = '👋 ¡Hasta la Próxima Ruta!';
         }
 
+        const quotedMessage = farewellMessage.split('\n').map(line => `> ${line}`).join('\n');
+
         const embed = createStyledEmbed({
             color: colors.primary,
             title: title,
-            description: farewellMessage,
+            description: quotedMessage,
             footer: { text: '¡Nos vemos en el camino!' }
         });
 
