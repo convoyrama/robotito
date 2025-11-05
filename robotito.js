@@ -36,7 +36,34 @@ client.once('clientReady', () => {
 
 const { handleMessage } = require('./utils/messageHandlers.js');
 
-client.on('interactionCreate', async interaction => {\n    if (!interaction.isChatInputCommand()) return;\n\n    const command = interaction.client.commands.get(interaction.commandName);\n\n    if (!command) {\n        console.error(`No se encontró ningún comando que coincida con ${interaction.commandName}.`);\n        return;\n    }\n\n    try {\n        await command.execute(interaction);\n    } catch (error) {\n        const errorId = crypto.randomBytes(8).toString('hex');\n        console.error(`Error ID: ${errorId} | Comando: '${interaction.commandName}' | Error:`, error);\n\n        const errorMessage = {\n            content: `❌ Ocurrió un error inesperado. Si el problema persiste, por favor reporta el siguiente ID de error: \`${errorId}\``,\n            flags: 64 // Ephemeral\n        };\n\n        if (interaction.replied || interaction.deferred) {\n            await interaction.followUp(errorMessage);\n        } else {\n            await interaction.reply(errorMessage);\n        }\n    }\n});
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isChatInputCommand()) return;
+
+    const command = interaction.client.commands.get(interaction.commandName);
+
+    if (!command) {
+        console.error(`No se encontró ningún comando que coincida con ${interaction.commandName}.`);
+        return;
+    }
+
+    try {
+        await command.execute(interaction);
+    } catch (error) {
+        const errorId = crypto.randomBytes(8).toString('hex');
+        console.error(`Error ID: ${errorId} | Comando: '${interaction.commandName}' | Error:`, error);
+
+        const errorMessage = {
+            content: `❌ Ocurrió un error inesperado. Si el problema persiste, por favor reporta el siguiente ID de error: \`${errorId}\``,
+            flags: 64 // Ephemeral
+        };
+
+        if (interaction.replied || interaction.deferred) {
+            await interaction.followUp(errorMessage);
+        } else {
+            await interaction.reply(errorMessage);
+        }
+    }
+});
 
 client.on('messageCreate', message => {
     handleMessage(message, client);

@@ -52,7 +52,7 @@ module.exports = {
                         }
                     } catch (vtcError) {
                         console.error(`[${new Date().toISOString()}] Error fetching VTC data for VTC ID ${vtcId}:`, vtcError.message);
-                        await interaction.followUp({ 
+                        await interaction.followUp({
                             content: '⚠️ No se pudo procesar la URL de la VTC. Se generará el código solo con tu perfil de usuario. Verifica que la URL de la VTC sea correcta.',
                             flags: 64 // Ephemeral
                         });
