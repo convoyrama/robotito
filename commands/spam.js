@@ -22,7 +22,7 @@ module.exports = {
         const embed = createStyledEmbed({
             color: colors.error,
             title: '🚨 Mensaje Aleatorio (SPAM)',
-            description: `> ${randomSpamText}`,
+            description: `\`\`\`\\n${randomSpamText}\\n\`\`\``,
             footer: { text: '¡Copia y pega con responsabilidad!' }
         });
 
