@@ -130,6 +130,7 @@ module.exports = {
                     let eventDescription = eventData.description || 'Evento generado automáticamente por Robotito.';
                     eventDescription += `\n\n**Enlace del Evento:** [Ver Evento](${eventLink})`;
                     eventDescription += `\n**Servidor:** ${eventServer}`;
+                    eventDescription += `\n**Lugar de Partida:** ${eventLocation}`;
                     eventDescription += `\n**Destino:** ${eventDestination}`;
                     eventDescription += `\n**Hora In-Game (Reunión):** ${meetingGameTimeEmoji} ${eventData.meetingGameTime.hours.toString().padStart(2, '0')}:${eventData.meetingGameTime.minutes.toString().padStart(2, '0')}`;
                     eventDescription += `\n**Hora In-Game (Llegada Aprox.):** ${arrivalGameTimeEmoji} ${eventData.arrivalGameTime.hours.toString().padStart(2, '0')}:${eventData.arrivalGameTime.minutes.toString().padStart(2, '0')}`;
