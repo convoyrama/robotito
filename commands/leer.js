@@ -119,9 +119,21 @@ module.exports = {
                     // --- Event Data Validation and Discord Event Creation --- 
 
                     const eventName = eventData.eventName;
-                    const eventDescription = eventData.description || 'Evento generado automáticamente por Robotito.';
-                    const eventLocation = eventData.startPlace || 'Lugar no especificado';
                     const eventLink = isValidHttpUrl(eventData.eventLink) ? eventData.eventLink : 'https://truckersmp.com/';
+                    const eventLocation = eventData.startPlace || 'Lugar no especificado';
+                    const eventServer = eventData.server || 'Servidor no especificado';
+                    const eventDestination = eventData.destination || 'Destino no especificado';
+
+                    const meetingGameTimeEmoji = getDetailedDayNightIcon(eventData.meetingGameTime.hours);
+                    const arrivalGameTimeEmoji = getDetailedDayNightIcon(eventData.arrivalGameTime.hours);
+
+                    let eventDescription = eventData.description || 'Evento generado automáticamente por Robotito.';
+                    eventDescription += `\n\n**Enlace del Evento:** [Ver Evento](${eventLink})`;
+                    eventDescription += `\n**Servidor:** ${eventServer}`;
+                    eventDescription += `\n**Destino:** ${eventDestination}`;
+                    eventDescription += `\n**Hora In-Game (Reunión):** ${meetingGameTimeEmoji} ${eventData.meetingGameTime.hours.toString().padStart(2, '0')}:${eventData.meetingGameTime.minutes.toString().padStart(2, '0')}`;
+                    eventDescription += `\n**Hora In-Game (Llegada Aprox.):** ${arrivalGameTimeEmoji} ${eventData.arrivalGameTime.hours.toString().padStart(2, '0')}:${eventData.arrivalGameTime.minutes.toString().padStart(2, '0')}`;
+
 
                     if (!eventName || !eventData.meetingTimestamp || !eventData.arrivalTimestamp) {
                         await interaction.editReply('Los datos del evento están incompletos (falta nombre, hora de reunión o hora de llegada).');
