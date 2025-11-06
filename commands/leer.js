@@ -170,10 +170,10 @@ module.exports = {
                             description: `Se ha creado el evento **[${eventName}](${scheduledEvent.url})** exitosamente.`, 
                             fields: [
                                 { name: 'Nombre', value: eventName, inline: true },
-                                { name: 'Descripción', value: eventDescription, inline: false },
+
                                 { name: 'Reunión', value: `<t:${eventData.meetingTimestamp}:F> (<t:${eventData.meetingTimestamp}:R>)`, inline: false },
-                                { name: 'Salida', value: `<t:${eventData.departureTimestamp}:F> (<t:${eventData.departureTimestamp}:R>)`, inline: false },
-                                { name: 'Enlace del Evento', value: eventLink ? `[Ver Evento](${eventLink})` : 'N/A', inline: false },
+
+                                { name: 'Enlace del Evento', value: `[Ver Evento](${scheduledEvent.url})`, inline: false },
                             ],
                             thumbnail: attachment.url,
                             footer: { text: `ID del Evento: ${scheduledEvent.id}` }
