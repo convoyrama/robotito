@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
+const { SlashCommandBuilder, AttachmentBuilder, GuildScheduledEventPrivacyLevel } = require('discord.js');
 const extract = require('png-chunks-extract');
 const text = require('png-chunk-text');
 const { DateTime } = require('luxon');
@@ -76,7 +76,7 @@ module.exports = {
                     description: eventDescription,
                     scheduledStartTime: scheduledStartTime,
                     scheduledEndTime: scheduledEndTime,
-                    privacyLevel: 1, // GUILD_ONLY
+                    privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly, // GUILD_ONLY
                     entityType: 3, // EXTERNAL
                     entityMetadata: { location: eventLocation },
                     image: imageBuffer,
