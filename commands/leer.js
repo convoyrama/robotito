@@ -6,6 +6,16 @@ const { createStyledEmbed } = require('../utils/helpers');
 const { colors, ranks } = require('../config');
 const { fetchUrl } = require('../utils/apiClients');
 
+function isValidHttpUrl(string) {
+    let url;
+    try {
+        url = new URL(string);
+    } catch (_) {
+        return false;
+    }
+    return url.protocol === "http:" || url.protocol === "https:";
+}
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('leer')
@@ -193,7 +203,7 @@ module.exports = {
                     const embed = createStyledEmbed({
                         color: colors.primary,
                         title: `Detalles del Evento: ${eventData.eventName || 'Evento Personalizado'}`, 
-                        url: eventData.eventLink || null,
+                        url: isValidHttpUrl(eventData.eventLink) ? eventData.eventLink : null,
                         image: attachment.url,
                         fields: fields,
                         footer: { text: `Generado el ${DateTime.fromISO(eventData.generatedAt).toFormat('dd/MM/yyyy HH:mm')}` }
