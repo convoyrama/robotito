@@ -9,7 +9,7 @@ const { fetchUrl } = require('../utils/apiClients');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('leer')
-        .setDescription('Lee los datos de un evento de Convoyrama a partir de una imagen PNG.')
+        .setDescription('Lee los datos de una licencia o evento de Convoyrama a partir de una imagen PNG.')
         .addAttachmentOption(option =>
             option.setName('imagen')
                 .setDescription('El archivo de imagen PNG de la licencia o evento.')
@@ -17,7 +17,7 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply();
 
-        const attachment = interaction.options.getAttachment('licencia');
+        const attachment = interaction.options.getAttachment('imagen');
 
         if (!attachment || !attachment.contentType.startsWith('image/png')) {
             await interaction.editReply('Por favor, adjunta un archivo de imagen PNG válido.');
@@ -105,13 +105,13 @@ module.exports = {
                 fields.push({ name: 'Descripción', value: eventData.description || 'N/A', inline: false });
 
                 if (eventData.meetingTimestamp) {
-                    fields.push({ name: 'Reunión (UTC)', value: `<t:${eventData.meetingTimestamp}:F> (<t:${eventData.meetingTimestamp}:R>)`, inline: false });
+                    fields.push({ name: 'Reunión', value: `<t:${eventData.meetingTimestamp}:F> (<t:${eventData.meetingTimestamp}:R>)`, inline: false });
                 }
                 if (eventData.departureTimestamp) {
-                    fields.push({ name: 'Salida (UTC)', value: `<t:${eventData.departureTimestamp}:t> (<t:${eventData.departureTimestamp}:R>)`, inline: true });
+                    fields.push({ name: 'Salida', value: `<t:${eventData.departureTimestamp}:t> (<t:${eventData.departureTimestamp}:R>)`, inline: true });
                 }
                 if (eventData.arrivalTimestamp) {
-                    fields.push({ name: 'Llegada Aprox. (UTC)', value: `<t:${eventData.arrivalTimestamp}:t> (<t:${eventData.arrivalTimestamp}:R>)`, inline: true });
+                    fields.push({ name: 'Llegada Aprox.', value: `<t:${eventData.arrivalTimestamp}:t> (<t:${eventData.arrivalTimestamp}:R>)`, inline: true });
                 }
 
                 if (eventData.meetingGameTime) {
@@ -120,9 +120,6 @@ module.exports = {
                 if (eventData.arrivalGameTime) {
                     fields.push({ name: 'Hora In-Game (Llegada Aprox.)', value: `${eventData.arrivalGameTime.hours.toString().padStart(2, '0')}:${eventData.arrivalGameTime.minutes.toString().padStart(2, '0')}`, inline: true });
                 }
-
-                fields.push({ name: 'Zona Horaria', value: eventData.ianaTimeZone || 'N/A', inline: true });
-                fields.push({ name: 'Offset UTC', value: `UTC${eventData.utcOffsetMinutes / 60}`, inline: true });
 
                 const embed = createStyledEmbed({
                     color: colors.primary,
