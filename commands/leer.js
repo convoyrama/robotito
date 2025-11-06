@@ -2,7 +2,7 @@ const { SlashCommandBuilder, GuildScheduledEventPrivacyLevel } = require('discor
 const extract = require('png-chunks-extract');
 const text = require('png-chunk-text');
 const { DateTime } = require('luxon');
-const { createStyledEmbed } = require('../utils/helpers');
+const { createStyledEmbed, getDetailedDayNightIcon } = require('../utils/helpers');
 const { colors, ranks } = require('../config');
 const { fetchUrl } = require('../utils/apiClients');
 
@@ -177,7 +177,7 @@ module.exports = {
                     const fields = [];
 
                     fields.push({ name: 'Nombre del Evento', value: eventData.eventName || 'N/A', inline: false });
-                    fields.push({ name: 'Enlace del Evento', value: eventData.eventLink ? `[Ver Evento](${eventData.eventLink})` : 'N/A', inline: false });
+                    fields.push({ name: 'Enlace del Evento', value: isValidHttpUrl(eventData.eventLink) ? `[Ver Evento](${eventData.eventLink})` : `[Ver Evento](https://truckersmp.com/)`, inline: false });
                     fields.push({ name: 'Lugar de Partida', value: eventData.startPlace || 'N/A', inline: true });
                     fields.push({ name: 'Destino', value: eventData.destination || 'N/A', inline: true });
                     fields.push({ name: 'Servidor', value: eventData.server || 'N/A', inline: true });
@@ -194,10 +194,12 @@ module.exports = {
                     }
 
                     if (eventData.meetingGameTime) {
-                        fields.push({ name: 'Hora In-Game (Reunión)', value: `${eventData.meetingGameTime.hours.toString().padStart(2, '0')}:${eventData.meetingGameTime.minutes.toString().padStart(2, '0')}`, inline: true });
+                        const meetingEmoji = getDetailedDayNightIcon(eventData.meetingGameTime.hours);
+                        fields.push({ name: 'Hora In-Game (Reunión)', value: `${meetingEmoji} ${eventData.meetingGameTime.hours.toString().padStart(2, '0')}:${eventData.meetingGameTime.minutes.toString().padStart(2, '0')}`, inline: true });
                     }
                     if (eventData.arrivalGameTime) {
-                        fields.push({ name: 'Hora In-Game (Llegada Aprox.)', value: `${eventData.arrivalGameTime.hours.toString().padStart(2, '0')}:${eventData.arrivalGameTime.minutes.toString().padStart(2, '0')}`, inline: true });
+                        const arrivalEmoji = getDetailedDayNightIcon(eventData.arrivalGameTime.hours);
+                        fields.push({ name: 'Hora In-Game (Llegada Aprox.)', value: `${arrivalEmoji} ${eventData.arrivalGameTime.hours.toString().padStart(2, '0')}:${eventData.arrivalGameTime.minutes.toString().padStart(2, '0')}`, inline: true });
                     }
 
                     const embed = createStyledEmbed({
