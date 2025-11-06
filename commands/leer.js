@@ -121,7 +121,7 @@ module.exports = {
                     const eventName = eventData.eventName;
                     const eventDescription = eventData.description || 'Evento generado automáticamente por Robotito.';
                     const eventLocation = eventData.startPlace || 'Lugar no especificado';
-                    const eventLink = eventData.eventLink;
+                    const eventLink = isValidHttpUrl(eventData.eventLink) ? eventData.eventLink : 'https://truckersmp.com/';
 
                     if (!eventName || !eventData.meetingTimestamp || !eventData.arrivalTimestamp) {
                         await interaction.editReply('Los datos del evento están incompletos (falta nombre, hora de reunión o hora de llegada).');
