@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, GuildScheduledEventPrivacyLevel } = require('discord.js');
 const extract = require('png-chunks-extract');
 const text = require('png-chunk-text');
 const { DateTime } = require('luxon');
@@ -13,7 +13,15 @@ module.exports = {
         .addAttachmentOption(option =>
             option.setName('imagen')
                 .setDescription('El archivo de imagen PNG de la licencia o evento.')
-                .setRequired(true)),
+                .setRequired(true))
+        .addStringOption(option =>
+            option.setName('accion')
+                .setDescription('¿Qué acción deseas realizar con los datos del evento?')
+                .setRequired(false) // Make it optional, default to 'mostrar'
+                .addChoices(
+                    { name: 'Mostrar Detalles', value: 'mostrar' },
+                    { name: 'Crear Evento Programado', value: 'crear' }
+                )),
     async execute(interaction) {
         await interaction.deferReply();
 
@@ -95,44 +103,104 @@ module.exports = {
                     return;
                 }
 
-                const fields = [];
+                const accion = interaction.options.getString('accion') || 'mostrar'; // Default to 'mostrar'
 
-                fields.push({ name: 'Nombre del Evento', value: eventData.eventName || 'N/A', inline: false });
-                fields.push({ name: 'Enlace del Evento', value: eventData.eventLink ? `[Ver Evento](${eventData.eventLink})` : 'N/A', inline: false });
-                fields.push({ name: 'Lugar de Partida', value: eventData.startPlace || 'N/A', inline: true });
-                fields.push({ name: 'Destino', value: eventData.destination || 'N/A', inline: true });
-                fields.push({ name: 'Servidor', value: eventData.server || 'N/A', inline: true });
-                fields.push({ name: 'Descripción', value: eventData.description || 'N/A', inline: false });
+                if (accion === 'crear') {
+                    // --- Event Data Validation and Discord Event Creation --- 
 
-                if (eventData.meetingTimestamp) {
-                    fields.push({ name: 'Reunión', value: `<t:${eventData.meetingTimestamp}:F> (<t:${eventData.meetingTimestamp}:R>)`, inline: false });
-                }
-                if (eventData.departureTimestamp) {
-                    fields.push({ name: 'Salida', value: `<t:${eventData.departureTimestamp}:t> (<t:${eventData.departureTimestamp}:R>)`, inline: true });
-                }
-                if (eventData.arrivalTimestamp) {
-                    fields.push({ name: 'Llegada Aprox.', value: `<t:${eventData.arrivalTimestamp}:t> (<t:${eventData.arrivalTimestamp}:R>)`, inline: true });
-                }
+                    const eventName = eventData.eventName;
+                    const eventDescription = eventData.description || 'Evento generado automáticamente por Robotito.';
+                    const eventLocation = eventData.startPlace || 'Lugar no especificado';
+                    const eventLink = eventData.eventLink;
 
-                if (eventData.meetingGameTime) {
-                    fields.push({ name: 'Hora In-Game (Reunión)', value: `${eventData.meetingGameTime.hours.toString().padStart(2, '0')}:${eventData.meetingGameTime.minutes.toString().padStart(2, '0')}`, inline: true });
-                }
-                if (eventData.arrivalGameTime) {
-                    fields.push({ name: 'Hora In-Game (Llegada Aprox.)', value: `${eventData.arrivalGameTime.hours.toString().padStart(2, '0')}:${eventData.arrivalGameTime.minutes.toString().padStart(2, '0')}`, inline: true });
-                }
+                    if (!eventName || !eventData.meetingTimestamp || !eventData.arrivalTimestamp) {
+                        await interaction.editReply('Los datos del evento están incompletos (falta nombre, hora de reunión o hora de llegada).');
+                        return;
+                    }
 
-                const embed = createStyledEmbed({
-                    color: colors.primary,
-                    title: `Detalles del Evento: ${eventData.eventName || 'Evento Personalizado'}`, 
-                    url: eventData.eventLink || null,
-                    image: attachment.url,
-                    fields: fields,
-                    footer: { text: `Generado el ${DateTime.fromISO(eventData.generatedAt).toFormat('dd/MM/yyyy HH:mm')}` }
-                });
+                    const scheduledStartTime = DateTime.fromSeconds(eventData.meetingTimestamp).toJSDate();
+                    const scheduledEndTime = DateTime.fromSeconds(eventData.arrivalTimestamp).toJSDate();
 
-                await interaction.editReply({ embeds: [embed] });
+                    if (scheduledEndTime <= scheduledStartTime) {
+                        await interaction.editReply('La hora de llegada debe ser posterior a la hora de reunión.');
+                        return;
+                    }
 
-            } else {
+                    // Discord Scheduled Event requires a cover image as a base64 string or Buffer
+                    const imageBuffer = buffer; // The original image buffer
+
+                    try {
+                        const scheduledEvent = await interaction.guild.scheduledEvents.create({
+                            name: eventName,
+                            description: eventDescription,
+                            scheduledStartTime: scheduledStartTime,
+                            scheduledEndTime: scheduledEndTime,
+                            privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly, // Corrected privacy level
+                            entityType: 3, // EXTERNAL
+                            entityMetadata: { location: eventLocation },
+                            image: imageBuffer,
+                        });
+
+                        const embed = createStyledEmbed({
+                            color: colors.success,
+                            title: 'Evento Programado Creado',
+                            description: `Se ha creado el evento **[${eventName}](${scheduledEvent.url})** exitosamente.`, 
+                            fields: [
+                                { name: 'Nombre', value: eventName, inline: true },
+                                { name: 'Descripción', value: eventDescription, inline: false },
+                                { name: 'Lugar', value: eventLocation, inline: true },
+                                { name: 'Inicio', value: `<t:${eventData.meetingTimestamp}:F> (<t:${eventData.meetingTimestamp}:R>)`, inline: false },
+                                { name: 'Fin', value: `<t:${eventData.arrivalTimestamp}:F> (<t:${eventData.arrivalTimestamp}:R>)`, inline: false },
+                                { name: 'Enlace del Evento', value: eventLink ? `[Ver Evento](${eventLink})` : 'N/A', inline: false },
+                            ],
+                            thumbnail: attachment.url,
+                            footer: { text: `ID del Evento: ${scheduledEvent.id}` }
+                        });
+
+                        await interaction.editReply({ embeds: [embed] });
+
+                    } catch (discordError) {
+                        console.error('Error creating Discord Scheduled Event:', discordError);
+                        await interaction.editReply(`Hubo un error al crear el evento programado de Discord: ${discordError.message}`);
+                    }
+                } else { // accion === 'mostrar'
+                    const fields = [];
+
+                    fields.push({ name: 'Nombre del Evento', value: eventData.eventName || 'N/A', inline: false });
+                    fields.push({ name: 'Enlace del Evento', value: eventData.eventLink ? `[Ver Evento](${eventData.eventLink})` : 'N/A', inline: false });
+                    fields.push({ name: 'Lugar de Partida', value: eventData.startPlace || 'N/A', inline: true });
+                    fields.push({ name: 'Destino', value: eventData.destination || 'N/A', inline: true });
+                    fields.push({ name: 'Servidor', value: eventData.server || 'N/A', inline: true });
+                    fields.push({ name: 'Descripción', value: eventData.description || 'N/A', inline: false });
+
+                    if (eventData.meetingTimestamp) {
+                        fields.push({ name: 'Reunión', value: `<t:${eventData.meetingTimestamp}:F> (<t:${eventData.meetingTimestamp}:R>)`, inline: false });
+                    }
+                    if (eventData.departureTimestamp) {
+                        fields.push({ name: 'Salida', value: `<t:${eventData.departureTimestamp}:t> (<t:${eventData.departureTimestamp}:R>)`, inline: true });
+                    }
+                    if (eventData.arrivalTimestamp) {
+                        fields.push({ name: 'Llegada Aprox.', value: `<t:${eventData.arrivalTimestamp}:t> (<t:${eventData.arrivalTimestamp}:R>)`, inline: true });
+                    }
+
+                    if (eventData.meetingGameTime) {
+                        fields.push({ name: 'Hora In-Game (Reunión)', value: `${eventData.meetingGameTime.hours.toString().padStart(2, '0')}:${eventData.meetingGameTime.minutes.toString().padStart(2, '0')}`, inline: true });
+                    }
+                    if (eventData.arrivalGameTime) {
+                        fields.push({ name: 'Hora In-Game (Llegada Aprox.)', value: `${eventData.arrivalGameTime.hours.toString().padStart(2, '0')}:${eventData.arrivalGameTime.minutes.toString().padStart(2, '0')}`, inline: true });
+                    }
+
+                    const embed = createStyledEmbed({
+                        color: colors.primary,
+                        title: `Detalles del Evento: ${eventData.eventName || 'Evento Personalizado'}`, 
+                        url: eventData.eventLink || null,
+                        image: attachment.url,
+                        fields: fields,
+                        footer: { text: `Generado el ${DateTime.fromISO(eventData.generatedAt).toFormat('dd/MM/yyyy HH:mm')}` }
+                    });
+
+                    await interaction.editReply({ embeds: [embed] });
+                } else {
                 await interaction.editReply('No se encontraron datos de licencia ni de evento en la imagen. Asegúrate de que la imagen fue generada por Convoyrama.');
             }
 
