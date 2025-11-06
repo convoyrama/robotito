@@ -200,7 +200,8 @@ module.exports = {
                     });
 
                     await interaction.editReply({ embeds: [embed] });
-                } else {
+                }
+            } else {
                 await interaction.editReply('No se encontraron datos de licencia ni de evento en la imagen. Asegúrate de que la imagen fue generada por Convoyrama.');
             }
 
