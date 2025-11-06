@@ -171,9 +171,8 @@ module.exports = {
                             fields: [
                                 { name: 'Nombre', value: eventName, inline: true },
                                 { name: 'Descripción', value: eventDescription, inline: false },
-                                { name: 'Lugar', value: eventLocation, inline: true },
-                                { name: 'Inicio', value: `<t:${eventData.meetingTimestamp}:F> (<t:${eventData.meetingTimestamp}:R>)`, inline: false },
-                                { name: 'Fin', value: `<t:${eventData.arrivalTimestamp}:F> (<t:${eventData.arrivalTimestamp}:R>)`, inline: false },
+                                { name: 'Reunión', value: `<t:${eventData.meetingTimestamp}:F> (<t:${eventData.meetingTimestamp}:R>)`, inline: false },
+                                { name: 'Salida', value: `<t:${eventData.departureTimestamp}:F> (<t:${eventData.departureTimestamp}:R>)`, inline: false },
                                 { name: 'Enlace del Evento', value: eventLink ? `[Ver Evento](${eventLink})` : 'N/A', inline: false },
                             ],
                             thumbnail: attachment.url,
