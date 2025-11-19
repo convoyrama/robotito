@@ -7,21 +7,24 @@ const { DateTime } = require('luxon');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('info')
-        .setDescription('Muestra información de un usuario o VTC de TruckersMP por URL o alias.')
+        .setDescription('Muestra info de un usuario o VTC de TruckersMP (URL, ID o alias).')
         .addStringOption(option =>
             option.setName('enlace_o_alias')
-                .setDescription('Enlace de perfil de TruckersMP (usuario o VTC) o alias de VTC.')
+                .setDescription('URL, ID de usuario (TMP o Steam), o alias/URL de VTC.')
                 .setRequired(true)),
     async execute(interaction) {
         await interaction.deferReply({ flags: 64 });
         const input = interaction.options.getString('enlace_o_alias');
         if (!input) {
-            await interaction.editReply({ content: 'Por favor, proporciona un enlace de perfil de TruckersMP (usuario o VTC) o un alias de VTC.', flags: 64 });
+            await interaction.editReply({ content: 'Por favor, proporciona un dato (URL, ID de usuario o alias/URL de VTC).', flags: 64 });
             return;
         }
+
         const userUrlMatch = input.match(/truckersmp\.com\/(?:user|profile)\/(\d+)/);
         const vtcUrlMatch = input.match(/truckersmp\.com\/vtc\/(\d+)/);
         const vtcAlias = vtcAliases[input.toLowerCase()];
+        const isNumericId = /^\d+$/.test(input);
+
         if (userUrlMatch) {
             const userId = userUrlMatch[1];
             await handlePlayerInfo(interaction, userId, input);
@@ -76,8 +79,11 @@ module.exports = {
                     throw error;
                 }
             }
+        } else if (isNumericId) {
+            const profileUrl = `https://truckersmp.com/user/${input}`;
+            await handlePlayerInfo(interaction, input, profileUrl);
         } else {
-            await interaction.editReply({ content: 'El formato del enlace o alias no es válido. Por favor, usa un enlace de perfil de usuario, de VTC o un alias de VTC válido.', flags: 64 });
+            await interaction.editReply({ content: 'El formato no es válido. Por favor, usa una URL, un ID de usuario (TMP/Steam) o un alias/URL de VTC.', flags: 64 });
         }
     },
 };
