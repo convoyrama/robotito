@@ -8,9 +8,6 @@ const { TRUCKERSMP_API_BASE_URL, openWeatherApiKey } = require('../config');
 const truckersMP = axios.create({
     baseURL: TRUCKERSMP_API_BASE_URL,
     timeout: 5000, // 5 second timeout
-    headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
-    }
 });
 
 /**
