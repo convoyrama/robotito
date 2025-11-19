@@ -1,1 +1,1 @@
-worker: node robotito.js
+worker: npm start

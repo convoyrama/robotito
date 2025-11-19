@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { t } = require('./utils/localization');
 
 // Note: The fallback to config.json has been removed for stricter debugging.
 // The bot will now ONLY use variables from the .env file.
@@ -16,19 +17,9 @@ module.exports = {
     TIME_SCALE: 6,
 
     // Bot constants
-    SPAM_TEXTS: [
-        'LAG\'S SPEED en la zona. Si vamos despacio no es por la carga, es que el ping no nos deja correr.',
-        'LAG\'S SPEED recomienda 500 metros de distancia de seguridad. No por el freno, por el ping. ¿O por los dos? ¡Buena ruta!',
-        'Ojo con el lag que andamos cerca... ¡Es broma! O no... ¡Un saludo de LAG\'S SPEED y buena ruta!',
-        '¿Tu ping subió de repente? No, no fuimos nosotros... ¿O sí? ¡Saludos de LAG\'S SPEED!',
-        'Prometemos no usar el lag como arma táctica... a menos que sea estrictamente necesario. ¡Saludos de LAG\'S SPEED!',
-        'Nuestra especialidad no es carga pesada, es el ping pesado. Buena Ruta!',
-    ],
     BASE_IMAGE_URL: 'https://convoyrama.github.io/robotito/img/',
     POSITIVE_STATES: ['admirando.png', 'alegre.png', 'enlaluna.png', 'fiesta.png', 'sorprendido.png', 'volando.png'],
     NEGATIVE_STATES: ['desesperado.png', 'durmiendo.png', 'enojado.png', 'impaciente.png', 'pensando.png'],
-    FAREWELL_MESSAGE_OWN: "LAG\'S SPEED les agradece sinceramente su participación. Ha sido una ruta excelente gracias a la compañía de cada uno de ustedes, y un placer compartir este gran momento. ¡Esperamos seguir contando con su presencia en futuras aventuras! Saludos y muy buena ruta a todos.",
-    FAREWELL_MESSAGE_EXTERNAL: "LAG\'S SPEED agradece la invitación a este convoy. Ha sido un placer compartir la ruta con todos. ¡Esperamos coincidir de nuevo en el camino! Saludos y muy buena ruta.",
 
     // API and external service constants
     TRUCKERSMP_API_BASE_URL: 'https://api.truckersmp.com/v2',
@@ -72,14 +63,8 @@ module.exports = {
     ],
 
     // Useful Links for /link command
-    usefulLinks: [
-        { name: 'Generador de Eventos', value: '[Convoyrama Eventos](https://convoyrama.github.io/event.html)' },
-        { name: 'Creador de ID', value: '[Convoyrama ID](https://convoyrama.github.io/id.html)' },
-        { name: 'Generador de Imagen de Perfil', value: '[Convoyrama Perfil](https://convoyrama.github.io/pc.html)' },
-        { name: 'Invitación a nuestro Discord', value: '```\nhttps://discord.gg/hjJcyREthH\n```' },
-        { name: 'TruckersMP', value: '[Sitio Oficial](https://truckersmp.com/)' },
-        { name: 'LAG\'S SPEED en TruckersMP', value: '[Perfil VTC](https://truckersmp.com/vtc/78865)' },
-        { name: 'LAG\'S SPEED en TrucksBook', value: '[Perfil de Empresa](https://trucksbook.eu/company/212761)' },
-        { name: 'LAG\'S SPEED en PickupVTM', value: '[Perfil de Empresa](https://pickupvtm.com/company/8203)' }
-    ]
+    SPAM_TEXTS: t('commands.spam.texts'),
+    FAREWELL_MESSAGE_OWN: t('commands.despedida.own_message'),
+    FAREWELL_MESSAGE_EXTERNAL: t('commands.despedida.external_message'),
+    usefulLinks: t('commands.link.useful_links')
 };

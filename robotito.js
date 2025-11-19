@@ -4,6 +4,7 @@ const { Client, Collection, GatewayIntentBits, EmbedBuilder, ActivityType } = re
 const http = require('http');
 const crypto = require('crypto');
 const { token } = require('./config.js');
+const { t } = require('./utils/localization');
 
 const client = new Client({
     intents: [
@@ -16,21 +17,31 @@ const client = new Client({
 
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands');
+
+if (!fs.existsSync(commandsPath)) {
+    console.error(t('common.commands_dir_not_found'));
+    process.exit(1);
+}
+
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
-    if ('data' in command && 'execute' in command) {
-        client.commands.set(command.data.name, command);
-    } else {
-        console.log(`[ADVERTENCIA] Al comando en ${filePath} le falta una propiedad "data" o "execute" requerida.`);
+    try {
+        const command = require(filePath);
+        if ('data' in command && 'execute' in command) {
+            client.commands.set(command.data.name, command);
+        } else {
+            console.log(t('common.module_missing_properties', { filePath }));
+        }
+    } catch (error) {
+        console.error(`Error loading command at ${filePath}:`, error);
     }
 }
 
 client.once('clientReady', () => {
-    console.log('Evento clientReady disparado.');
-    console.log(`¡Bot Robotito conectado como ${client.user.tag}!`);
+    console.log('clientReady event fired.');
+    console.log(`Robotito bot connected as ${client.user.tag}!`);
     client.user.setActivity('Convoyrama', { type: ActivityType.Watching });
 });
 
@@ -42,7 +53,7 @@ client.on('interactionCreate', async interaction => {
     const command = interaction.client.commands.get(interaction.commandName);
 
     if (!command) {
-        console.error(`No se encontró ningún comando que coincida con ${interaction.commandName}.`);
+        console.error(t('common.command_not_found', { commandName: interaction.commandName }));
         return;
     }
 
@@ -50,10 +61,10 @@ client.on('interactionCreate', async interaction => {
         await command.execute(interaction);
     } catch (error) {
         const errorId = crypto.randomBytes(8).toString('hex');
-        console.error(`Error ID: ${errorId} | Comando: '${interaction.commandName}' | Error:`, error);
+        console.error(`Error ID: ${errorId} | Command: '${interaction.commandName}' | Error:`, error);
 
         const errorMessage = {
-            content: `❌ Ocurrió un error inesperado. Si el problema persiste, por favor reporta el siguiente ID de error: \`${errorId}\``,
+            content: t('common.error_generic', { errorId }),
             flags: 64 // Ephemeral
         };
 
@@ -78,18 +89,19 @@ process.on('unhandledRejection', error => {
 });
 
 if (!token) {
-    console.error('❌ Error: El token no está configurado en config.js');
+    console.error('❌ Error: Token is not configured in config.js');
     process.exit(1);
 }
 
-client.login(token)
-    .then(() => {
-        console.log('¡Inicio de sesión exitoso!');
-    })
-    .catch(error => {
-        console.error('❌ Error al conectar con Discord:', error.message);
+(async () => {
+    try {
+        await client.login(token);
+        console.log('Login successful!');
+    } catch (error) {
+        console.error('❌ Error connecting to Discord:', error.message);
         process.exit(1);
-    });
+    }
+})();
 
 // Keep-alive server
 const server = http.createServer((req, res) => {

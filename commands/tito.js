@@ -2,11 +2,12 @@ const { SlashCommandBuilder } = require('discord.js');
 const { createStyledEmbed } = require('../utils/helpers');
 const { colors } = require('../config');
 const { jokeApi } = require('../utils/apiClients');
+const { t } = require('../utils/localization');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('tito')
-        .setDescription('Tito te cuenta un dato inútil y absurdo.'),
+        .setName(t('commands.tito.name'))
+        .setDescription(t('commands.tito.description')),
     async execute(interaction) {
         try {
             await interaction.deferReply();
@@ -21,14 +22,14 @@ module.exports = {
 
             const embed = createStyledEmbed({
                 color: colors.info,
-                title: '😂 Tito cuenta un chiste...',
+                title: t('commands.tito.embed_title'),
                 description: jokeText
             });
 
             await interaction.editReply({ embeds: [embed] });
         } catch (error) {
             console.error('Error al obtener chiste:', error);
-            await interaction.editReply('Lo siento, Tito no está inspirado ahora mismo. Inténtalo de nuevo más tarde.');
+            await interaction.editReply(t('common.tito_inspiration_error'));
         }
     },
 };

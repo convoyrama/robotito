@@ -5,6 +5,7 @@ const { DateTime } = require('luxon');
 const { createStyledEmbed, getDetailedDayNightIcon } = require('../utils/helpers');
 const { colors, ranks } = require('../config');
 const { fetchUrl } = require('../utils/apiClients');
+const { t } = require('../utils/localization');
 
 function isValidHttpUrl(string) {
     let url;
@@ -18,34 +19,34 @@ function isValidHttpUrl(string) {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('leer')
-        .setDescription('Lee los datos de una licencia o evento de Convoyrama a partir de una imagen PNG.')
+        .setName(t('commands.leer.name'))
+        .setDescription(t('commands.leer.description'))
         .addAttachmentOption(option =>
-            option.setName('imagen')
-                .setDescription('El archivo de imagen PNG de la licencia o evento.')
+            option.setName(t('commands.leer.options.imagen.name'))
+                .setDescription(t('commands.leer.options.imagen.description'))
                 .setRequired(true))
         .addStringOption(option =>
-            option.setName('accion')
-                .setDescription('¿Qué acción deseas realizar con los datos del evento?')
-                .setRequired(false) // Make it optional, default to 'mostrar'
+            option.setName(t('commands.leer.options.accion.name'))
+                .setDescription(t('commands.leer.options.accion.description'))
+                .setRequired(false)
                 .addChoices(
-                    { name: 'Mostrar Detalles', value: 'mostrar' },
-                    { name: 'Crear Evento Programado', value: 'crear' }
+                    { name: t('commands.leer.options.accion.choices.mostrar'), value: 'mostrar' },
+                    { name: t('commands.leer.options.accion.choices.crear'), value: 'crear' }
                 )),
     async execute(interaction) {
         await interaction.deferReply();
 
-        const attachment = interaction.options.getAttachment('imagen');
+        const attachment = interaction.options.getAttachment(t('commands.leer.options.imagen.name'));
 
         if (!attachment || !attachment.contentType.startsWith('image/png')) {
-            await interaction.editReply('Por favor, adjunta un archivo de imagen PNG válido.');
+            await interaction.editReply(t('commands.leer.invalid_png'));
             return;
         }
 
         try {
             const response = await fetchUrl(attachment.url, { responseType: 'arraybuffer' });
             const buffer = Buffer.from(response.data, 'binary');
-            
+
             const chunks = extract(buffer);
             const textChunks = chunks.filter(chunk => chunk.name === 'tEXt').map(chunk => text.decode(chunk.data));
 
@@ -57,7 +58,7 @@ module.exports = {
                 try {
                     licenseData = JSON.parse(licenseChunk.text);
                 } catch (error) {
-                    await interaction.editReply('Hubo un error al interpretar los datos de la licencia. El formato es inválido.');
+                    await interaction.editReply(t('commands.leer.error_parsing_license'));
                     console.error('Error parsing license JSON:', error);
                     return;
                 }
@@ -65,40 +66,40 @@ module.exports = {
                 const rankInfo = ranks.find(r => r.id === licenseData.rank);
 
                 const fields = [
-                    { name: 'Nº de Licencia', value: licenseData.license_number, inline: true },
-                    { name: 'País', value: `:flag_${licenseData.country.toLowerCase()}:`, inline: true },
+                    { name: t('commands.leer.license_fields.license_number'), value: licenseData.license_number, inline: true },
+                    { name: t('commands.leer.license_fields.country'), value: `:flag_${licenseData.country.toLowerCase()}:`, inline: true },
                 ];
 
                 if (licenseData.rank) {
-                    fields.push({ name: 'Rango:', value: String(licenseData.rank), inline: true });
+                    fields.push({ name: t('commands.leer.license_fields.rank'), value: String(licenseData.rank), inline: true });
                 }
 
-                fields.push({ name: 'Estado', value: licenseData.is_verified ? '✅ Verificada' : '❌ No Verificada', inline: false });
-                fields.push({ name: 'Perfil de TruckersMP', value: `[Ver Perfil](${licenseData.truckersmp_link})`, inline: false });
+                fields.push({ name: t('commands.leer.license_fields.status'), value: licenseData.is_verified ? t('commands.leer.license_fields.verified') : t('commands.leer.license_fields.not_verified'), inline: false });
+                fields.push({ name: t('commands.leer.license_fields.tmp_profile'), value: `[${t('commands.leer.license_fields.view_profile')}](${licenseData.truckersmp_link})`, inline: false });
 
                 if (licenseData.vtc_link) {
-                    fields.push({ name: 'VTC', value: `[Ver VTC](${licenseData.vtc_link})`, inline: false });
+                    fields.push({ name: t('commands.leer.license_fields.vtc'), value: `[${t('commands.leer.license_fields.view_vtc')}](${licenseData.vtc_link})`, inline: false });
                 }
 
                 if (licenseData.social_network && licenseData.social_link) {
                     const socialName = licenseData.social_network.charAt(0).toUpperCase() + licenseData.social_network.slice(1);
-                    fields.push({ name: socialName, value: `[Ver Enlace](${licenseData.social_link})`, inline: false });
-                }
-                
-                if (licenseData.is_verified && licenseData.tmp_join_date) {
-                    fields.push({ name: 'Miembro desde', value: DateTime.fromISO(licenseData.tmp_join_date.replace(' ', 'T')).toFormat('dd/MM/yyyy'), inline: false });
+                    fields.push({ name: socialName, value: `[${t('commands.leer.license_fields.social_link')}](${licenseData.social_link})`, inline: false });
                 }
 
-                fields.push({ name: 'Información Adicional', value: 'Genera tu licencia en [Convoyrama](https://convoyrama.github.io/).\nPara ser incluido en la [lista de ID](https://convoyrama.github.io/idlist.html), solicítalo por ticket en Discord.', inline: false });
+                if (licenseData.is_verified && licenseData.tmp_join_date) {
+                    fields.push({ name: t('commands.leer.license_fields.member_since'), value: DateTime.fromISO(licenseData.tmp_join_date).toFormat('dd/MM/yyyy'), inline: false });
+                }
+
+                fields.push({ name: t('commands.leer.license_fields.additional_info'), value: t('commands.leer.license_fields.additional_info_value'), inline: false });
 
                 const embed = createStyledEmbed({
                     color: licenseData.is_verified ? colors.success : colors.error,
-                    title: `Licencia de Conducir: ${licenseData.name}`,
+                    title: t('commands.leer.license_title', { name: licenseData.name }),
                     url: licenseData.truckersmp_link,
                     thumbnail: rankInfo ? rankInfo.image : null,
                     image: attachment.url,
                     fields: fields,
-                    footer: { text: `Licencia generada el ${DateTime.fromISO(licenseData.generated_at).toFormat('dd/MM/yyyy HH:mm')}` }
+                    footer: { text: t('commands.leer.license_footer', { generated_at: DateTime.fromISO(licenseData.generated_at).toFormat('dd/MM/yyyy HH:mm') }) }
                 });
 
                 await interaction.editReply({ embeds: [embed] });
@@ -108,37 +109,36 @@ module.exports = {
                 try {
                     eventData = JSON.parse(eventChunk.text);
                 } catch (error) {
-                    await interaction.editReply('Hubo un error al interpretar los datos del evento. El formato es inválido.');
+                    await interaction.editReply(t('commands.leer.error_parsing_event'));
                     console.error('Error parsing event JSON:', error);
                     return;
                 }
 
-                const accion = interaction.options.getString('accion') || 'mostrar'; // Default to 'mostrar'
+                const accion = interaction.options.getString(t('commands.leer.options.accion.name')) || 'mostrar'; // Default to 'mostrar'
 
                 if (accion === 'crear') {
-                    // --- Event Data Validation and Discord Event Creation --- 
-
                     const eventName = eventData.eventName;
                     const eventLink = isValidHttpUrl(eventData.eventLink) ? eventData.eventLink : 'https://truckersmp.com/';
-                    const eventLocation = eventData.startPlace || 'Lugar no especificado';
-                    const eventServer = eventData.server || 'Servidor no especificado';
-                    const eventDestination = eventData.destination || 'Destino no especificado';
+                    const eventLocation = eventData.startPlace || t('commands.evento.field_no_description');
+                    const eventServer = eventData.server || t('commands.evento.field_no_description');
+                    const eventDestination = eventData.destination || t('commands.evento.field_no_description');
 
                     const meetingGameTimeEmoji = getDetailedDayNightIcon(eventData.meetingGameTime.hours);
                     const arrivalGameTimeEmoji = getDetailedDayNightIcon(eventData.arrivalGameTime.hours);
 
-                    let eventDescription = eventData.description || 'Evento generado automáticamente por Robotito.';
-                    eventDescription += `\n\n**Enlace del Evento:** [Ver Evento](${eventLink})`;
-                    eventDescription += `\n**Servidor:** ${eventServer}`;
-                    eventDescription += `\n**Lugar de Partida:** ${eventLocation}`;
-                    eventDescription += `\n**Destino:** ${eventDestination}`;
-                    eventDescription += `\n**Reunión:** <t:${eventData.meetingTimestamp}:F> (<t:${eventData.meetingTimestamp}:R>)`;
-                    eventDescription += `\n**Salida:** <t:${eventData.departureTimestamp}:F> (<t:${eventData.departureTimestamp}:R>)`;
-                    eventDescription += `\n**Hora In-Game (Reunión):** ${meetingGameTimeEmoji} ${eventData.meetingGameTime.hours.toString().padStart(2, '0')}:${eventData.meetingGameTime.minutes.toString().padStart(2, '0')}`;                    eventDescription += `\n**Hora In-Game (Llegada Aprox.):** ${arrivalGameTimeEmoji} ${eventData.arrivalGameTime.hours.toString().padStart(2, '0')}:${eventData.arrivalGameTime.minutes.toString().padStart(2, '0')}`;
+                    let eventDescription = eventData.description || t('commands.leer.event_autogen_desc');
+                    eventDescription += `\n\n**${t('commands.leer.event_fields.link')}:** [${t('commands.leer.event_fields.view_event')}](${eventLink})`;
+                    eventDescription += `\n**${t('commands.leer.event_fields.server')}:** ${eventServer}`;
+                    eventDescription += `\n**${t('commands.leer.event_fields.start_place')}:** ${eventLocation}`;
+                    eventDescription += `\n**${t('commands.leer.event_fields.destination')}:** ${eventDestination}`;
+                    eventDescription += `\n**${t('commands.leer.event_fields.meeting')}:** <t:${eventData.meetingTimestamp}:F> (<t:${eventData.meetingTimestamp}:R>)`;
+                    eventDescription += `\n**${t('commands.leer.event_fields.departure')}:** <t:${eventData.departureTimestamp}:F> (<t:${eventData.departureTimestamp}:R>)`;
+                    eventDescription += `\n**${t('commands.leer.event_fields.meeting_ingame')}:** ${meetingGameTimeEmoji} ${eventData.meetingGameTime.hours.toString().padStart(2, '0')}:${eventData.meetingGameTime.minutes.toString().padStart(2, '0')}`;
+                    eventDescription += `\n**${t('commands.leer.event_fields.arrival_ingame')}:** ${arrivalGameTimeEmoji} ${eventData.arrivalGameTime.hours.toString().padStart(2, '0')}:${eventData.arrivalGameTime.minutes.toString().padStart(2, '0')}`;
 
 
                     if (!eventName || !eventData.meetingTimestamp || !eventData.arrivalTimestamp) {
-                        await interaction.editReply('Los datos del evento están incompletos (falta nombre, hora de reunión o hora de llegada).');
+                        await interaction.editReply(t('commands.leer.incomplete_event_data'));
                         return;
                     }
 
@@ -146,12 +146,11 @@ module.exports = {
                     const scheduledEndTime = DateTime.fromSeconds(eventData.arrivalTimestamp).toJSDate();
 
                     if (scheduledEndTime <= scheduledStartTime) {
-                        await interaction.editReply('La hora de llegada debe ser posterior a la hora de reunión.');
+                        await interaction.editReply(t('commands.leer.invalid_event_times'));
                         return;
                     }
 
-                    // Discord Scheduled Event requires a cover image as a base64 string or Buffer
-                    const imageBuffer = buffer; // The original image buffer
+                    const imageBuffer = buffer;
 
                     try {
                         const scheduledEvent = await interaction.guild.scheduledEvents.create({
@@ -159,7 +158,7 @@ module.exports = {
                             description: eventDescription,
                             scheduledStartTime: scheduledStartTime,
                             scheduledEndTime: scheduledEndTime,
-                            privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly, // Corrected privacy level
+                            privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly,
                             entityType: 3, // EXTERNAL
                             entityMetadata: { location: eventLocation },
                             image: imageBuffer,
@@ -167,72 +166,70 @@ module.exports = {
 
                         const embed = createStyledEmbed({
                             color: colors.success,
-                            title: 'Evento Programado Creado',
-                            description: `Se ha creado el evento **[${eventName}](${scheduledEvent.url})** exitosamente.`, 
+                            title: t('commands.leer.event_created_title'),
+                            description: t('commands.leer.event_created_desc', { eventName, eventUrl: scheduledEvent.url }),
                             fields: [
-                                { name: 'Nombre', value: eventName, inline: true },
-
-                                { name: 'Reunión', value: `<t:${eventData.meetingTimestamp}:F> (<t:${eventData.meetingTimestamp}:R>)`, inline: false },
-
-                                { name: 'Enlace del Evento', value: `[Ver Evento](${scheduledEvent.url})`, inline: false },
+                                { name: t('commands.leer.event_created_fields.name'), value: eventName, inline: true },
+                                { name: t('commands.leer.event_created_fields.meeting'), value: `<t:${eventData.meetingTimestamp}:F> (<t:${eventData.meetingTimestamp}:R>)`, inline: false },
+                                { name: t('commands.leer.event_created_fields.link'), value: `[${t('commands.leer.event_fields.view_event')}](${scheduledEvent.url})`, inline: false },
                             ],
                             thumbnail: attachment.url,
-                            footer: { text: `ID del Evento: ${scheduledEvent.id}` }
+                            footer: { text: t('commands.leer.event_created_footer', { eventId: scheduledEvent.id }) }
                         });
 
                         await interaction.editReply({ embeds: [embed] });
 
                     } catch (discordError) {
                         console.error('Error creating Discord Scheduled Event:', discordError);
-                        await interaction.editReply(`Hubo un error al crear el evento programado de Discord: ${discordError.message}`);
+                        await interaction.editReply(t('commands.leer.error_creating_event', { errorMessage: discordError.message }));
                     }
                 } else { // accion === 'mostrar'
                     const fields = [];
 
-                    fields.push({ name: 'Nombre del Evento', value: eventData.eventName || 'N/A', inline: false });
-                    fields.push({ name: 'Enlace del Evento', value: isValidHttpUrl(eventData.eventLink) ? `[Ver Evento](${eventData.eventLink})` : `[Ver Evento](https://truckersmp.com/)`, inline: false });
-                    fields.push({ name: 'Lugar de Partida', value: eventData.startPlace || 'N/A', inline: true });
-                    fields.push({ name: 'Destino', value: eventData.destination || 'N/A', inline: true });
-                    fields.push({ name: 'Servidor', value: eventData.server || 'N/A', inline: true });
-                    fields.push({ name: 'Descripción', value: eventData.description || 'N/A', inline: false });
+                    fields.push({ name: t('commands.leer.event_fields.name'), value: eventData.eventName || 'N/A', inline: false });
+                    fields.push({ name: t('commands.leer.event_fields.link'), value: isValidHttpUrl(eventData.eventLink) ? `[${t('commands.leer.event_fields.view_event')}](${eventData.eventLink})` : `[${t('commands.leer.event_fields.view_event')}](https://truckersmp.com/)`, inline: false });
+                    fields.push({ name: t('commands.leer.event_fields.start_place'), value: eventData.startPlace || 'N/A', inline: true });
+                    fields.push({ name: t('commands.leer.event_fields.destination'), value: eventData.destination || 'N/A', inline: true });
+                    fields.push({ name: t('commands.leer.event_fields.server'), value: eventData.server || 'N/A', inline: true });
+                    fields.push({ name: t('commands.leer.event_fields.description'), value: eventData.description || 'N/A', inline: false });
 
                     if (eventData.meetingTimestamp) {
-                        fields.push({ name: 'Reunión', value: `<t:${eventData.meetingTimestamp}:F> (<t:${eventData.meetingTimestamp}:R>)`, inline: false });
+                        fields.push({ name: t('commands.leer.event_fields.meeting'), value: `<t:${eventData.meetingTimestamp}:F> (<t:${eventData.meetingTimestamp}:R>)`, inline: false });
                     }
                     if (eventData.departureTimestamp) {
-                        fields.push({ name: 'Salida', value: `<t:${eventData.departureTimestamp}:t> (<t:${eventData.departureTimestamp}:R>)`, inline: true });
+                        fields.push({ name: t('commands.leer.event_fields.departure'), value: `<t:${eventData.departureTimestamp}:t> (<t:${eventData.departureTimestamp}:R>)`, inline: true });
                     }
                     if (eventData.arrivalTimestamp) {
-                        fields.push({ name: 'Llegada Aprox.', value: `<t:${eventData.arrivalTimestamp}:t> (<t:${eventData.arrivalTimestamp}:R>)`, inline: true });
+                        fields.push({ name: t('commands.leer.event_fields.arrival'), value: `<t:${eventData.arrivalTimestamp}:t> (<t:${eventData.arrivalTimestamp}:R>)`, inline: true });
                     }
 
                     if (eventData.meetingGameTime) {
                         const meetingEmoji = getDetailedDayNightIcon(eventData.meetingGameTime.hours);
-                        fields.push({ name: 'Hora In-Game (Reunión)', value: `${meetingEmoji} ${eventData.meetingGameTime.hours.toString().padStart(2, '0')}:${eventData.meetingGameTime.minutes.toString().padStart(2, '0')}`, inline: true });
+                        fields.push({ name: t('commands.leer.event_fields.meeting_ingame'), value: `${meetingEmoji} ${eventData.meetingGameTime.hours.toString().padStart(2, '0')}:${eventData.meetingGameTime.minutes.toString().padStart(2, '0')}`, inline: true });
                     }
                     if (eventData.arrivalGameTime) {
                         const arrivalEmoji = getDetailedDayNightIcon(eventData.arrivalGameTime.hours);
-                        fields.push({ name: 'Hora In-Game (Llegada Aprox.)', value: `${arrivalEmoji} ${eventData.arrivalGameTime.hours.toString().padStart(2, '0')}:${eventData.arrivalGameTime.minutes.toString().padStart(2, '0')}`, inline: true });
+                        fields.push({ name: t('commands.leer.event_fields.arrival_ingame'), value: `${arrivalEmoji} ${eventData.arrivalGameTime.hours.toString().padStart(2, '0')}:${eventData.arrivalGameTime.minutes.toString().padStart(2, '0')}`, inline: true });
                     }
 
                     const embed = createStyledEmbed({
                         color: colors.primary,
-                        title: `Detalles del Evento: ${eventData.eventName || 'Evento Personalizado'}`, 
+                        title: t('commands.leer.event_details_title', { eventName: eventData.eventName || 'Evento Personalizado' }),
                         url: isValidHttpUrl(eventData.eventLink) ? eventData.eventLink : null,
                         image: attachment.url,
                         fields: fields,
-                        footer: { text: `Generado el ${DateTime.fromISO(eventData.generatedAt).toFormat('dd/MM/yyyy HH:mm')}` }
+                        footer: { text: t('commands.leer.event_details_footer', { generatedAt: DateTime.fromISO(eventData.generatedAt).toFormat('dd/MM/yyyy HH:mm') }) }
                     });
 
                     await interaction.editReply({ embeds: [embed] });
                 }
             } else {
-                await interaction.editReply('No se encontraron datos de licencia ni de evento en la imagen. Asegúrate de que la imagen fue generada por Convoyrama.');
+                await interaction.editReply(t('commands.leer.no_data_found'));
             }
 
         } catch (error) {
             console.error('Error processing image:', error);
-            await interaction.editReply('Hubo un error al procesar la imagen.');
+            await interaction.editReply(t('commands.leer.error_processing_image'));
         }
     },
 };

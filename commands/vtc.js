@@ -2,11 +2,12 @@ const { SlashCommandBuilder } = require('discord.js');
 const fs = require('node:fs').promises;
 const { createStyledEmbed } = require('../utils/helpers');
 const { colors } = require('../config');
+const { t } = require('../utils/localization');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('vtc')
-        .setDescription('Muestra la lista de VTCs de la comunidad.'),
+        .setName(t('commands.vtc.name'))
+        .setDescription(t('commands.vtc.description')),
     async execute(interaction) {
         await interaction.deferReply();
         try {
@@ -20,7 +21,7 @@ module.exports = {
 
             const embed = createStyledEmbed({
                 color: colors.primary,
-                title: '🚚 VTCs de la Comunidad',
+                title: t('commands.vtc.embed_title'),
                 fields: fields
             });
 

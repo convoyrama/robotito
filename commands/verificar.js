@@ -3,30 +3,31 @@ const crypto = require('crypto');
 const { hmacSecret, colors } = require('../config');
 const { createStyledEmbed } = require('../utils/helpers');
 const { truckersMP } = require('../utils/apiClients');
+const { t } = require('../utils/localization');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('verificar')
-        .setDescription('Genera un código para verificar tu cuenta, y opcionalmente, tu VTC.')
+        .setName(t('commands.verificar.name'))
+        .setDescription(t('commands.verificar.description'))
         .addStringOption(option =>
-            option.setName('url')
-                .setDescription('La URL completa de tu perfil de TruckersMP.')
+            option.setName(t('commands.verificar.options.url.name'))
+                .setDescription(t('commands.verificar.options.url.description'))
                 .setRequired(true))
         .addStringOption(option =>
-            option.setName('url_vtc')
-                .setDescription('Opcional: La URL de tu VTC para verificar propiedad y logo.')
+            option.setName(t('commands.verificar.options.url_vtc.name'))
+                .setDescription(t('commands.verificar.options.url_vtc.description'))
                 .setRequired(false)),
     async execute(interaction) {
         await interaction.deferReply({ flags: 64 });
         if (!interaction.channel.permissionsFor(interaction.client.user).has('EmbedLinks')) {
-            await interaction.editReply({ content: 'No tengo permiso para enviar mensajes incrustados (Embeds) en este canal. Por favor, contacta a un administrador.', flags: 64 });
+            await interaction.editReply({ content: t('common.no_embed_permission'), flags: 64 });
             return;
         }
-        const userUrl = interaction.options.getString('url');
-        const vtcUrl = interaction.options.getString('url_vtc');
+        const userUrl = interaction.options.getString(t('commands.verificar.options.url.name'));
+        const vtcUrl = interaction.options.getString(t('commands.verificar.options.url_vtc.name'));
         const userUrlMatch = userUrl.match(/truckersmp\.com\/(?:user|profile)\/(\d+)/);
         if (!userUrlMatch || !userUrlMatch[1]) {
-            await interaction.editReply({ content: 'La URL de perfil de usuario proporcionada no es válida. Asegúrate de que sea la URL completa.', flags: 64 });
+            await interaction.editReply({ content: t('common.invalid_user_url'), flags: 64 });
             return;
         }
         const userId = userUrlMatch[1];
@@ -34,7 +35,7 @@ module.exports = {
             const playerResponse = await truckersMP.get(`/player/${userId}`);
             const playerData = playerResponse.data.response;
             if (!playerData || !playerData.joinDate) {
-                await interaction.editReply('No se pudo encontrar la fecha de registro para este usuario. El perfil podría ser privado o el ID incorrecto.');
+                await interaction.editReply(t('common.user_data_not_found'));
                 return;
             }
             let payload = `${userId}|${playerData.joinDate}|${playerData.name}`;
@@ -53,7 +54,7 @@ module.exports = {
                     } catch (vtcError) {
                         console.error(`[${new Date().toISOString()}] Error fetching VTC data for VTC ID ${vtcId}:`, vtcError.message);
                         await interaction.followUp({
-                            content: '⚠️ No se pudo procesar la URL de la VTC. Se generará el código solo con tu perfil de usuario. Verifica que la URL de la VTC sea correcta.',
+                            content: t('common.vtc_url_error'),
                             flags: 64 // Ephemeral
                         });
                     }
@@ -64,26 +65,26 @@ module.exports = {
             const verificationCode = `${Buffer.from(payload).toString('base64')}.${signature}`;
 
             const fields = [
-                { name: 'Tu Código de Verificación', value: '```\n' + verificationCode + '\n```' },
-                { name: '¿Dónde usar este código?', value: '[Haz clic aquí para ir al Generador de ID](https://convoyrama.github.io/id.html)' }
+                { name: t('commands.verificar.fields.code'), value: '```\n' + verificationCode + '\n```' },
+                { name: t('commands.verificar.fields.where_to_use'), value: t('commands.verificar.fields.where_to_use_value') }
             ];
 
             if (vtcDataForEmbed) {
-                fields.push({ name: 'VTC Procesada', value: `${vtcDataForEmbed.name}`, inline: true });
+                fields.push({ name: t('commands.verificar.fields.vtc_processed'), value: `${vtcDataForEmbed.name}`, inline: true });
             }
 
             const embed = createStyledEmbed({
                 color: colors.success,
-                title: '✅ Código de Verificación Generado',
-                description: '¡Tu código está listo! Cópialo y pégalo en el campo correspondiente del generador de licencias.',
+                title: t('commands.verificar.embed_title'),
+                description: t('commands.verificar.embed_description'),
                 fields: fields,
-                footer: { text: 'Este código vincula tu licencia a tu fecha de registro real.' }
+                footer: { text: t('commands.verificar.footer') }
             });
 
             await interaction.editReply({ embeds: [embed] });
         } catch (error) {
             if (error.response && error.response.status === 404) {
-                await interaction.editReply('No se pudo encontrar el perfil de TruckersMP. Verifica que la URL sea correcta y que el perfil no sea privado.');
+                await interaction.editReply(t('common.user_profile_not_found'));
             } else {
                 // For other errors, re-throw to be caught by the global error handler
                 throw error;

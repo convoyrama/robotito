@@ -2,6 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const { DateTime } = require('luxon');
 const { colors } = require('../config');
 const { truckersMP } = require('./apiClients');
+const { t } = require('./localization');
 
 /**
  * Returns a day/night icon based on the hour.
@@ -54,37 +55,37 @@ async function handlePlayerInfo(interaction, userId, profileUrl) {
         const response = await truckersMP.get(`/player/${userId}`);
         const playerData = response.data.response;
         if (!playerData) {
-            await interaction.editReply('No se encontró información para ese usuario de TruckersMP.');
+            await interaction.editReply(t('common.user_profile_not_found'));
             return;
         }
         const fields = [
-            { name: 'ID de TruckersMP', value: `${playerData.id}`, inline: true },
-            { name: 'SteamID', value: `[${playerData.steamID}](https://steamcommunity.com/profiles/${playerData.steamID})`, inline: true },
-            { name: 'Registrado', value: playerData.joinDate ? DateTime.fromISO(playerData.joinDate.replace(' ', 'T')).toFormat('dd/MM/yyyy') : 'N/A', inline: true },
-            { name: 'Última Conexión', value: playerData.lastGameTime ? DateTime.fromISO(playerData.lastGameTime.replace(' ', 'T')).toRelative() : 'N/A', inline: true },
-            { name: 'Baneado', value: playerData.banned ? `Sí, hasta ${DateTime.fromISO(playerData.bannedUntil.replace(' ', 'T')).toFormat('dd/MM/yyyy HH:mm')}` : 'No', inline: true },
-            { name: 'Número de Baneos', value: `${playerData.bansCount}`, inline: true },
-            { name: 'En VTC', value: playerData.vtc && playerData.vtc.id ? `[${playerData.vtc.name} ${playerData.vtc.tag ? `[${playerData.vtc.tag}]` : ''}](https://truckersmp.com/vtc/${playerData.vtc.id})` : 'No', inline: true },
-            { name: 'Grupo', value: playerData.groupName || 'N/A', inline: true },
-            { name: 'Patreon', value: playerData.patreon.isPatron ? 'Sí' : 'No', inline: true },
-            { name: 'Staff', value: playerData.permissions.isStaff ? 'Sí' : 'No', inline: true },
-            { name: 'Game Admin', value: playerData.permissions.isGameAdmin ? 'Sí' : 'No', inline: true },
-            { name: 'Management', value: playerData.permissions.isManagement ? 'Sí' : 'No', inline: true }
+            { name: t('commands.info.player_id'), value: `${playerData.id}`, inline: true },
+            { name: t('commands.info.player_steam'), value: `[${playerData.steamID}](https://steamcommunity.com/profiles/${playerData.steamID})`, inline: true },
+            { name: t('commands.info.player_joined'), value: playerData.joinDate ? DateTime.fromISO(playerData.joinDate).toFormat('dd/MM/yyyy') : 'N/A', inline: true },
+            { name: t('commands.info.player_last_seen'), value: playerData.lastGameTime ? DateTime.fromISO(playerData.lastGameTime).toRelative() : 'N/A', inline: true },
+            { name: t('commands.info.player_banned'), value: playerData.banned ? t('commands.info.player_banned_until', { bannedUntil: DateTime.fromISO(playerData.bannedUntil).toFormat('dd/MM/yyyy HH:mm') }) : t('commands.info.player_not_banned'), inline: true },
+            { name: t('commands.info.player_bans'), value: `${playerData.bansCount}`, inline: true },
+            { name: t('commands.info.player_in_vtc'), value: playerData.vtc && playerData.vtc.id ? `[${playerData.vtc.name} ${playerData.vtc.tag ? `[${playerData.vtc.tag}]` : ''}](https://truckersmp.com/vtc/${playerData.vtc.id})` : t('commands.info.player_not_in_vtc'), inline: true },
+            { name: t('commands.info.player_group'), value: playerData.groupName || 'N/A', inline: true },
+            { name: t('commands.info.player_patreon'), value: playerData.patreon.isPatron ? t('commands.info.player_is_patron') : t('commands.info.player_not_banned'), inline: true },
+            { name: t('commands.info.player_staff'), value: playerData.permissions.isStaff ? t('commands.info.player_is_patron') : t('commands.info.player_not_banned'), inline: true },
+            { name: t('commands.info.player_game_admin'), value: playerData.permissions.isGameAdmin ? t('commands.info.player_is_patron') : t('commands.info.player_not_banned'), inline: true },
+            { name: t('commands.info.player_management'), value: playerData.permissions.isManagement ? t('commands.info.player_is_patron') : t('commands.info.player_not_banned'), inline: true }
         ];
 
         const embed = createStyledEmbed({
             color: colors.primary,
-            title: `👤 Perfil de TruckersMP: ${playerData.name}`,
+            title: t('commands.info.player_embed_title', { playerName: playerData.name }),
             url: profileUrl,
             thumbnail: playerData.avatar || null,
             fields: fields,
-            footer: { text: 'Datos obtenidos de la API de TruckersMP.' }
+            footer: { text: t('commands.info.footer') }
         });
 
         await interaction.editReply({ embeds: [embed] });
     } catch (error) {
         if (error.response && error.response.status === 404) {
-            await interaction.editReply('El usuario con el ID proporcionado no fue encontrado en TruckersMP.');
+            await interaction.editReply(t('common.user_profile_not_found'));
         } else {
             // For other errors, re-throw to be caught by the global error handler
             throw error;

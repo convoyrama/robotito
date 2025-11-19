@@ -2,11 +2,12 @@ const { SlashCommandBuilder } = require('discord.js');
 const { colors } = require('../config');
 const { createStyledEmbed } = require('../utils/helpers');
 const { truckersMP } = require('../utils/apiClients');
+const { t } = require('../utils/localization');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('servidores')
-        .setDescription('Muestra el estado de los servidores de TruckersMP.'),
+        .setName(t('commands.servidores.name'))
+        .setDescription(t('commands.servidores.description')),
     async execute(interaction) {
         await interaction.deferReply();
         try {
@@ -14,16 +15,24 @@ module.exports = {
             const servers = response.data.response;
             
             const fields = servers.map(server => ({
-                name: `${server.online ? '🟢' : '🔴'} ${server.name} (${server.shortname})`,
-                value: `**Jugadores:** ${server.players} / ${server.maxplayers}\n**En cola:** ${server.queue}`,
+                name: t('commands.servidores.server_status_name', {
+                    status_icon: server.online ? '🟢' : '🔴',
+                    server_name: server.name,
+                    server_shortname: server.shortname
+                }),
+                value: t('commands.servidores.server_status_value', {
+                    players: server.players,
+                    maxplayers: server.maxplayers,
+                    queue: server.queue
+                }),
                 inline: true
             }));
 
             const embed = createStyledEmbed({
                 color: colors.success,
-                title: '📡 Estado de los Servidores de TruckersMP',
+                title: t('commands.servidores.embed_title'),
                 fields: fields,
-                footer: { text: 'Datos obtenidos de la API de TruckersMP' }
+                footer: { text: t('commands.servidores.footer') }
             });
 
             await interaction.editReply({ embeds: [embed] });

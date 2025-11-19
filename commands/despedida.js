@@ -1,27 +1,28 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { FAREWELL_MESSAGE_OWN, FAREWELL_MESSAGE_EXTERNAL, colors } = require('../config');
 const { createStyledEmbed } = require('../utils/helpers');
+const { t } = require('../utils/localization');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('despedida')
-        .setDescription('Envía un mensaje de despedida de convoy (propio o ajeno).')
+        .setName(t('commands.despedida.name'))
+        .setDescription(t('commands.despedida.description'))
         .addStringOption(option =>
-            option.setName('tipo')
-                .setDescription('Tipo de despedida (propia o ajena).')
+            option.setName(t('commands.despedida.options.tipo.name'))
+                .setDescription(t('commands.despedida.options.tipo.description'))
                 .setRequired(false)
                 .addChoices(
-                    { name: 'propia', value: 'propia' },
-                    { name: 'ajena', value: 'ajena' },
+                    { name: t('commands.despedida.options.tipo.choices.propia'), value: 'propia' },
+                    { name: t('commands.despedida.options.tipo.choices.ajena'), value: 'ajena' },
                 )),
     async execute(interaction) {
         await interaction.deferReply();
-        const type = interaction.options.getString('tipo');
+        const type = interaction.options.getString(t('commands.despedida.options.tipo.name'));
         let farewellMessage = FAREWELL_MESSAGE_EXTERNAL;
-        let title = '👋 ¡Despedida de Convoy Externo!';
+        let title = t('commands.despedida.embed_title_external');
         if (type && type.toLowerCase() === 'propia') {
             farewellMessage = FAREWELL_MESSAGE_OWN;
-            title = '👋 ¡Hasta la Próxima Ruta!';
+            title = t('commands.despedida.embed_title_own');
         }
 
         const codeBlockMessage = "```\n" + farewellMessage + "\n```";
@@ -30,7 +31,7 @@ module.exports = {
             color: colors.primary,
             title: title,
             description: codeBlockMessage,
-            footer: { text: '¡Nos vemos en el camino!' }
+            footer: { text: t('commands.despedida.footer') }
         });
 
         await interaction.editReply({ embeds: [embed] });

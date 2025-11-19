@@ -3,11 +3,12 @@ const fs = require('fs').promises;
 const path = require('path');
 const { createStyledEmbed } = require('../utils/helpers');
 const { colors } = require('../config');
+const { t } = require('../utils/localization');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('murphy')
-        .setDescription('Muestra una de las leyes de Murphy.'),
+        .setName(t('commands.murphy.name'))
+        .setDescription(t('commands.murphy.description')),
     async execute(interaction) {
         await interaction.deferReply();
         try {
@@ -18,14 +19,14 @@ module.exports = {
 
             const embed = createStyledEmbed({
                 color: colors.warning,
-                title: '📜 Ley de Murphy',
+                title: t('commands.murphy.embed_title'),
                 description: randomLaw,
-                footer: { text: '- Murphy' }
+                footer: { text: t('commands.murphy.footer') }
             });
 
             await interaction.editReply({ embeds: [embed] });
         } catch (error) {
-            console.error('Error al leer o procesar el archivo de las leyes de Murphy:', error);
+            console.error('Error reading or parsing murphy.json:', error);
             throw error;
         }
     },

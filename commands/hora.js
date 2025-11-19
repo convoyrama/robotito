@@ -4,43 +4,74 @@ const timezones = require('../timezones.json');
 const { parseInputTime } = require('../utils/time');
 const { createStyledEmbed } = require('../utils/helpers');
 const { colors } = require('../config');
+const { t } = require('../utils/localization');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('hora')
-        .setDescription('Muestra la hora actual en varias zonas horarias o calcula esas horas.')
+        .setName(t('commands.hora.name'))
+        .setDescription(t('commands.hora.description'))
         .addStringOption(option =>
-            option.setName('tiempo')
-                .setDescription('Hora en formato HH:MM o Ham/pm (ej: 20:00 o 8pm).')
+            option.setName(t('commands.hora.options.tiempo.name'))
+                .setDescription(t('commands.hora.options.tiempo.description'))
                 .setRequired(false))
         .addStringOption(option =>
-            option.setName('ciudad')
-                .setDescription('Ciudad de referencia (ej: Montevideo).')
+            option.setName(t('commands.hora.options.ciudad.name'))
+                .setDescription(t('commands.hora.options.ciudad.description'))
+                .setRequired(false))
+        .addBooleanOption(option =>
+            option.setName(t('commands.hora.options.listar-ciudades.name'))
+                .setDescription(t('commands.hora.options.listar-ciudades.description'))
                 .setRequired(false)),
     async execute(interaction) {
         await interaction.deferReply();
-        const timeString = interaction.options.getString('tiempo');
-        const cityName = interaction.options.getString('ciudad');
+
+        if (interaction.options.getBoolean(t('commands.hora.options.listar-ciudades.name'))) {
+            const cityList = timezones.map(tz => tz.name).join('\n');
+            const embed = createStyledEmbed({
+                color: colors.info,
+                title: t('commands.hora.cities_list_embed_title'),
+                description: '```\n' + cityList + '\n```'
+            });
+            await interaction.editReply({ embeds: [embed] });
+            return;
+        }
+
+        const timeString = interaction.options.getString(t('commands.hora.options.tiempo.name'));
+        const cityNameOrOffset = interaction.options.getString(t('commands.hora.options.ciudad.name'));
         let referenceTime, referenceCity, description = '';
         const userLocalTime = DateTime.local();
-        if (timeString && cityName) {
-            const foundCity = timezones.find(tz => tz.name.toLowerCase().includes(cityName.toLowerCase()));
-            if (!foundCity) {
-                await interaction.editReply('Ciudad no encontrada en la lista de capitales latinas. Intenta con `/hora` para ver las horas actuales o `/hora tiempo:HH:MM ciudad:[Ciudad]` con una ciudad válida.');
-                return;
+
+        if (timeString && cityNameOrOffset) {
+            const utcOffsetMatch = cityNameOrOffset.match(/^[+-]?\d{1,2}$/);
+            if (utcOffsetMatch) {
+                const offset = parseInt(cityNameOrOffset, 10);
+                if (offset >= -12 && offset <= 14) {
+                    referenceTime = parseInputTime(timeString, userLocalTime.setZone(`UTC${offset}`));
+                    referenceCity = `UTC${offset}`;
+                } else {
+                    await interaction.editReply(t('commands.hora.city_not_found'));
+                    return;
+                }
+            } else {
+                const foundCity = timezones.find(tz => tz.name.toLowerCase().includes(cityNameOrOffset.toLowerCase()));
+                if (!foundCity) {
+                    await interaction.editReply(t('commands.hora.city_not_found'));
+                    return;
+                }
+                referenceTime = parseInputTime(timeString, userLocalTime.setZone(foundCity.zone));
+                referenceCity = foundCity.name;
             }
-            referenceTime = parseInputTime(timeString, userLocalTime.setZone(foundCity.zone));
+
             if (!referenceTime) {
-                await interaction.editReply('Formato de tiempo inválido. Intenta `/hora tiempo:HH:MM ciudad:[Ciudad]` o `/hora tiempo:Ham/pm ciudad:[Ciudad]`');
+                await interaction.editReply(t('commands.hora.invalid_time'));
                 return;
             }
-            referenceCity = foundCity.name;
-            description = `**Si en ${referenceCity} son las ${referenceTime.toFormat('HH:mm')}, entonces:**\n`;
-        } else if (!timeString && !cityName) {
+            description = t('commands.hora.description_referenced', { referenceCity, referenceTime: referenceTime.toFormat('HH:mm') });
+        } else if (!timeString && !cityNameOrOffset) {
             referenceTime = userLocalTime;
-            description = `**Horas actuales en Zonas Latinas:**\n`;
+            description = t('commands.hora.description_current');
         } else {
-            await interaction.editReply('Uso incorrecto. Intenta `/hora` para horas actuales, o `/hora tiempo:HH:MM ciudad:[Ciudad]`');
+            await interaction.editReply(t('commands.hora.incorrect_usage'));
             return;
         }
         timezones.forEach(tz => {
@@ -50,9 +81,9 @@ module.exports = {
 
         const embed = createStyledEmbed({
             color: colors.info,
-            title: '🌎 Horas en Zonas Latinas',
+            title: t('commands.hora.embed_title'),
             description: description,
-            footer: { text: 'Horas basadas en la zona horaria del bot.' }
+            footer: { text: t('commands.hora.footer') }
         });
 
         await interaction.editReply({ embeds: [embed] });

@@ -3,23 +3,24 @@ const fs = require('fs').promises;
 const path = require('path');
 const { createStyledEmbed } = require('../utils/helpers');
 const { colors } = require('../config');
+const { t } = require('../utils/localization');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('mods')
-        .setDescription('Muestra listas de sitios recomendados para buscar mods.')
+        .setName(t('commands.mods.name'))
+        .setDescription(t('commands.mods.description'))
         .addSubcommand(subcommand =>
             subcommand
-                .setName('ets2')
-                .setDescription('Muestra la lista de mapas para Euro Truck Simulator 2.'))
+                .setName(t('commands.mods.subcommands.ets2.name'))
+                .setDescription(t('commands.mods.subcommands.ets2.description')))
         .addSubcommand(subcommand =>
             subcommand
-                .setName('ats')
-                .setDescription('Muestra la lista de mapas para American Truck Simulator.'))
+                .setName(t('commands.mods.subcommands.ats.name'))
+                .setDescription(t('commands.mods.subcommands.ats.description')))
         .addSubcommand(subcommand =>
             subcommand
-                .setName('vehiculos')
-                .setDescription('Muestra sitios de mods de vehículos y portales generales.')),
+                .setName(t('commands.mods.subcommands.vehiculos.name'))
+                .setDescription(t('commands.mods.subcommands.vehiculos.description'))),
 
     async execute(interaction) {
         await interaction.deferReply({ flags: 64 });
@@ -41,8 +42,8 @@ module.exports = {
                 return `**${e.nombre}**: ${ets2Link} | ${atsLink}\n*${e.descripcion}*`;
             }).join('\n\n');
 
-            if (subcommand === 'ets2') {
-                embedOptions.title = '🗺️ Lista de Mapas para ETS2';
+            if (subcommand === t('commands.mods.subcommands.ets2.name')) {
+                embedOptions.title = t('commands.mods.ets2_embed_title');
                 const ets2Maps = modsData.mapas.ets2;
                 const fields = [];
                 let ets2FieldValue = '';
@@ -51,29 +52,29 @@ module.exports = {
                 for (const map of ets2Maps) {
                     const entryString = `[**${map.nombre}**](${map.url})\n*${map.descripcion}*\n\n`;
                     if (ets2FieldValue.length + entryString.length > 1024) {
-                        fields.push({ name: `Parte ${ets2Part}`, value: ets2FieldValue });
+                        fields.push({ name: t('commands.mods.part', { part: ets2Part }), value: ets2FieldValue });
                         ets2FieldValue = '';
                         ets2Part++;
                     }
                     ets2FieldValue += entryString;
                 }
                 if (ets2FieldValue) {
-                    fields.push({ name: `Parte ${ets2Part}`, value: ets2FieldValue });
+                    fields.push({ name: t('commands.mods.part', { part: ets2Part }), value: ets2FieldValue });
                 }
                 embedOptions.fields = fields;
 
-            } else if (subcommand === 'ats') {
-                embedOptions.title = '🗺️ Lista de Mapas para ATS';
+            } else if (subcommand === t('commands.mods.subcommands.ats.name')) {
+                embedOptions.title = t('commands.mods.ats_embed_title');
                 embedOptions.fields = [
-                    { name: 'Mapas Principales', value: formatEntries(modsData.mapas.ats) || 'No disponible' },
-                    { name: 'Otras Plataformas', value: formatPlatforms(modsData.mapas.plataformas) || 'No disponible' }
+                    { name: t('commands.mods.main_maps'), value: formatEntries(modsData.mapas.ats) || t('commands.mods.not_available') },
+                    { name: t('commands.mods.other_platforms'), value: formatPlatforms(modsData.mapas.plataformas) || t('commands.mods.not_available') }
                 ];
 
-            } else if (subcommand === 'vehiculos') {
-                embedOptions.title = '🚚 Sitios de Mods de Vehículos y Portales';
+            } else if (subcommand === t('commands.mods.subcommands.vehiculos.name')) {
+                embedOptions.title = t('commands.mods.vehicles_embed_title');
                 embedOptions.fields = [
-                    { name: 'Tiendas de Creadores', value: formatEntries(modsData.vehiculos.tiendas) || 'No disponible' },
-                    { name: 'Portales Generales', value: formatEntries(modsData.vehiculos.portales) || 'No disponible' }
+                    { name: t('commands.mods.creator_stores'), value: formatEntries(modsData.vehiculos.tiendas) || t('commands.mods.not_available') },
+                    { name: t('commands.mods.general_portals'), value: formatEntries(modsData.vehiculos.portales) || t('commands.mods.not_available') }
                 ];
             }
 

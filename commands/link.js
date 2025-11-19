@@ -1,20 +1,21 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { createStyledEmbed } = require('../utils/helpers');
 const { colors, usefulLinks } = require('../config');
+const { t } = require('../utils/localization');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('link')
-        .setDescription('Muestra enlaces útiles de Convoyrama y el Discord.'),
+        .setName(t('commands.link.name'))
+        .setDescription(t('commands.link.description')),
     async execute(interaction) {
         await interaction.deferReply();
 
         const embed = createStyledEmbed({
             color: colors.primary,
-            title: '🔗 Enlaces Útiles de Convoyrama',
-            description: 'Aquí tienes algunos enlaces importantes:',
+            title: t('commands.link.embed_title'),
+            description: t('commands.link.embed_description'),
             fields: usefulLinks,
-            footer: { text: '¡Explora y únete a la diversión!' }
+            footer: { text: t('commands.link.footer') }
         });
 
         await interaction.editReply({ embeds: [embed] });

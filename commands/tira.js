@@ -3,20 +3,21 @@ const { createStyledEmbed } = require('../utils/helpers');
 const { colors } = require('../config');
 const fs = require('fs').promises;
 const path = require('path');
+const { t } = require('../utils/localization');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('tira')
-        .setDescription('Muestra una tira cómica o información sobre ellas.')
+        .setName(t('commands.tira.name'))
+        .setDescription(t('commands.tira.description'))
         .addStringOption(option =>
-            option.setName('accion')
-                .setDescription('Elige una acción.')
+            option.setName(t('commands.tira.options.accion.name'))
+                .setDescription(t('commands.tira.options.accion.description'))
                 .setRequired(false)
                 .addChoices(
-                    { name: 'info', value: 'info' },
+                    { name: t('commands.tira.options.accion.choices.info'), value: 'info' },
                 )),
     async execute(interaction) {
-        const accion = interaction.options.getString('accion');
+        const accion = interaction.options.getString(t('commands.tira.options.accion.name'));
         if (accion === 'info') {
             try {
                 await interaction.deferReply();
@@ -25,19 +26,19 @@ module.exports = {
                 const tiraData = JSON.parse(tiraDataFile);
 
                 const fields = [
-                    { name: 'Autor', value: 'Javier Malonda' },
-                    { name: 'Licencia', value: '[Creative Commons BY-NC-ND 4.0](http://creativecommons.org/licenses/by-nc-nd/4.0/)' },
-                    { name: 'Extracto de la Entrevista (2004)', value: tiraData.interviewSnippet + '...' },
-                    { name: 'Leer más', value: '[Entrevista Completa](https://convoyrama.github.io/robotito/img/tira-ecol-master/Entrevista-Javier-Malonda.txt) | [Sitio Web](https://biloynano.com/)' }
+                    { name: t('commands.tira.info_fields.author'), value: t('commands.tira.info_fields.author_name') },
+                    { name: t('commands.tira.info_fields.license'), value: t('commands.tira.info_fields.license_value') },
+                    { name: t('commands.tira.info_fields.interview_snippet'), value: tiraData.interviewSnippet + '...' },
+                    { name: t('commands.tira.info_fields.read_more'), value: t('commands.tira.info_fields.read_more_value') }
                 ];
 
                 const embed = createStyledEmbed({
                     color: colors.info,
-                    title: 'ℹ️ Información sobre Tira Ecol',
+                    title: t('commands.tira.info_embed_title'),
                     url: 'https://biloynano.com/',
                     description: tiraData.readmeDescription,
                     fields: fields,
-                    footer: { text: 'Todo el crédito para Javier Malonda.' }
+                    footer: { text: t('commands.tira.info_footer') }
                 });
 
                 await interaction.editReply({ embeds: [embed] });
@@ -55,10 +56,10 @@ module.exports = {
                 
                 const embed = createStyledEmbed({
                     color: colors.primary,
-                    title: '🎨 Tira Cómica de ECOL',
+                    title: t('commands.tira.comic_embed_title'),
                     url: 'https://biloynano.com/',
                     image: imageUrl,
-                    footer: { text: 'Tira por Javier Malonda (Bilo y Nano) | Usa /tira info para más detalles.' }
+                    footer: { text: t('commands.tira.comic_footer') }
                 });
 
                 await interaction.editReply({ embeds: [embed] });

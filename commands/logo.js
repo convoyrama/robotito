@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { BASE_IMAGE_URL, colors } = require('../config');
 const { createStyledEmbed } = require('../utils/helpers');
+const { t } = require('../utils/localization');
 
 const logoMap = {
     LS1: { file: 'logotLS.png', title: "Logo Oficial de LAG'S SPEED (Transparente)" },
@@ -16,31 +17,23 @@ const logoMap = {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('logo')
-        .setDescription('Muestra el logo oficial de la comunidad.')
+        .setName(t('commands.logo.name'))
+        .setDescription(t('commands.logo.description'))
         .addStringOption(option =>
-            option.setName('opcion')
-                .setDescription('Elige una de las variantes del logo.')
+            option.setName(t('commands.logo.options.opcion.name'))
+                .setDescription(t('commands.logo.options.opcion.description'))
                 .setRequired(false)
                 .addChoices(
-                    { name: "LAG'S SPEED (Transparente)", value: 'LS1' },
-                    { name: "LAG'S SPEED (Blanco)", value: 'LS2' },
-                    { name: "LAG'S SPEED (Negro)", value: 'LS3' },
-                    { name: "Convoyrama (Transparente)", value: 'CR1' },
-                    { name: "Convoyrama (Oscuro)", value: 'CR2' },
-                    { name: "Convoy Nocturno DRP", value: 'CNDRP' },
-                    { name: "Convoy Nocturno", value: 'CN' },
-                    { name: "Canteras del Sur (Blanco)", value: 'CDS1' },
-                    { name: "Canteras del Sur (Negro)", value: 'CDS2' },
+                    ...Object.entries(t('commands.logo.options.opcion.choices')).map(([key, value]) => ({ name: value, value: key }))
                 )),
     async execute(interaction) {
         await interaction.deferReply();
-        const opcion = interaction.options.getString('opcion') || 'LS1';
+        const opcion = interaction.options.getString(t('commands.logo.options.opcion.name')) || 'LS1';
         const logoInfo = logoMap[opcion] || logoMap.LS1;
-
+        
         const embed = createStyledEmbed({
             color: colors.warning,
-            title: logoInfo.title,
+            title: t(`commands.logo.logo_titles.${opcion}`),
             image: `${BASE_IMAGE_URL}LS/${logoInfo.file}`
         });
 
