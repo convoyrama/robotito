@@ -9,6 +9,8 @@ module.exports = {
         .setName(t('commands.servidores.name'))
         .setDescription(t('commands.servidores.description')),
     async execute(interaction) {
+        await interaction.reply({ content: 'Este comando está temporalmente deshabilitado por mantenimiento.', ephemeral: true });
+        return;
         await interaction.deferReply();
         try {
             const response = await truckersMP.get('/servers');
