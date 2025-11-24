@@ -28,9 +28,11 @@ module.exports = {
                 { name: t('commands.clima.weather_fields.description'), value: weather.weather[0].description, inline: true },
             ];
 
+            const embedTitle = t('commands.clima.embed_title', { weatherName: weather.name }) || `🌦️ Clima en ${weather.name}`;
+
             const embed = createStyledEmbed({
                 color: colors.info,
-                title: t('commands.clima.embed_title', { weatherName: weather.name }),
+                title: embedTitle,
                 thumbnail: `https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`,
                 fields: fields,
                 footer: { text: t('commands.clima.footer') }
