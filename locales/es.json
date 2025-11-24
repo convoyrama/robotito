@@ -18,7 +18,8 @@
     "murphy_error": "Error al leer o procesar el archivo de las leyes de Murphy:",
     "vtcs_error": "Error al leer o procesar el archivo vtcs.json:",
     "no_spam_texts": "No hay textos de spam configurados.",
-    "tito_inspiration_error": "Lo siento, Tito no está inspirado ahora mismo. Inténtalo de nuevo más tarde."
+    "tito_inspiration_error": "Lo siento, Tito no está inspirado ahora mismo. Inténtalo de nuevo más tarde.",
+    "command_unavailable": "Este comando no está disponible temporalmente por mantenimiento. Por favor, inténtalo de nuevo más tarde."
   },
   "commands": {
     "clima": {
@@ -41,449 +42,524 @@
       "footer": "Datos proporcionados por OpenWeatherMap"
     },
     "ayuda": {
-        "name": "ayuda",
-        "description": "Muestra la lista de comandos de Robotito.",
-        "embed_title": "🤖 Comandos de Robotito",
-        "embed_description": "Aquí tienes una lista de lo que puedo hacer:",
-        "footer": "¡Usa los comandos con el prefijo /",
-        "fields": {
-            "ayuda": "Muestra esta lista de comandos.",
-            "clima": "Muestra el clima actual de una ciudad.",
-            "tira": "Muestra una tira cómica o información sobre ellas.",
-            "tito": "Tito te cuenta un dato inútil y absurdo.",
-            "estado": "Muestra el estado de ánimo diario de Robotito.",
-            "logo": "Muestra una de las 3 variantes del logo de la comunidad.",
-            "link": "Muestra enlaces útiles de Convoyrama y el Discord.",
-            "ingame": "Calcula la hora in-game para una hora y zona horaria específicas.",
-            "hora": "Muestra la hora actual en varias zonas horarias o calcula esas horas.",
-            "despedida": "Envía un mensaje de despedida de convoy (propio o ajeno).",
-            "spam": "Envía un mensaje aleatorio de la lista de textos predefinidos.",
-            "evento": "Muestra los eventos (próximo, semana, mes).",
-            "vtc": "Muestra la lista de VTCs de la comunidad.",
-            "servidores": "Muestra el estado de los servidores de TruckersMP.",
-            "info": "Muestra información de un usuario o VTC de TruckersMP.",
-            "verificar": "Genera un código para verificar tu cuenta y, opcionalmente, tu VTC."
-        }
+      "name": "ayuda",
+      "description": "Muestra la lista de comandos de Robotito.",
+      "embed_title": "🤖 Comandos de Robotito",
+      "embed_description": "Aquí tienes una lista de lo que puedo hacer:",
+      "footer": "¡Usa los comandos con el prefijo /",
+      "fields": {
+        "ayuda": "Muestra esta lista de comandos.",
+        "clima": "Muestra el clima actual de una ciudad.",
+        "tira": "Muestra una tira cómica o información sobre ellas.",
+        "tito": "Tito te cuenta un dato inútil y absurdo.",
+        "estado": "Muestra el estado de ánimo diario de Robotito.",
+        "logo": "Muestra una de las 3 variantes del logo de la comunidad.",
+        "link": "Muestra enlaces útiles de Convoyrama y el Discord.",
+        "ingame": "Calcula la hora in-game para una hora y zona horaria específicas.",
+        "hora": "Muestra la hora actual en varias zonas horarias o calcula esas horas.",
+        "despedida": "Envía un mensaje de despedida de convoy (propio o ajeno).",
+        "spam": "Envía un mensaje aleatorio de la lista de textos predefinidos.",
+        "evento": "Muestra los eventos (próximo, semana, mes).",
+        "vtc": "Muestra la lista de VTCs de la comunidad.",
+        "servidores": "Muestra el estado de los servidores de TruckersMP.",
+        "info": "Muestra información de un usuario o VTC de TruckersMP.",
+        "verificar": "Genera un código para verificar tu cuenta y, opcionalmente, tu VTC."
+      }
     },
     "despedida": {
-        "name": "despedida",
-        "description": "Envía un mensaje de despedida de convoy (propio o ajeno).",
-        "options": {
-            "tipo": {
-                "name": "tipo",
-                "description": "Tipo de despedida (propia o ajena).",
-                "choices": {
-                    "propia": "propia",
-                    "ajena": "ajena"
-                }
-            }
-        },
-        "embed_title_external": "👋 ¡Despedida de Convoy Externo!",
-        "embed_title_own": "👋 ¡Hasta la Próxima Ruta!",
-        "footer": "¡Nos vemos en el camino!",
-        "own_message": "LAG'S SPEED les agradece sinceramente su participación. Ha sido una ruta excelente gracias a la compañía de cada uno de ustedes, y un placer compartir este gran momento. ¡Esperamos seguir contando con su presencia en futuras aventuras! Saludos y muy buena ruta a todos.",
-        "external_message": "LAG'S SPEED agradece la invitación a este convoy. Ha sido un placer compartir la ruta con todos. ¡Esperamos coincidir de nuevo en el camino! Saludos y muy buena ruta."
+      "name": "despedida",
+      "description": "Envía un mensaje de despedida de convoy (propio o ajeno).",
+      "options": {
+        "tipo": {
+          "name": "tipo",
+          "description": "Tipo de despedida (propia o ajena).",
+          "choices": {
+            "propia": "propia",
+            "ajena": "ajena"
+          }
+        }
+      },
+      "embed_title_external": "👋 ¡Despedida de Convoy Externo!",
+      "embed_title_own": "👋 ¡Hasta la Próxima Ruta!",
+      "footer": "¡Nos vemos en el camino!",
+      "own_message": "LAG'S SPEED les agradece sinceramente su participación. Ha sido una ruta excelente gracias a la compañía de cada uno de ustedes, y un placer compartir este gran momento. ¡Esperamos seguir contando con su presencia en futuras aventuras! Saludos y muy buena ruta a todos.",
+      "external_message": "LAG'S SPEED agradece la invitación a este convoy. Ha sido un placer compartir la ruta con todos. ¡Esperamos coincidir de nuevo en el camino! Saludos y muy buena ruta."
     },
     "estado": {
-        "name": "estado",
-        "description": "Muestra el estado de ánimo diario de Robotito.",
-        "footer": "Estado del día {date}",
-        "valentine_title": "❤️ ¡Feliz Día de San Valentín!",
-        "valentine_desc": "Que su ruta esté llena de amor y amistad. ¡Robotito les desea un feliz San Valentín a toda la comunidad!",
-        "halloween_title": "🎃 ¡Feliz Halloween!",
-        "halloween_desc": "¡Feliz Halloween! Que los únicos sustos de hoy sean en las películas y no en la carretera. ¡Cuidado ahí fuera!",
-        "christmas_title": "🎄 ¡Feliz Navidad!",
-        "christmas_desc": "¡Jo, jo, jo! Robotito les desea una muy Feliz Navidad a toda la comunidad. ¡Que sus hogares se llenen de paz y alegría!",
-        "positive_title": "😊 Hoy Robotito se siente... ¡Positivo!",
-        "negative_title": "😕 Hoy Robotito se siente... ¡Un poco negativo!"
+      "name": "estado",
+      "description": "Muestra el estado de ánimo diario de Robotito.",
+      "footer": "Estado del día {date}",
+      "valentine_title": "❤️ ¡Feliz Día de San Valentín!",
+      "valentine_desc": "Que su ruta esté llena de amor y amistad. ¡Robotito les desea un feliz San Valentín a toda la comunidad!",
+      "halloween_title": "🎃 ¡Feliz Halloween!",
+      "halloween_desc": "¡Feliz Halloween! Que los únicos sustos de hoy sean en las películas y no en la carretera. ¡Cuidado ahí fuera!",
+      "christmas_title": "🎄 ¡Feliz Navidad!",
+      "christmas_desc": "¡Jo, jo, jo! Robotito les desea una muy Feliz Navidad a toda la comunidad. ¡Que sus hogares se llenen de paz y alegría!",
+      "positive_title": "😊 Hoy Robotito se siente... ¡Positivo!",
+      "negative_title": "😕 Hoy Robotito se siente... ¡Un poco negativo!"
     },
     "evento": {
-        "name": "evento",
-        "description": "Muestra los próximos eventos programados.",
-        "options": {
-            "periodo": {
-                "name": "periodo",
-                "description": "El periodo de tiempo para mostrar los eventos.",
-                "choices": {
-                    "proximo": "próximo",
-                    "semana": "semana",
-                    "mes": "mes"
-                }
-            }
-        },
-        "title_week": "📅 Próximos Eventos de la Semana",
-        "title_month": "📅 Próximos Eventos del Mes",
-        "no_events": "Lo siento, no hay eventos programados próximos en este servidor.",
-        "no_events_week": "No hay eventos programados para esta semana.",
-        "no_events_month": "No hay eventos programados para este mes.",
-        "next_event_title": "📅 Próximo Evento: {eventName}",
-        "next_event_footer": "¡No te lo pierdas!",
-        "field_description": "Descripción",
-        "field_no_description": "Sin descripción.",
-        "field_start": "Inicio",
-        "field_location": "Ubicación",
-        "field_creator": "Creador",
-        "field_unknown_creator": "Desconocido",
-        "field_event_link": "Enlace del Evento"
+      "name": "evento",
+      "description": "Muestra los próximos eventos programados.",
+      "options": {
+        "periodo": {
+          "name": "periodo",
+          "description": "El periodo de tiempo para mostrar los eventos.",
+          "choices": {
+            "proximo": "próximo",
+            "semana": "semana",
+            "mes": "mes"
+          }
+        }
+      },
+      "title_week": "📅 Próximos Eventos de la Semana",
+      "title_month": "📅 Próximos Eventos del Mes",
+      "no_events": "Lo siento, no hay eventos programados próximos en este servidor.",
+      "no_events_week": "No hay eventos programados para esta semana.",
+      "no_events_month": "No hay eventos programados para este mes.",
+      "next_event_title": "📅 Próximo Evento: {eventName}",
+      "next_event_footer": "¡No te lo pierdas!",
+      "field_description": "Descripción",
+      "field_no_description": "Sin descripción.",
+      "field_start": "Inicio",
+      "field_location": "Ubicación",
+      "field_creator": "Creador",
+      "field_unknown_creator": "Desconocido",
+      "field_event_link": "Enlace del Evento"
     },
     "hora": {
-        "name": "hora",
-        "description": "Muestra la hora actual en varias zonas horarias o calcula esas horas.",
-        "options": {
-            "tiempo": {
-                "name": "tiempo",
-                "description": "Hora en formato HH:MM o Ham/pm (ej: 20:00 o 8pm)."
-            },
-            "ciudad": {
-                "name": "ciudad",
-                "description": "Ciudad de referencia (ej: Montevideo) o huso horario UTC (ej: -3)."
-            },
-            "listar-ciudades": {
-                "name": "listar-ciudades",
-                "description": "Muestra una lista de todas las ciudades y zonas horarias disponibles."
-            }
-            },
-            "city_not_found": "Ciudad o huso horario no encontrado. Por favor, usa una de las capitales de la lista, un nombre reconocible o un huso horario UTC (ej: -3).",
-            "invalid_time": "Formato de tiempo inválido. Intenta `/hora tiempo:HH:MM ciudad:[Ciudad]` o `/hora tiempo:Ham/pm ciudad:[Ciudad]`",
-            "incorrect_usage": "Uso incorrecto. Intenta `/hora` para horas actuales, o `/hora tiempo:HH:MM ciudad:[Ciudad]`",
-            "embed_title": "🌎 Horas en Zonas Latinas",
-            "cities_list_embed_title": "🏙️ Ciudades y Zonas Horarias Disponibles",
-            "description_referenced": "**Si en {referenceCity} son las {referenceTime}, entonces:**\n",
-            "description_current": "**Horas actuales en Zonas Latinas:**\n",
-            "footer": "Horas basadas en la zona horaria del bot."
-            },
-    "info": {
-        "name": "info",
-        "description": "Muestra info de un usuario o VTC de TruckersMP (URL, ID o alias).",
-        "options": {
-            "enlace_o_alias": {
-                "name": "enlace_o_alias",
-                "description": "URL, ID de usuario (TMP o Steam), o alias/URL de VTC."
-            }
+      "name": "hora",
+      "description": "Muestra la hora actual en varias zonas horarias o calcula esas horas.",
+      "options": {
+        "tiempo": {
+          "name": "tiempo",
+          "description": "Hora en formato HH:MM o Ham/pm (ej: 20:00 o 8pm)."
         },
-        "vtc_embed_title": "🚚 Perfil de VTC: {vtcName}",
-        "vtc_slogan": "Lema",
-        "vtc_id": "ID de VTC",
-        "vtc_tag": "Tag",
-        "vtc_members": "Miembros",
-        "vtc_created": "Creada",
-        "vtc_recruitment": "Reclutamiento",
-        "vtc_verified": "Verificada",
-        "vtc_last_news": "Última Noticia",
-        "player_embed_title": "👤 Perfil de TruckersMP: {playerName}",
-        "player_id": "ID de TruckersMP",
-        "player_steam": "SteamID",
-        "player_joined": "Registrado",
-        "player_last_seen": "Última Conexión",
-        "player_banned": "Baneado",
-        "player_banned_until": "Sí, hasta {bannedUntil}",
-        "player_not_banned": "No",
-        "player_bans": "Número de Baneos",
-        "player_in_vtc": "En VTC",
-        "player_not_in_vtc": "No",
-        "player_group": "Grupo",
-        "player_patreon": "Patreon",
-        "player_is_patron": "Sí",
-        "player_staff": "Staff",
-        "player_game_admin": "Game Admin",
-        "player_management": "Management",
-        "footer": "Datos obtenidos de la API de TruckersMP."
+        "ciudad": {
+          "name": "ciudad",
+          "description": "Ciudad de referencia (ej: Montevideo) o huso horario UTC (ej: -3)."
+        },
+        "listar-ciudades": {
+          "name": "listar-ciudades",
+          "description": "Muestra una lista de todas las ciudades y zonas horarias disponibles."
+        }
+      },
+      "city_not_found": "Ciudad o huso horario no encontrado. Por favor, usa una de las capitales de la lista, un nombre reconocible o un huso horario UTC (ej: -3).",
+      "invalid_time": "Formato de tiempo inválido. Intenta `/hora tiempo:HH:MM ciudad:[Ciudad]` o `/hora tiempo:Ham/pm ciudad:[Ciudad]`",
+      "incorrect_usage": "Uso incorrecto. Intenta `/hora` para horas actuales, o `/hora tiempo:HH:MM ciudad:[Ciudad]`",
+      "embed_title": "🌎 Horas en Zonas Latinas",
+      "cities_list_embed_title": "🏙️ Ciudades y Zonas Horarias Disponibles",
+      "description_referenced": "**Si en {referenceCity} son las {referenceTime}, entonces:**\n",
+      "description_current": "**Horas actuales en Zonas Latinas:**\n",
+      "footer": "Horas basadas en la zona horaria del bot."
+    },
+    "info": {
+      "name": "info",
+      "description": "Muestra info de un usuario o VTC de TruckersMP (URL, ID o alias).",
+      "options": {
+        "enlace_o_alias": {
+          "name": "enlace_o_alias",
+          "description": "URL, ID de usuario (TMP o Steam), o alias/URL de VTC."
+        }
+      },
+      "vtc_embed_title": "🚚 Perfil de VTC: {vtcName}",
+      "vtc_slogan": "Lema",
+      "vtc_id": "ID de VTC",
+      "vtc_tag": "Tag",
+      "vtc_members": "Miembros",
+      "vtc_created": "Creada",
+      "vtc_recruitment": "Reclutamiento",
+      "vtc_verified": "Verificada",
+      "vtc_last_news": "Última Noticia",
+      "player_embed_title": "👤 Perfil de TruckersMP: {playerName}",
+      "player_id": "ID de TruckersMP",
+      "player_steam": "SteamID",
+      "player_joined": "Registrado",
+      "player_last_seen": "Última Conexión",
+      "player_banned": "Baneado",
+      "player_banned_until": "Sí, hasta {bannedUntil}",
+      "player_not_banned": "No",
+      "player_bans": "Número de Baneos",
+      "player_in_vtc": "En VTC",
+      "player_not_in_vtc": "No",
+      "player_group": "Grupo",
+      "player_patreon": "Patreon",
+      "player_is_patron": "Sí",
+      "player_staff": "Staff",
+      "player_game_admin": "Game Admin",
+      "player_management": "Management",
+      "footer": "Datos obtenidos de la API de TruckersMP."
     },
     "ingame": {
-        "name": "ingame",
-        "description": "Calcula la hora in-game para una hora y zona horaria específicas.",
-        "options": {
-            "tiempo": {
-                "name": "tiempo",
-                "description": "Hora en formato HH:MM, HHMM o Ham/pm (ej: 22:00, 2200 o 5pm)."
-            },
-            "ciudad": {
-                "name": "ciudad",
-                "description": "Ciudad/País para la zona horaria de referencia (ej: Montevideo)."
-            },
-            "listar-ciudades": {
-                "name": "listar-ciudades",
-                "description": "Muestra una lista de todas las ciudades y zonas horarias disponibles."
-            }
-            },
-            "city_not_found": "Ciudad no encontrada. Por favor, usa una de las capitales de la lista, un nombre reconocible o un huso horario UTC (ej: -3).",
-            "invalid_time": "Formato de tiempo inválido. Intenta con `HH:MM`, `HHMM` (ej: 2200) o `Ham/pm` (ej: 8pm).",
-            "embed_title": "⏰ Hora In-Game",
-            "cities_list_embed_title": "🏙️ Ciudades y Zonas Horarias Disponibles",
-            "description_now": "Ahora mismo",
-            "description_now_city": "Ahora mismo en {foundCity}",
-            "description_referenced": "Si en {foundCity} son las **{inputTime}**",
-            "description_referenced_no_city": "Si en la zona horaria del bot son las **{inputTime}**",
-            "result": "{responseDescription}, la hora in-game es: **{ingameTime} {ingameEmoji}**"
-            },
+      "name": "ingame",
+      "description": "Calcula la hora in-game para una hora y zona horaria específicas.",
+      "options": {
+        "tiempo": {
+          "name": "tiempo",
+          "description": "Hora en formato HH:MM, HHMM o Ham/pm (ej: 22:00, 2200 o 5pm)."
+        },
+        "ciudad": {
+          "name": "ciudad",
+          "description": "Ciudad/País para la zona horaria de referencia (ej: Montevideo)."
+        },
+        "listar-ciudades": {
+          "name": "listar-ciudades",
+          "description": "Muestra una lista de todas las ciudades y zonas horarias disponibles."
+        }
+      },
+      "city_not_found": "Ciudad no encontrada. Por favor, usa una de las capitales de la lista, un nombre reconocible o un huso horario UTC (ej: -3).",
+      "invalid_time": "Formato de tiempo inválido. Intenta con `HH:MM`, `HHMM` (ej: 2200) o `Ham/pm` (ej: 8pm).",
+      "embed_title": "⏰ Hora In-Game",
+      "cities_list_embed_title": "🏙️ Ciudades y Zonas Horarias Disponibles",
+      "description_now": "Ahora mismo",
+      "description_now_city": "Ahora mismo en {foundCity}",
+      "description_referenced": "Si en {foundCity} son las **{inputTime}**",
+      "description_referenced_no_city": "Si en la zona horaria del bot son las **{inputTime}**",
+      "result": "{responseDescription}, la hora in-game es: **{ingameTime} {ingameEmoji}**"
+    },
     "leer": {
-        "name": "leer",
-        "description": "Lee los datos de una licencia o evento de Convoyrama a partir de una imagen PNG.",
-        "options": {
-            "imagen": {
-                "name": "imagen",
-                "description": "El archivo de imagen PNG de la licencia o evento."
-            },
-            "accion": {
-                "name": "accion",
-                "description": "¿Qué acción deseas realizar con los datos del evento?",
-                "choices": {
-                    "mostrar": "Mostrar Detalles",
-                    "crear": "Crear Evento Programado"
-                }
-            }
+      "name": "leer",
+      "description": "Lee los datos de una licencia o evento de Convoyrama a partir de una imagen PNG.",
+      "options": {
+        "imagen": {
+          "name": "imagen",
+          "description": "El archivo de imagen PNG de la licencia o evento."
         },
-        "invalid_png": "Por favor, adjunta un archivo de imagen PNG válido.",
-        "error_parsing_license": "Hubo un error al interpretar los datos de la licencia. El formato es inválido.",
-        "error_parsing_event": "Hubo un error al interpretar los datos del evento. El formato es inválido.",
-        "incomplete_event_data": "Los datos del evento están incompletos (falta nombre, hora de reunión o hora de llegada).",
-        "invalid_event_times": "La hora de llegada debe ser posterior a la hora de reunión.",
-        "error_creating_event": "Hubo un error al crear el evento programado de Discord: {errorMessage}",
-        "no_data_found": "No se encontraron datos de licencia ni de evento en la imagen. Asegúrate de que la imagen fue generada por Convoyrama.",
-        "error_processing_image": "Hubo un error al procesar la imagen.",
-        "license_title": "Licencia de Conducir: {name}",
-        "license_footer": "Licencia generada el {generated_at}",
-        "license_fields": {
-            "license_number": "Nº de Licencia",
-            "country": "País",
-            "rank": "Rango:",
-            "status": "Estado",
-            "verified": "✅ Verificada",
-            "not_verified": "❌ No Verificada",
-            "tmp_profile": "Perfil de TruckersMP",
-            "view_profile": "Ver Perfil",
-            "vtc": "VTC",
-            "view_vtc": "Ver VTC",
-            "social_link": "Ver Enlace",
-            "member_since": "Miembro desde",
-            "additional_info": "Información Adicional",
-            "additional_info_value": "Genera tu licencia en [Convoyrama](https://convoyrama.github.io/).\nPara ser incluido en la [lista de ID](https://convoyrama.github.io/idlist.html), solicítalo por ticket en Discord."
-        },
-        "event_created_title": "Evento Programado Creado",
-        "event_created_desc": "Se ha creado el evento **[{eventName}]({eventUrl})** exitosamente.",
-        "event_created_fields": {
-            "name": "Nombre",
-            "meeting": "Reunión",
-            "link": "Enlace del Evento"
-        },
-        "event_created_footer": "ID del Evento: {eventId}",
-        "event_details_title": "Detalles del Evento: {eventName}",
-        "event_details_footer": "Generado el {generatedAt}",
-        "event_fields": {
-            "name": "Nombre del Evento",
-            "link": "Enlace del Evento",
-            "view_event": "Ver Evento",
-            "start_place": "Lugar de Partida",
-            "destination": "Destino",
-            "server": "Servidor",
-            "description": "Descripción",
-            "meeting": "Reunión",
-            "departure": "Salida",
-            "arrival": "Llegada Aprox.",
-            "meeting_ingame": "Hora In-Game (Reunión)",
-            "arrival_ingame": "Hora In-Game (Llegada Aprox.)"
-        },
-        "event_autogen_desc": "Evento generado automáticamente por Robotito."
+        "accion": {
+          "name": "accion",
+          "description": "¿Qué acción deseas realizar con los datos del evento?",
+          "choices": {
+            "mostrar": "Mostrar Detalles",
+            "crear": "Crear Evento Programado"
+          }
+        }
+      },
+      "invalid_png": "Por favor, adjunta un archivo de imagen PNG válido.",
+      "error_parsing_license": "Hubo un error al interpretar los datos de la licencia. El formato es inválido.",
+      "error_parsing_event": "Hubo un error al interpretar los datos del evento. El formato es inválido.",
+      "incomplete_event_data": "Los datos del evento están incompletos (falta nombre, hora de reunión o hora de llegada).",
+      "invalid_event_times": "La hora de llegada debe ser posterior a la hora de reunión.",
+      "error_creating_event": "Hubo un error al crear el evento programado de Discord: {errorMessage}",
+      "no_data_found": "No se encontraron datos de licencia ni de evento en la imagen. Asegúrate de que la imagen fue generada por Convoyrama.",
+      "error_processing_image": "Hubo un error al procesar la imagen.",
+      "license_title": "Licencia de Conducir: {name}",
+      "license_footer": "Licencia generada el {generated_at}",
+      "license_fields": {
+        "license_number": "Nº de Licencia",
+        "country": "País",
+        "rank": "Rango:",
+        "status": "Estado",
+        "verified": "✅ Verificada",
+        "not_verified": "❌ No Verificada",
+        "tmp_profile": "Perfil de TruckersMP",
+        "view_profile": "Ver Perfil",
+        "vtc": "VTC",
+        "view_vtc": "Ver VTC",
+        "social_link": "Ver Enlace",
+        "member_since": "Miembro desde",
+        "additional_info": "Información Adicional",
+        "additional_info_value": "Genera tu licencia en [Convoyrama](https://convoyrama.github.io/).\nPara ser incluido en la [lista de ID](https://convoyrama.github.io/idlist.html), solicítalo por ticket en Discord."
+      },
+      "event_created_title": "Evento Programado Creado",
+      "event_created_desc": "Se ha creado el evento **[{eventName}]({eventUrl})** exitosamente.",
+      "event_created_fields": {
+        "name": "Nombre",
+        "meeting": "Reunión",
+        "link": "Enlace del Evento"
+      },
+      "event_created_footer": "ID del Evento: {eventId}",
+      "event_details_title": "Detalles del Evento: {eventName}",
+      "event_details_footer": "Generado el {generatedAt}",
+      "event_fields": {
+        "name": "Nombre del Evento",
+        "link": "Enlace del Evento",
+        "view_event": "Ver Evento",
+        "start_place": "Lugar de Partida",
+        "destination": "Destino",
+        "server": "Servidor",
+        "description": "Descripción",
+        "meeting": "Reunión",
+        "departure": "Salida",
+        "arrival": "Llegada Aprox.",
+        "meeting_ingame": "Hora In-Game (Reunión)",
+        "arrival_ingame": "Hora In-Game (Llegada Aprox.)"
+      },
+      "event_autogen_desc": "Evento generado automáticamente por Robotito."
     },
     "link": {
-        "name": "link",
-        "description": "Muestra enlaces útiles de Convoyrama y el Discord.",
-        "embed_title": "🔗 Enlaces Útiles de Convoyrama",
-        "embed_description": "Aquí tienes algunos enlaces importantes:",
-        "footer": "¡Explora y únete a la diversión!",
-        "useful_links": [
-            { "name": "Generador de Eventos", "value": "[Convoyrama Eventos](https://convoyrama.github.io/event.html)" },
-            { "name": "Creador de ID", "value": "[Convoyrama ID](https://convoyrama.github.io/id.html)" },
-            { "name": "Generador de Imagen de Perfil", "value": "[Convoyrama Perfil](https://convoyrama.github.io/pc.html)" },
-            { "name": "Invitación a nuestro Discord", "value": "```\nhttps://discord.gg/hjJcyREthH\n```" },
-            { "name": "TruckersMP", "value": "[Sitio Oficial](https://truckersmp.com/)" },
-            { "name": "LAG'S SPEED en TruckersMP", "value": "[Perfil VTC](https://truckersmp.com/vtc/78865)" },
-            { "name": "LAG'S SPEED en TrucksBook", "value": "[Perfil de Empresa](https://trucksbook.eu/company/212761)" },
-            { "name": "LAG'S SPEED en PickupVTM", "value": "[Perfil de Empresa](https://pickupvtm.com/company/8203)" }
-        ]
+      "name": "link",
+      "description": "Muestra enlaces útiles de Convoyrama y el Discord.",
+      "embed_title": "🔗 Enlaces Útiles de Convoyrama",
+      "embed_description": "Aquí tienes algunos enlaces importantes:",
+      "footer": "¡Explora y únete a la diversión!",
+      "useful_links": [
+        {
+          "name": "Generador de Eventos",
+          "value": "[Convoyrama Eventos](https://convoyrama.github.io/event.html)"
+        },
+        {
+          "name": "Creador de ID",
+          "value": "[Convoyrama ID](https://convoyrama.github.io/id.html)"
+        },
+        {
+          "name": "Generador de Imagen de Perfil",
+          "value": "[Convoyrama Perfil](https://convoyrama.github.io/pc.html)"
+        },
+        {
+          "name": "Invitación a nuestro Discord",
+          "value": "```\nhttps://discord.gg/hjJcyREthH\n```"
+        },
+        {
+          "name": "TruckersMP",
+          "value": "[Sitio Oficial](https://truckersmp.com/)"
+        },
+        {
+          "name": "LAG'S SPEED en TruckersMP",
+          "value": "[Perfil VTC](https://truckersmp.com/vtc/78865)"
+        },
+        {
+          "name": "LAG'S SPEED en TrucksBook",
+          "value": "[Perfil de Empresa](https://trucksbook.eu/company/212761)"
+        },
+        {
+          "name": "LAG'S SPEED en PickupVTM",
+          "value": "[Perfil de Empresa](https://pickupvtm.com/company/8203)"
+        }
+      ]
     },
     "logo": {
-        "name": "logo",
-        "description": "Muestra el logo oficial de la comunidad.",
-        "options": {
-            "opcion": {
-                "name": "opcion",
-                "description": "Elige una de las variantes del logo.",
-                "choices": {
-                    "LS1": "LAG'S SPEED (Transparente)",
-                    "LS2": "LAG'S SPEED (Blanco)",
-                    "LS3": "LAG'S SPEED (Negro)",
-                    "CR1": "Convoyrama (Transparente)",
-                    "CR2": "Convoyrama (Oscuro)",
-                    "CNDRP": "Convoy Nocturno DRP",
-                    "CN": "Convoy Nocturno",
-                    "CDS1": "Canteras del Sur (Blanco)",
-                    "CDS2": "Canteras del Sur (Negro)"
-                }
-            }
-        },
-        "logo_titles": {
-            "LS1": "Logo Oficial de LAG'S SPEED (Transparente)",
-            "LS2": "Logo Oficial de LAG'S SPEED (Blanco)",
-            "LS3": "Logo Oficial de LAG'S SPEED (Negro)",
-            "CR1": "Logo Oficial de Convoyrama (Transparente)",
-            "CR2": "Logo Oficial de Convoyrama (Oscuro)",
-            "CNDRP": "Logo Oficial de Convoy Nocturno DRP",
-            "CN": "Logo Oficial de Convoy Nocturno",
+      "name": "logo",
+      "description": "Muestra el logo oficial de la comunidad.",
+      "options": {
+        "opcion": {
+          "name": "opcion",
+          "description": "Elige una de las variantes del logo.",
+          "choices": {
+            "LS1": "LAG'S SPEED (Transparente)",
+            "LS2": "LAG'S SPEED (Blanco)",
+            "LS3": "LAG'S SPEED (Negro)",
+            "CR1": "Convoyrama (Transparente)",
+            "CR2": "Convoyrama (Oscuro)",
+            "CNDRP": "Convoy Nocturno DRP",
+            "CN": "Convoy Nocturno",
             "CDS1": "Canteras del Sur (Blanco)",
             "CDS2": "Canteras del Sur (Negro)"
+          }
         }
+      },
+      "logo_titles": {
+        "LS1": "Logo Oficial de LAG'S SPEED (Transparente)",
+        "LS2": "Logo Oficial de LAG'S SPEED (Blanco)",
+        "LS3": "Logo Oficial de LAG'S SPEED (Negro)",
+        "CR1": "Logo Oficial de Convoyrama (Transparente)",
+        "CR2": "Logo Oficial de Convoyrama (Oscuro)",
+        "CNDRP": "Logo Oficial de Convoy Nocturno DRP",
+        "CN": "Logo Oficial de Convoy Nocturno",
+        "CDS1": "Canteras del Sur (Blanco)",
+        "CDS2": "Canteras del Sur (Negro)"
+      }
     },
     "mods": {
-        "name": "mods",
-        "description": "Muestra listas de sitios recomendados para buscar mods.",
-        "subcommands": {
-            "ets2": {
-                "name": "ets2",
-                "description": "Muestra la lista de mapas para Euro Truck Simulator 2."
-            },
-            "ats": {
-                "name": "ats",
-                "description": "Muestra la lista de mapas para American Truck Simulator."
-            },
-            "vehiculos": {
-                "name": "vehiculos",
-                "description": "Muestra sitios de mods de vehículos y portales generales."
-            }
+      "name": "mods",
+      "description": "Muestra listas de sitios recomendados para buscar mods.",
+      "subcommands": {
+        "ets2": {
+          "name": "ets2",
+          "description": "Muestra la lista de mapas para Euro Truck Simulator 2."
         },
-        "ets2_embed_title": "🗺️ Lista de Mapas para ETS2",
-        "ats_embed_title": "🗺️ Lista de Mapas para ATS",
-        "vehicles_embed_title": "🚚 Sitios de Mods de Vehículos y Portales",
-        "part": "Parte {part}",
-        "main_maps": "Mapas Principales",
-        "other_platforms": "Otras Plataformas",
-        "creator_stores": "Tiendas de Creadores",
-        "general_portals": "Portales Generales",
-        "not_available": "No disponible"
+        "ats": {
+          "name": "ats",
+          "description": "Muestra la lista de mapas para American Truck Simulator."
+        },
+        "vehiculos": {
+          "name": "vehiculos",
+          "description": "Muestra sitios de mods de vehículos y portales generales."
+        }
+      },
+      "ets2_embed_title": "🗺️ Lista de Mapas para ETS2",
+      "ats_embed_title": "🗺️ Lista de Mapas para ATS",
+      "vehicles_embed_title": "🚚 Sitios de Mods de Vehículos y Portales",
+      "part": "Parte {part}",
+      "main_maps": "Mapas Principales",
+      "other_platforms": "Otras Plataformas",
+      "creator_stores": "Tiendas de Creadores",
+      "general_portals": "Portales Generales",
+      "not_available": "No disponible"
     },
     "murphy": {
-        "name": "murphy",
-        "description": "Muestra una de las leyes de Murphy.",
-        "embed_title": "📜 Ley de Murphy",
-        "footer": "- Murphy"
+      "name": "murphy",
+      "description": "Muestra una de las leyes de Murphy.",
+      "embed_title": "📜 Ley de Murphy",
+      "footer": "- Murphy"
     },
     "servidores": {
-        "name": "servidores",
-        "description": "Muestra el estado de los servidores de TruckersMP.",
-        "embed_title": "📡 Estado de los Servidores de TruckersMP",
-        "server_status_name": "{status_icon} {server_name} ({server_shortname})",
-        "server_status_value": "**Jugadores:** {players} / {maxplayers}\n**En cola:** {queue}",
-        "footer": "Datos obtenidos de la API de TruckersMP"
+      "name": "servidores",
+      "description": "Muestra el estado de los servidores de TruckersMP.",
+      "embed_title": "📡 Estado de los Servidores de TruckersMP",
+      "server_status_name": "{status_icon} {server_name} ({server_shortname})",
+      "server_status_value": "**Jugadores:** {players} / {maxplayers}\n**En cola:** {queue}",
+      "footer": "Datos obtenidos de la API de TruckersMP"
     },
     "spam": {
-        "name": "spam",
-        "description": "Envía un mensaje aleatorio de la lista de textos predefinidos.",
-        "embed_title": "🚨 Mensaje Aleatorio (SPAM)",
-        "footer": "¡Copia y pega con responsabilidad!",
-        "texts": [
-            "LAG'S SPEED en la zona. Si vamos despacio no es por la carga, es que el ping no nos deja correr.",
-            "LAG'S SPEED recomienda 500 metros de distancia de seguridad. No por el freno, por el ping. ¿O por los dos? ¡Buena ruta!",
-            "Ojo con el lag que andamos cerca... ¡Es broma! O no... ¡Un saludo de LAG'S SPEED y buena ruta!",
-            "¿Tu ping subió de repente? No, no fuimos nosotros... ¿O sí? ¡Saludos de LAG'S SPEED!",
-            "Prometemos no usar el lag como arma táctica... a menos que sea estrictamente necesario. ¡Saludos de LAG'S SPEED!",
-            "Nuestra especialidad no es carga pesada, es el ping pesado. Buena Ruta!"
-        ]
+      "name": "spam",
+      "description": "Envía un mensaje aleatorio de la lista de textos predefinidos.",
+      "embed_title": "🚨 Mensaje Aleatorio (SPAM)",
+      "footer": "¡Copia y pega con responsabilidad!",
+      "texts": [
+        "LAG'S SPEED en la zona. Si vamos despacio no es por la carga, es que el ping no nos deja correr.",
+        "LAG'S SPEED recomienda 500 metros de distancia de seguridad. No por el freno, por el ping. ¿O por los dos? ¡Buena ruta!",
+        "Ojo con el lag que andamos cerca... ¡Es broma! O no... ¡Un saludo de LAG'S SPEED y buena ruta!",
+        "¿Tu ping subió de repente? No, no fuimos nosotros... ¿O sí? ¡Saludos de LAG'S SPEED!",
+        "Prometemos no usar el lag como arma táctica... a menos que sea estrictamente necesario. ¡Saludos de LAG'S SPEED!",
+        "Nuestra especialidad no es carga pesada, es el ping pesado. Buena Ruta!"
+      ]
     },
     "tira": {
-        "name": "tira",
-        "description": "Muestra una tira cómica o información sobre ellas.",
-        "options": {
-            "accion": {
-                "name": "accion",
-                "description": "Elige una acción.",
-                "choices": {
-                    "info": "info"
-                }
-            }
-        },
-        "info_embed_title": "ℹ️ Información sobre Tira Ecol",
-        "info_footer": "Todo el crédito para Javier Malonda.",
-        "info_fields": {
-            "author": "Autor",
-            "author_name": "Javier Malonda",
-            "license": "Licencia",
-            "license_value": "[Creative Commons BY-NC-ND 4.0](http://creativecommons.org/licenses/by-nc-nd/4.0/)",
-            "interview_snippet": "Extracto de la Entrevista (2004)",
-            "read_more": "Leer más",
-            "read_more_value": "[Entrevista Completa](https://convoyrama.github.io/robotito/img/tira-ecol-master/Entrevista-Javier-Malonda.txt) | [Sitio Web](https://biloynano.com/)"
-        },
-        "comic_embed_title": "🎨 Tira Cómica de ECOL",
-        "comic_footer": "Tira por Javier Malonda (Bilo y Nano) | Usa /tira info para más detalles."
+      "name": "tira",
+      "description": "Muestra una tira cómica o información sobre ellas.",
+      "options": {
+        "accion": {
+          "name": "accion",
+          "description": "Elige una acción.",
+          "choices": {
+            "info": "info"
+          }
+        }
+      },
+      "info_embed_title": "ℹ️ Información sobre Tira Ecol",
+      "info_footer": "Todo el crédito para Javier Malonda.",
+      "info_fields": {
+        "author": "Autor",
+        "author_name": "Javier Malonda",
+        "license": "Licencia",
+        "license_value": "[Creative Commons BY-NC-ND 4.0](http://creativecommons.org/licenses/by-nc-nd/4.0/)",
+        "interview_snippet": "Extracto de la Entrevista (2004)",
+        "read_more": "Leer más",
+        "read_more_value": "[Entrevista Completa](https://convoyrama.github.io/robotito/img/tira-ecol-master/Entrevista-Javier-Malonda.txt) | [Sitio Web](https://biloynano.com/)"
+      },
+      "comic_embed_title": "🎨 Tira Cómica de ECOL",
+      "comic_footer": "Tira por Javier Malonda (Bilo y Nano) | Usa /tira info para más detalles."
     },
     "tito": {
-        "name": "tito",
-        "description": "Tito te cuenta un dato inútil y absurdo.",
-        "embed_title": "😂 Tito cuenta un chiste..."
+      "name": "tito",
+      "description": "Tito te cuenta un dato inútil y absurdo.",
+      "embed_title": "😂 Tito cuenta un chiste..."
     },
     "verificar": {
-        "name": "verificar",
-        "description": "Genera un código para verificar tu cuenta, y opcionalmente, tu VTC.",
-        "options": {
-            "url": {
-                "name": "url",
-                "description": "La URL completa de tu perfil de TruckersMP."
-            },
-            "url_vtc": {
-                "name": "url_vtc",
-                "description": "Opcional: La URL de tu VTC para verificar propiedad y logo."
-            }
+      "name": "verificar",
+      "description": "Genera un código para verificar tu cuenta, y opcionalmente, tu VTC.",
+      "options": {
+        "url": {
+          "name": "url",
+          "description": "La URL completa de tu perfil de TruckersMP."
         },
-        "embed_title": "✅ Código de Verificación Generado",
-        "embed_description": "¡Tu código está listo! Cópialo y pégalo en el campo correspondiente del generador de licencias.",
-        "footer": "Este código vincula tu licencia a tu fecha de registro real.",
-        "fields": {
-            "code": "Tu Código de Verificación",
-            "where_to_use": "¿Dónde usar este código?",
-            "where_to_use_value": "[Haz clic aquí para ir al Generador de ID](https://convoyrama.github.io/id.html)",
-            "vtc_processed": "VTC Procesada"
+        "url_vtc": {
+          "name": "url_vtc",
+          "description": "Opcional: La URL de tu VTC para verificar propiedad y logo."
         }
+      },
+      "embed_title": "✅ Código de Verificación Generado",
+      "embed_description": "¡Tu código está listo! Cópialo y pégalo en el campo correspondiente del generador de licencias.",
+      "footer": "Este código vincula tu licencia a tu fecha de registro real.",
+      "fields": {
+        "code": "Tu Código de Verificación",
+        "where_to_use": "¿Dónde usar este código?",
+        "where_to_use_value": "[Haz clic aquí para ir al Generador de ID](https://convoyrama.github.io/id.html)",
+        "vtc_processed": "VTC Procesada"
+      }
     },
     "vtc": {
-        "name": "vtc",
-        "description": "Muestra la lista de VTCs de la comunidad.",
-        "embed_title": "🚚 VTCs de la Comunidad"
+      "name": "vtc",
+      "description": "Muestra la lista de VTCs de la comunidad.",
+      "embed_title": "🚚 VTCs de la Comunidad"
     }
   },
   "messages": {
     "handle_message": {
-        "default_response": "¡Bip-bop! Me has llamado. Si necesitas algo, usa `/ayuda` para ver mi lista de comandos.",
-        "special_days": {
-            "01-01": ["¡Feliz Año Nuevo! ¡Que este nuevo año te traiga nuevas rutas y kilómetros de alegría!", "¡Bip-bop! Año nuevo, motor nuevo. ¡A rodar!"],
-            "01-06": ["¡Felices Reyes! Espero que te dejen muchos accesorios nuevos para tu camión.", "Yo le pedí a los Reyes Magos un GPS que nunca se equivoque. ¿Y tú?"],
-            "02-02": ["¡Feliz aniversario, American Truck Simulator! Gracias por tantas millas de desiertos y ciudades.", "¡Hoy se celebra al hermano americano! ¡Larga vida a ATS!"],
-            "02-14": ["¡Feliz San Valentín! ¿Hay algo más hermoso que el amor entre un camionero y su motor?", "Hoy el único cargamento que importa es el amor... y quizás ese tráiler con doble remolque."],
-            "05-01": ["¡Feliz día del trabajador, especialmente a los que mueven el mundo, kilómetro a kilómetro!", "Hoy mis circuitos descansan en honor a todos los trabajadores. ¡Buen día!"],
-            "07-20": ["¡Feliz día del amigo! Gracias por ser parte de esta increíble comunidad de rutas virtuales.", "Un amigo es el que te espera en el convoy aunque te hayas quedado sin gasolina. ¡Feliz día!"],
-            "08-24": ["¡Bip-bop! Subiendo el volumen de los clásicos. ¡Feliz Noche de la Nostalgia para todos en Uruguay!", "Esta noche, las rutas se llenan de recuerdos. ¡A disfrutar la Noche de la Nostalgia!"],
-            "08-25": ["¡Feliz Día de la Independencia, Uruguay! ¡A celebrar con la celeste y blanca en el corazón!", "¡Arriba la República Oriental del Uruguay! ¡Feliz día de la independencia!"],
-            "10-19": ["¡Feliz cumpleaños, Euro Truck Simulator 2! El juego que lo empezó todo. ¡Por muchas entregas más!", "¡Hoy celebramos al rey de las carreteras europeas! ¡Feliz aniversario, ETS2!"],
-            "10-31": ["¡Feliz Halloween! Cuidado con los cargamentos fantasma y las rutas embrujadas esta noche... 🎃", "¿Truco o trato? Yo prefiero... ¿un tráiler? ¡Feliz Halloween!"],
-            "12-24": ["¡Feliz Nochebuena! Dejando el camión bien aparcado para preparar todo para mañana.", "Que la paz y la alegría estén en sus cabinas esta Nochebuena."],
-            "12-25": ["¡Feliz Navidad! Que la alegría y los buenos momentos llenen tu ruta.", "¡Bip-bop! ¡Navidad detectada! Iniciando protocolo de felicidad."],
-            "12-28": ["Última noticia: SCS ha confirmado que el próximo DLC será en la Luna. ¡Inocente palomita! 😉 ¡Feliz Día de los Inocentes!", "Me han programado para decir solo la verdad, pero por hoy haré una excepción. ¡Feliz Día de los Inocentes!"],
-            "12-31": ["¡Última entrega del año! ¡Feliz Nochevieja! ¿Listos para el siguiente viaje alrededor del sol?", "Gracias por todos los kilómetros recorridos este año. ¡Que termines bien el año!"]
-        },
-        "generic_greetings": [
-                    "¡Hola, hola! ✨",
-                    "¡Buenas! ¿Todo en orden por aquí?",
-                    "¡Qué tal! Aquí Robotito, listo para la acción (o para contarte un dato inútil con `/tito`).",
-                    "¡Bip-burup! ¡Hola!",
-                    "¡Hola! ¿Qué tal el día? Si quieres saber el tiempo que hace, siempre puedes usar `/clima [ciudad]`.",
-                    "¡Buenas! Hoy me siento... bueno, mejor usa `/estado` para averiguarlo. 😉",
-                    "¡Qué tal! ¿Buscando cosas nuevas? Tengo una lista de sitios de mods que puedes ver con `/mods`.",
-                    "¡Hola! Espero que tu día vaya bien. Y si no, siempre nos quedará la ley de Murphy... `/murphy`.",
-                    "¡Saludos! ¿Necesitas saber la hora en algún lugar del mundo? Pregúntame con `/hora`.",
-                    "¡Hola! ¿Buscas los enlaces de la comunidad? Los tengo a mano con el comando `/link`.",
-                    "¡Buenas! ¿Verificando si los servidores de TruckersMP están online? Puedes usar `/servidores` para eso.",
-                    "¡Qué tal! ¿Con ganas de un convoy? Mira los próximos eventos con `/evento`.",
-                    "01001000 01101111 01101100 01100001... ¡Ah, perdona! A veces pienso en binario. ¡Hola!",
-                    "¡Hola! ¿Calculando la hora para el próximo convoy? Recuerda que puedes usar `/ingame` para saber la hora dentro del juego."
-                ],
-                "greeting_keywords": ["hola", "buenas", "qué tal", "saludos", "tal", "buen día", "buenos días"]
-            }
-        }}
+      "default_response": "¡Bip-bop! Me has llamado. Si necesitas algo, usa `/ayuda` para ver mi lista de comandos.",
+      "special_days": {
+        "01-01": [
+          "¡Feliz Año Nuevo! ¡Que este nuevo año te traiga nuevas rutas y kilómetros de alegría!",
+          "¡Bip-bop! Año nuevo, motor nuevo. ¡A rodar!"
+        ],
+        "01-06": [
+          "¡Felices Reyes! Espero que te dejen muchos accesorios nuevos para tu camión.",
+          "Yo le pedí a los Reyes Magos un GPS que nunca se equivoque. ¿Y tú?"
+        ],
+        "02-02": [
+          "¡Feliz aniversario, American Truck Simulator! Gracias por tantas millas de desiertos y ciudades.",
+          "¡Hoy se celebra al hermano americano! ¡Larga vida a ATS!"
+        ],
+        "02-14": [
+          "¡Feliz San Valentín! ¿Hay algo más hermoso que el amor entre un camionero y su motor?",
+          "Hoy el único cargamento que importa es el amor... y quizás ese tráiler con doble remolque."
+        ],
+        "05-01": [
+          "¡Feliz día del trabajador, especialmente a los que mueven el mundo, kilómetro a kilómetro!",
+          "Hoy mis circuitos descansan en honor a todos los trabajadores. ¡Buen día!"
+        ],
+        "07-20": [
+          "¡Feliz día del amigo! Gracias por ser parte de esta increíble comunidad de rutas virtuales.",
+          "Un amigo es el que te espera en el convoy aunque te hayas quedado sin gasolina. ¡Feliz día!"
+        ],
+        "08-24": [
+          "¡Bip-bop! Subiendo el volumen de los clásicos. ¡Feliz Noche de la Nostalgia para todos en Uruguay!",
+          "Esta noche, las rutas se llenan de recuerdos. ¡A disfrutar la Noche de la Nostalgia!"
+        ],
+        "08-25": [
+          "¡Feliz Día de la Independencia, Uruguay! ¡A celebrar con la celeste y blanca en el corazón!",
+          "¡Arriba la República Oriental del Uruguay! ¡Feliz día de la independencia!"
+        ],
+        "10-19": [
+          "¡Feliz cumpleaños, Euro Truck Simulator 2! El juego que lo empezó todo. ¡Por muchas entregas más!",
+          "¡Hoy celebramos al rey de las carreteras europeas! ¡Feliz aniversario, ETS2!"
+        ],
+        "10-31": [
+          "¡Feliz Halloween! Cuidado con los cargamentos fantasma y las rutas embrujadas esta noche... 🎃",
+          "¿Truco o trato? Yo prefiero... ¿un tráiler? ¡Feliz Halloween!"
+        ],
+        "12-24": [
+          "¡Feliz Nochebuena! Dejando el camión bien aparcado para preparar todo para mañana.",
+          "Que la paz y la alegría estén en sus cabinas esta Nochebuena."
+        ],
+        "12-25": [
+          "¡Feliz Navidad! Que la alegría y los buenos momentos llenen tu ruta.",
+          "¡Bip-bop! ¡Navidad detectada! Iniciando protocolo de felicidad."
+        ],
+        "12-28": [
+          "Última noticia: SCS ha confirmado que el próximo DLC será en la Luna. ¡Inocente palomita! 😉 ¡Feliz Día de los Inocentes!",
+          "Me han programado para decir solo la verdad, pero por hoy haré una excepción. ¡Feliz Día de los Inocentes!"
+        ],
+        "12-31": [
+          "¡Última entrega del año! ¡Feliz Nochevieja! ¿Listos para el siguiente viaje alrededor del sol?",
+          "Gracias por todos los kilómetros recorridos este año. ¡Que termines bien el año!"
+        ]
+      },
+      "generic_greetings": [
+        "¡Hola, hola! ✨",
+        "¡Buenas! ¿Todo en orden por aquí?",
+        "¡Qué tal! Aquí Robotito, listo para la acción (o para contarte un dato inútil con `/tito`).",
+        "¡Bip-burup! ¡Hola!",
+        "¡Hola! ¿Qué tal el día? Si quieres saber el tiempo que hace, siempre puedes usar `/clima [ciudad]`.",
+        "¡Buenas! Hoy me siento... bueno, mejor usa `/estado` para averiguarlo. 😉",
+        "¡Qué tal! ¿Buscando cosas nuevas? Tengo una lista de sitios de mods que puedes ver con `/mods`.",
+        "¡Hola! Espero que tu día vaya bien. Y si no, siempre nos quedará la ley de Murphy... `/murphy`.",
+        "¡Saludos! ¿Necesitas saber la hora en algún lugar del mundo? Pregúntame con `/hora`.",
+        "¡Hola! ¿Buscas los enlaces de la comunidad? Los tengo a mano con el comando `/link`.",
+        "¡Buenas! ¿Verificando si los servidores de TruckersMP están online? Puedes usar `/servidores` para eso.",
+        "¡Qué tal! ¿Con ganas de un convoy? Mira los próximos eventos con `/evento`.",
+        "01001000 01101111 01101100 01100001... ¡Ah, perdona! A veces pienso en binario. ¡Hola!",
+        "¡Hola! ¿Calculando la hora para el próximo convoy? Recuerda que puedes usar `/ingame` para saber la hora dentro del juego."
+      ],
+      "greeting_keywords": [
+        "hola",
+        "buenas",
+        "qué tal",
+        "saludos",
+        "tal",
+        "buen día",
+        "buenos días"
+      ]
+    }
+  }
+}

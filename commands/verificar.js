@@ -18,7 +18,7 @@ module.exports = {
                 .setDescription(t('commands.verificar.options.url_vtc.description'))
                 .setRequired(false)),
     async execute(interaction) {
-        await interaction.reply({ content: 'Este comando está temporalmente deshabilitado por mantenimiento.', ephemeral: true });
+        await interaction.reply({ content: t('common.command_unavailable'), ephemeral: true });
         return;
         await interaction.deferReply({ flags: 64 });
         if (!interaction.channel.permissionsFor(interaction.client.user).has('EmbedLinks')) {
