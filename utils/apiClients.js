@@ -8,6 +8,9 @@ const { TRUCKERSMP_API_BASE_URL, openWeatherApiKey } = require('../config');
 const truckersMP = axios.create({
     baseURL: TRUCKERSMP_API_BASE_URL,
     timeout: 5000, // 5 second timeout
+    headers: {
+        'User-Agent': 'Robotito-Discord-Bot/1.0 (+https://github.com/convoyrama/robotito)'
+    }
 });
 
 /**
