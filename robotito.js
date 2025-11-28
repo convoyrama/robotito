@@ -1,9 +1,10 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits, EmbedBuilder, ActivityType } = require('discord.js');
-const http = require('http');
 const crypto = require('crypto');
-const { token } = require('./config.js');
+const express = require('express'); // Import express
+const bodyParser = require('body-parser'); // Import body-parser
+const { token, ROBOTITO_RESULTS_URL } = require('./config.js'); // Import ROBOTITO_RESULTS_URL
 const { t } = require('./utils/localization');
 
 const client = new Client({
@@ -103,13 +104,54 @@ if (!token) {
     }
 })();
 
-// Keep-alive server
-const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Bot is alive!\n');
+// Express server for game results
+const app = express();
+app.use(bodyParser.json());
+
+// Extract the path from ROBOTITO_RESULTS_URL for the endpoint
+const resultsPath = new URL(ROBOTITO_RESULTS_URL).pathname;
+
+app.post(resultsPath, async (req, res) => {
+    const { gameId, winnerId, loserId, channelId } = req.body;
+
+    if (!gameId || !winnerId || !loserId || !channelId) {
+        return res.status(400).send('Missing required game result parameters.');
+    }
+
+    try {
+        const channel = await client.channels.fetch(channelId);
+        if (!channel) {
+            console.error(`Channel with ID ${channelId} not found.`);
+            return res.status(404).send('Channel not found.');
+        }
+
+        const winner = await client.users.fetch(winnerId);
+        const loser = await client.users.fetch(loserId);
+
+        const embed = new EmbedBuilder()
+            .setColor(colors.primary)
+            .setTitle(t('game_results.title')) // Assuming you'll add localization for this
+            .setDescription(t('game_results.description', { winner: winner.username, loser: loser.username }))
+            .addFields(
+                { name: t('game_results.winner_field'), value: `<@${winner.id}>`, inline: true },
+                { name: t('game_results.loser_field'), value: `<@${loser.id}>`, inline: true }
+            )
+            .setThumbnail(winner.displayAvatarURL())
+            .setTimestamp()
+            .setFooter({ text: t('game_results.footer', { gameId: gameId }) });
+
+        await channel.send({ embeds: [embed] });
+
+        console.log(`Game Result Announced: Game ID: ${gameId}, Winner: ${winner.username}, Loser: ${loser.username}, Channel: ${channel.name}`);
+        res.status(200).send('Game result received and announced successfully.');
+
+    } catch (error) {
+        console.error(`Error processing game result for Game ID ${gameId}:`, error);
+        res.status(500).send('Error processing game result.');
+    }
 });
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(`Keep-alive server running on port ${PORT}`);
+const PORT = process.env.PORT || 3000; // Use port 3000 as defined in the config memory
+app.listen(PORT, () => {
+    console.log(`Express server for game results running on port ${PORT}`);
 });

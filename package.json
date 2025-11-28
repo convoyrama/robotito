@@ -23,8 +23,10 @@
   "dependencies": {
     "@dowmeister/trucky-services-client": "github:dowmeister/trucky-services-client-node",
     "axios": "^1.13.2",
+    "body-parser": "^2.2.1",
     "discord.js": "^14.25.0",
     "dotenv": "^17.2.3",
+    "express": "^5.1.0",
     "luxon": "^3.7.2",
     "png-chunk-text": "^1.0.0",
     "png-chunks-extract": "^1.0.0"

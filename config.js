@@ -66,5 +66,9 @@ module.exports = {
     SPAM_TEXTS: t('commands.spam.texts'),
     FAREWELL_MESSAGE_OWN: t('commands.despedida.own_message'),
     FAREWELL_MESSAGE_EXTERNAL: t('commands.despedida.external_message'),
-    usefulLinks: t('commands.link.useful_links')
+    usefulLinks: t('commands.link.useful_links'),
+
+    // Game Integration Settings
+    TRUCKGIOH_SERVER_URL: process.env.TRUCKGIOH_SERVER_URL || 'http://localhost:3001',
+    ROBOTITO_RESULTS_URL: process.env.ROBOTITO_RESULTS_URL || 'http://localhost:3000/game-result'
 };

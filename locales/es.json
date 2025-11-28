@@ -472,6 +472,13 @@
       "name": "vtc",
       "description": "Muestra la lista de VTCs de la comunidad.",
       "embed_title": "🚚 VTCs de la Comunidad"
+    },
+    "game_results": {
+      "title": "🏆 ¡Resultados de la Partida de Truckgioh!",
+      "description": "¡Felicidades, {winner} ha ganado a {loser} en una emocionante partida de Truckgioh!",
+      "winner_field": "Ganador",
+      "loser_field": "Perdedor",
+      "footer": "ID de Partida: {gameId}"
     }
   },
   "messages": {
