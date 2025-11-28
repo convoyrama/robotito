@@ -19,9 +19,11 @@ module.exports = {
             return interaction.reply({ content: 'No puedes desafiar a un bot.', ephemeral: true });
         }
 
+        /*
         if (oponente.id === retador.id) {
             return interaction.reply({ content: 'No puedes desafiarte a ti mismo.', ephemeral: true });
         }
+        */
 
         await interaction.deferReply({ ephemeral: true }); // Defer the reply as game creation might take time
 
