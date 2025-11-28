@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, User } = require('discord.js');
 const axios = require('axios'); // Import axios
 const { TRUCKGIOH_SERVER_URL } = require('../config'); // Import TRUCKGIOH_SERVER_URL from config
-const { t } = require('./utils/localization'); // Changed to relative path.
+const { t } = require('../utils/localization'); // Changed to relative path.
 
 module.exports = {
     data: new SlashCommandBuilder()
