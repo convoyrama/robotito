@@ -9,8 +9,6 @@ module.exports = {
         .setName(t('commands.servidores.name'))
         .setDescription(t('commands.servidores.description')),
     async execute(interaction) {
-        await interaction.reply({ content: t('common.command_unavailable'), ephemeral: true });
-        return;
         await interaction.deferReply();
         try {
             const response = await truckersMP.get('/servers');

@@ -14,8 +14,6 @@ module.exports = {
                 .setDescription(t('commands.info.options.enlace_o_alias.description'))
                 .setRequired(true)),
     async execute(interaction) {
-        await interaction.reply({ content: t('common.command_unavailable'), ephemeral: true });
-        return;
         await interaction.deferReply({ flags: 64 });
         const input = interaction.options.getString(t('commands.info.options.enlace_o_alias.name'));
         if (!input) {

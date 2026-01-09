@@ -4,7 +4,7 @@ const { Client, Collection, GatewayIntentBits, EmbedBuilder, ActivityType } = re
 const crypto = require('crypto');
 const express = require('express'); // Import express
 const bodyParser = require('body-parser'); // Import body-parser
-const { token, ROBOTITO_RESULTS_URL } = require('./config.js'); // Import ROBOTITO_RESULTS_URL
+const { token, ROBOTITO_RESULTS_URL, guildId } = require('./config.js'); // Import ROBOTITO_RESULTS_URL and guildId
 const { t } = require('./utils/localization');
 
 const client = new Client({
@@ -50,6 +50,13 @@ const { handleMessage } = require('./utils/messageHandlers.js');
 
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
+
+    // SECURITY CHECK: Guild Lock
+    if (guildId && interaction.guildId !== guildId) {
+        console.warn(`Unauthorized command attempt from guild ${interaction.guildId} (User: ${interaction.user.tag})`);
+        await interaction.reply({ content: '⛔ This bot is private and only works in its home server.', flags: 64 });
+        return;
+    }
 
     const command = interaction.client.commands.get(interaction.commandName);
 

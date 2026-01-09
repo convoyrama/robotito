@@ -1,17 +1,85 @@
 const axios = require('axios');
 const { TRUCKERSMP_API_BASE_URL, openWeatherApiKey } = require('../config');
 
-/**
- * Pre-configured Axios instance for making requests to the official TruckersMP API.
- * @see https://truckersmp.com/developers/api
- */
-const truckersMP = axios.create({
-    baseURL: TRUCKERSMP_API_BASE_URL,
-    timeout: 5000, // 5 second timeout
-    headers: {
-        'User-Agent': 'Robotito-Discord-Bot/1.0 (+https://github.com/convoyrama/robotito)'
+// --- Caching & Rate Limiting System for TruckersMP ---
+
+const requestQueue = [];
+let isProcessingQueue = false;
+const cache = new Map();
+
+// Cache TTL configuration (in milliseconds)
+const CACHE_TTL = {
+    '/servers': 60 * 1000, // 1 minute
+    'default': 5 * 60 * 1000 // 5 minutes for players, VTCs, etc.
+};
+
+const getTTL = (url) => {
+    if (url === '/servers') return CACHE_TTL['/servers'];
+    return CACHE_TTL['default'];
+};
+
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const processQueue = async () => {
+    if (isProcessingQueue) return;
+    isProcessingQueue = true;
+
+    while (requestQueue.length > 0) {
+        const { url, config, resolve, reject } = requestQueue.shift();
+
+        try {
+            // Check cache one last time before making the request (in case concurrent requests populated it)
+            const cachedItem = cache.get(url);
+            if (cachedItem && Date.now() < cachedItem.expires) {
+                resolve(cachedItem.data);
+            } else {
+                console.log(`[API] Making fresh request to: ${url}`);
+                const response = await axios.get(TRUCKERSMP_API_BASE_URL + url, {
+                    ...config,
+                    timeout: 5000,
+                    headers: { 'User-Agent': 'Robotito-Discord-Bot/1.0 (+https://github.com/convoyrama/robotito)' }
+                });
+
+                // Save to cache
+                cache.set(url, {
+                    data: response,
+                    expires: Date.now() + getTTL(url)
+                });
+
+                resolve(response);
+                // Wait 2 seconds before the next request to be safe
+                await delay(5000); 
+            }
+        } catch (error) {
+            reject(error);
+            // Even on error, wait a bit to avoid hammering
+            await delay(5000); 
+        }
     }
-});
+
+    isProcessingQueue = false;
+};
+
+/**
+ * Custom wrapper for TruckersMP API requests with Caching and Rate Limiting.
+ * Replaces the direct Axios instance.
+ */
+const truckersMP = {
+    get: (url, config = {}) => {
+        return new Promise((resolve, reject) => {
+            // Check cache immediately
+            const cachedItem = cache.get(url);
+            if (cachedItem && Date.now() < cachedItem.expires) {
+                // console.log(`[Cache] Serving from cache: ${url}`);
+                return resolve(cachedItem.data);
+            }
+
+            // If not in cache, add to queue
+            requestQueue.push({ url, config, resolve, reject });
+            processQueue();
+        });
+    }
+};
 
 /**
  * Pre-configured Axios instance for making requests to the OpenWeatherMap API.
