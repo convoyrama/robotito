@@ -427,6 +427,71 @@
         ]
       }
     },
+    "yo": {
+      "name": "yo",
+      "description": "Analiza tu nivel de acceso, rol y propósito en el servidor.",
+      "thanks_message": "¡Gracias por ser parte de LAG'S SPEED! Aquí tienes los detalles de tu rol:",
+      "embed_title": "📂 Expediente de Usuario: {user}",
+      "footer": "Sistema de Identificación de Robotito v2.0",
+      "roles": {
+        "owner": {
+          "title": "Lagmin 🪽 - El Guardián de la Ruta",
+          "text": "No ostentas un trono, sino una responsabilidad sagrada. Eres el primer voluntario, el cimiento sobre el que se construye este hogar digital. Tu misión trasciende la gestión; eres el custodio del espíritu de LAG'S SPEED, asegurando que esta comunidad sea siempre un refugio de camaradería y respeto. Como autoridad final para proteger nuestra integridad, tu deber es liderar desde el frente, servir con humildad, mantener el rumbo firme en las tormentas y garantizar que cada miembro sienta el orgullo de pertenecer a esta familia."
+        },
+        "admin": {
+          "title": "Lagmin 🪽 - Arquitecto Logístico",
+          "text": "Eres el motor silencioso que impulsa nuestra maquinaria, transformando el caos en orden y la pasión en estructura. Sin tu visión estratégica y tu dedicación constante, la flota navegaría a la deriva. Al ostentar la dirección ejecutiva y la gestión integral de la VTC, se espera de ti firmeza en las decisiones, claridad en la comunicación y una voluntad inquebrantable para resolver problemas, facilitando siempre que los demás brillen en la carretera."
+        },
+        "supervisor": {
+          "title": "Lagvisor 🪽 - Centinela del Convoy",
+          "text": "Tus ojos vigilan para que la armonía prevalezca, actuando como un faro en la niebla y un escudo que protege el buen ambiente. No eres un juez, sino un mediador que convierte el conflicto en entendimiento, asegurando que el respeto sea nuestra única moneda de cambio. Tu misión requiere justicia imparcial, paciencia infinita y estar siempre dispuesto a extender una mano para mantener la paz y el orden en nuestras filas."
+        },
+        "leader": {
+          "title": "Líder de Comunidad - Cónsul Aliado",
+          "text": "Portas estandartes de tierras hermanas, pero aquí eres honrado como uno de los nuestros, siendo un testimonio de que las fronteras se borran en el asfalto. Eres un constructor de puentes y un diplomático que entiende que la verdadera fuerza del trucking reside en la unión. Tu papel es fundamental para fomentar la fraternidad, colaborar en grandes proyectos y recordar siempre que, bajo distintos colores, compartimos la misma pasión por la ruta."
+        },
+        "content_creator": {
+          "title": "Creador de Contenido - Cronista Visual",
+          "text": "Posees el don de capturar la esencia de lo efímero, siendo el narrador de nuestras épicas y el artista que inmortaliza cada kilómetro recorrido. A través de tu lente, el mundo descubre quiénes somos y se inspira para unirse a nuestra caravana. Se espera que narres nuestra historia con autenticidad, utilizando tu carisma para ser un embajador radiante que atraiga a nuevos viajeros a nuestra costa."
+        },
+        "honorary": {
+          "title": "Honorario - Veterano de Mil Rutas",
+          "text": "Tu nombre está grabado en el asfalto de nuestra historia, habiendo recorrido caminos que forjaron lo que somos hoy. Aunque tu uniforme haya cambiado, tu espíritu permanece tejido en el ADN de este lugar como un testimonio vivo de la amistad que perdura más allá de los kilómetros. Tu legado se porta con dignidad, compartiendo tu sabiduría con las nuevas generaciones y recordando que en LAG'S SPEED, tu llave siempre abrirá la puerta."
+        },
+        "member": {
+          "title": "Lagger 🪽 - Hermano de Ruta",
+          "text": "Eres la sangre que da vida a este cuerpo y la fuerza imparable de LAG'S SPEED. No eres un simple número, sino parte de una hermandad que nunca deja a nadie atrás. Se espera de ti lealtad inquebrantable al compañero, pasión en cada entrega y el honor de llevar nuestro emblema con respeto, tanto dentro como fuera de la carretera."
+        },
+        "visitor": {
+          "title": "👤 Viajero - El Nuevo Camino",
+          "text": "Te encuentras en el umbral de una nueva aventura, observando desde la orilla mientras el horizonte te llama. Tu historia aquí está por escribirse y eres el potencial de lo que vendrá. Te invitamos a explorar con curiosidad, respetar nuestras costumbres y, cuando estés listo, unirte a la formación para escribir tu propia leyenda junto a nosotros."
+        }
+      }
+    },
+        "visitor": {
+          "title": "👤 Viajero - El Nuevo Camino",
+          "desc": "Te encuentras en el umbral de una nueva aventura. Aún observas desde la orilla, pero el horizonte te llama. Tu historia aquí está por escribirse, y el volante espera tus manos. Eres el potencial de lo que vendrá, un futuro hermano de ruta si decides dar el paso.",
+          "powers": "La oportunidad de observar, aprender y conectar.",
+          "expectations": "Explorar con curiosidad, respetar nuestras costumbres y, cuando estés listo, unirte a la formación para escribir tu propia leyenda junto a nosotros."
+        }
+      }
+    },
+    "manifiesto": {
+      "name": "manifiesto",
+      "description": "Muestra el manifiesto, normas y espíritu de LAG'S SPEED.",
+      "embed_title": "📜 Códice de LAG'S SPEED",
+      "description": "**\"Mitad bohemios y embusteros, no somos lo que un padre quiere para su hijita bebé!\"**",
+      "motto": "Siempre vamos un paso atrás!",
+      "footer": "LAG'S SPEED | Siempre vamos un paso atrás!",
+      "fields": {
+        "about_title": "✨ Nuestra Filosofía",
+        "about_content": "En LAG'S SPEED creemos en la libertad y la madurez. No encontrarás un reglamento extenso porque confiamos en el sentido común y la buena educación de nuestros miembros. Entendemos que la netiqueta básica y el respeto mutuo son suficientes para convivir en armonía.\n\nSin embargo, es importante recordar que la ausencia de normas escritas no implica impunidad. Al contrario: significa que la Moderación no está limitada por vacíos legales o reglamentos técnicos. Actuamos con total libertad para preservar el buen ambiente de la comunidad, y nuestras decisiones son finales.",
+        "rules_title": "⚖️ Rules (Tradiciones)",
+        "rules_content": "• Cero drama, salvo cuando el ping sube a 1000.\n• El GPS es una sugerencia, no una orden, perderse en grupo es tradición.\n• El botón F7 es nuestro mejor amigo. Y como todo amigo, lo usamos seguido.\n• Los frenos se usan con moderación… o con resignación.\n• El chat es para bromear, no para coordinar. La coordinación nunca funcionó de todos modos.\n• Si el convoy se divide en dos, ambos grupos tienen razón.\n• Si todo falla… culpa al lag.",
+        "req_title": "📋 Requirements (Requisitos)",
+        "req_content": "• Buen humor y cero drama.\n• Edad flexible, madurez indispensable.\n• Lento por lag, no por elección."
+      }
+    },
     "game_results": {
       "title": "🏆 ¡Resultados de la Partida de Truckgioh!",
       "description": "¡Felicidades, {winner} ha ganado a {loser} en una emocionante partida de Truckgioh!",
