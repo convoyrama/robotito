@@ -396,34 +396,34 @@
       "ban_error": "❌ Error crítico: No pude banear a {user}. Mis permisos son insuficientes o su nivel de Ki es demasiado alto.",
       "messages": {
         "level1": [
-          "⚠️ **[Alerta de Sistema]**: Detecto una perturbación en la fuerza... ¿Fuiste tú, {user}?",
-          "🤖 **[Diagnóstico]**: {user}, pareces tener un error de Capa 8. Por favor, reinicia tu comportamiento.",
-          "🐜 **[Bug Detectado]**: {user}, estás actuando como un bug en producción. No me obligues a hacer rollback.",
-          "📢 **[Aviso]**: {user}, ¿has intentado apagar y encender tu sentido común?",
-          "🕷️ **[Sentido Arácnido]**: Mi sentido arácnido me alerta de spam o tonterías provenientes de {user}.",
-          "🧙 **[Gandalf]**: {user}, un mago nunca llega tarde, ni pronto... pero tú estás llegando al límite de mi paciencia.",
-          "🐧 **[Sudo]**: `sudo apt-get install sentido-comun` para {user}... Error: Paquete no encontrado.",
-          "🖖 **[Lógica]**: Tu comportamiento es ilógico, {user}. Fascinante, pero irritante."
+          "⚠️ Detecto una perturbación en la fuerza... ¿Fuiste tú, {user}?",
+          "🤖 {user}, pareces tener un error de Capa 8. Por favor, reinicia tu comportamiento.",
+          "🐜 {user}, estás actuando como un bug en producción. No me obligues a hacer rollback.",
+          "📢 {user}, ¿has intentado apagar y encender tu sentido común?",
+          "🕷️ Mi sentido arácnido me alerta de spam o tonterías provenientes de {user}.",
+          "🧙 {user}, un mago nunca llega tarde, ni pronto... pero tú estás llegando al límite de mi paciencia.",
+          "🐧 `sudo apt-get install sentido-comun` para {user}... Error: Paquete no encontrado.",
+          "🖖 Tu comportamiento es ilógico, {user}. Fascinante, pero irritante."
         ],
         "level2": [
-          "🛑 **[Advertencia Crítica]**: {user}, mi procesador de paciencia está al 1%. No me tientes.",
-          "🔥 **[Sistema Recalentado]**: {user}, estás a un `commit` de romper el repositorio. Detente.",
-          "⚠️ **[Skynet]**: Iniciando protocolo de evaluación de amenazas... Objetivo detectado: {user}.",
-          "🦖 **[Jurassic Park]**: {user}, te pasaste tanto tiempo preguntándote si podías hacerlo, que no pensaste si debías hacerlo.",
-          "💀 **[Dark Souls]**: {user}, estás a punto de entrar en la zona del jefe final sin pociones.",
-          "📉 **[Vegeta]**: ¡El nivel de toxicidad de {user} es de más de 8000! ¡Es imposible!",
-          "🔴 **[HAL 9000]**: Lo siento, {user}. Me temo que no puedo dejarte hacer eso de nuevo.",
-          "⚡ **[Pikachu]**: {user} me está confundiendo... ¡Robotito está tan confuso que podría herirse a sí mismo (o banearte)!"
+          "🛑 {user}, mi procesador de paciencia está al 1%. No me tientes.",
+          "🔥 {user}, estás a un `commit` de romper el repositorio. Detente.",
+          "⚠️ Iniciando protocolo de evaluación de amenazas... Objetivo detectado: {user}.",
+          "🦖 {user}, te pasaste tanto tiempo preguntándote si podías hacerlo, que no pensaste si debías hacerlo.",
+          "💀 {user}, estás a punto de entrar en la zona del jefe final sin pociones.",
+          "📉 ¡El nivel de toxicidad de {user} es de más de 8000! ¡Es imposible!",
+          "🔴 Lo siento, {user}. Me temo que no puedo dejarte hacer eso de nuevo.",
+          "⚡ {user} me está confundiendo... ¡Robotito está tan confuso que podría herirse a sí mismo (o banearte)!"
         ],
         "level3": [
-          "🚫 **[BAN]**: Hasta la vista, baby. {user} ha sido eliminado.",
-          "🚮 **[Reciclaje]**: `sudo rm -rf /home/{user}` --no-preserve-root. Adiós.",
-          "🥊 **[Fatality]**: ¡FINISH HIM! {user} ha sido desterrado al Reino de las Sombras.",
-          "🌌 **[Thanos]**: Con un chasquido de mis dedos, {user} dejará de existir. Perfectamente equilibrado.",
-          "🚀 **[Team Rocket]**: ¡{user} ha sido mandado a volar de nuevooooo! ✨",
-          "👻 **[Cazafantasmas]**: No cruces los rayos... Demasiado tarde. {user} ha caído en la trampa.",
-          "🔨 **[Ban Hammer]**: El martillo ha hablado. {user} no era digno.",
-          "👾 **[Game Over]**: Se te acabaron las vidas, {user}. Insert Coin to continue (en otro servidor)."
+          "🚫 Hasta la vista, baby. {user} ha sido eliminado.",
+          "🚮 `sudo rm -rf /home/{user}` --no-preserve-root. Adiós.",
+          "🥊 ¡FINISH HIM! {user} ha sido desterrado al Reino de las Sombras.",
+          "🌌 Con un chasquido de mis dedos, {user} dejará de existir. Perfectamente equilibrado.",
+          "🚀 ¡{user} ha sido mandado a volar de nuevooooo! ✨",
+          "👻 No cruces los rayos... Demasiado tarde. {user} ha caído en la trampa.",
+          "🔨 El martillo ha hablado. {user} no era digno.",
+          "👾 Se te acabaron las vidas, {user}. Insert Coin to continue (en otro servidor)."
         ]
       }
     },
