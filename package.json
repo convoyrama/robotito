@@ -21,7 +21,6 @@
   },
   "homepage": "https://github.com/convoyrama/robotito#readme",
   "dependencies": {
-    "@dowmeister/trucky-services-client": "github:dowmeister/trucky-services-client-node",
     "axios": "^1.13.2",
     "body-parser": "^2.2.1",
     "discord.js": "^14.25.0",

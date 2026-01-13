@@ -60,10 +60,7 @@
         "despedida": "Envía un mensaje de despedida de convoy (propio o ajeno).",
         "spam": "Envía un mensaje aleatorio de la lista de textos predefinidos.",
         "evento": "Muestra los eventos (próximo, semana, mes).",
-        "vtc": "Muestra la lista de VTCs de la comunidad.",
-        "servidores": "Muestra el estado de los servidores de TruckersMP.",
-        "info": "Muestra información de un usuario o VTC de TruckersMP.",
-        "verificar": "Genera un código para verificar tu cuenta y, opcionalmente, tu VTC."
+        "vtc": "Muestra la lista de VTCs de la comunidad."
       }
     },
     "despedida": {
@@ -152,43 +149,6 @@
       "description_referenced": "**Si en {referenceCity} son las {referenceTime}, entonces:**\n",
       "description_current": "**Horas actuales en Zonas Latinas:**\n",
       "footer": "Horas basadas en la zona horaria del bot."
-    },
-    "info": {
-      "name": "info",
-      "description": "Muestra info de un usuario o VTC de TruckersMP (URL, ID o alias).",
-      "options": {
-        "enlace_o_alias": {
-          "name": "enlace_o_alias",
-          "description": "URL, ID de usuario (TMP o Steam), o alias/URL de VTC."
-        }
-      },
-      "vtc_embed_title": "🚚 Perfil de VTC: {vtcName}",
-      "vtc_slogan": "Lema",
-      "vtc_id": "ID de VTC",
-      "vtc_tag": "Tag",
-      "vtc_members": "Miembros",
-      "vtc_created": "Creada",
-      "vtc_recruitment": "Reclutamiento",
-      "vtc_verified": "Verificada",
-      "vtc_last_news": "Última Noticia",
-      "player_embed_title": "👤 Perfil de TruckersMP: {playerName}",
-      "player_id": "ID de TruckersMP",
-      "player_steam": "SteamID",
-      "player_joined": "Registrado",
-      "player_last_seen": "Última Conexión",
-      "player_banned": "Baneado",
-      "player_banned_until": "Sí, hasta {bannedUntil}",
-      "player_not_banned": "No",
-      "player_bans": "Número de Baneos",
-      "player_in_vtc": "En VTC",
-      "player_not_in_vtc": "No",
-      "player_group": "Grupo",
-      "player_patreon": "Patreon",
-      "player_is_patron": "Sí",
-      "player_staff": "Staff",
-      "player_game_admin": "Game Admin",
-      "player_management": "Management",
-      "footer": "Datos obtenidos de la API de TruckersMP."
     },
     "ingame": {
       "name": "ingame",
@@ -359,46 +319,11 @@
         "CDS2": "Canteras del Sur (Negro)"
       }
     },
-    "mods": {
-      "name": "mods",
-      "description": "Muestra listas de sitios recomendados para buscar mods.",
-      "subcommands": {
-        "ets2": {
-          "name": "ets2",
-          "description": "Muestra la lista de mapas para Euro Truck Simulator 2."
-        },
-        "ats": {
-          "name": "ats",
-          "description": "Muestra la lista de mapas para American Truck Simulator."
-        },
-        "vehiculos": {
-          "name": "vehiculos",
-          "description": "Muestra sitios de mods de vehículos y portales generales."
-        }
-      },
-      "ets2_embed_title": "🗺️ Lista de Mapas para ETS2",
-      "ats_embed_title": "🗺️ Lista de Mapas para ATS",
-      "vehicles_embed_title": "🚚 Sitios de Mods de Vehículos y Portales",
-      "part": "Parte {part}",
-      "main_maps": "Mapas Principales",
-      "other_platforms": "Otras Plataformas",
-      "creator_stores": "Tiendas de Creadores",
-      "general_portals": "Portales Generales",
-      "not_available": "No disponible"
-    },
     "murphy": {
       "name": "murphy",
       "description": "Muestra una de las leyes de Murphy.",
       "embed_title": "📜 Ley de Murphy",
       "footer": "- Murphy"
-    },
-    "servidores": {
-      "name": "servidores",
-      "description": "Muestra el estado de los servidores de TruckersMP.",
-      "embed_title": "📡 Estado de los Servidores de TruckersMP",
-      "server_status_name": "{status_icon} {server_name} ({server_shortname})",
-      "server_status_value": "**Jugadores:** {players} / {maxplayers}\n**En cola:** {queue}",
-      "footer": "Datos obtenidos de la API de TruckersMP"
     },
     "spam": {
       "name": "spam",
@@ -444,29 +369,6 @@
       "name": "tito",
       "description": "Tito te cuenta un dato inútil y absurdo.",
       "embed_title": "😂 Tito cuenta un chiste..."
-    },
-    "verificar": {
-      "name": "verificar",
-      "description": "Genera un código para verificar tu cuenta, y opcionalmente, tu VTC.",
-      "options": {
-        "url": {
-          "name": "url",
-          "description": "La URL completa de tu perfil de TruckersMP."
-        },
-        "url_vtc": {
-          "name": "url_vtc",
-          "description": "Opcional: La URL de tu VTC para verificar propiedad y logo."
-        }
-      },
-      "embed_title": "✅ Código de Verificación Generado",
-      "embed_description": "¡Tu código está listo! Cópialo y pégalo en el campo correspondiente del generador de licencias.",
-      "footer": "Este código vincula tu licencia a tu fecha de registro real.",
-      "fields": {
-        "code": "Tu Código de Verificación",
-        "where_to_use": "¿Dónde usar este código?",
-        "where_to_use_value": "[Haz clic aquí para ir al Generador de ID](https://convoyrama.github.io/id.html)",
-        "vtc_processed": "VTC Procesada"
-      }
     },
     "vtc": {
       "name": "vtc",

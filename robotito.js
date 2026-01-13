@@ -4,7 +4,7 @@ const { Client, Collection, GatewayIntentBits, EmbedBuilder, ActivityType } = re
 const crypto = require('crypto');
 const express = require('express'); // Import express
 const bodyParser = require('body-parser'); // Import body-parser
-const { token, ROBOTITO_RESULTS_URL, guildId } = require('./config.js'); // Import ROBOTITO_RESULTS_URL and guildId
+const { token, ROBOTITO_RESULTS_URL, guildId, colors } = require('./config.js'); // Import ROBOTITO_RESULTS_URL, guildId and colors
 const { t } = require('./utils/localization');
 
 const client = new Client({
@@ -137,15 +137,15 @@ app.post(resultsPath, async (req, res) => {
 
         const embed = new EmbedBuilder()
             .setColor(colors.primary)
-            .setTitle(t('game_results.title')) // Assuming you'll add localization for this
-            .setDescription(t('game_results.description', { winner: winner.username, loser: loser.username }))
+            .setTitle(t('commands.game_results.title')) // Assuming you'll add localization for this
+            .setDescription(t('commands.game_results.description', { winner: winner.username, loser: loser.username }))
             .addFields(
-                { name: t('game_results.winner_field'), value: `<@${winner.id}>`, inline: true },
-                { name: t('game_results.loser_field'), value: `<@${loser.id}>`, inline: true }
+                { name: t('commands.game_results.winner_field'), value: `<@${winner.id}>`, inline: true },
+                { name: t('commands.game_results.loser_field'), value: `<@${loser.id}>`, inline: true }
             )
             .setThumbnail(winner.displayAvatarURL())
             .setTimestamp()
-            .setFooter({ text: t('game_results.footer', { gameId: gameId }) });
+            .setFooter({ text: t('commands.game_results.footer', { gameId: gameId }) });
 
         await channel.send({ embeds: [embed] });
 

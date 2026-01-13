@@ -21,9 +21,6 @@ module.exports = {
     POSITIVE_STATES: ['admirando.png', 'alegre.png', 'enlaluna.png', 'fiesta.png', 'sorprendido.png', 'volando.png'],
     NEGATIVE_STATES: ['desesperado.png', 'durmiendo.png', 'enojado.png', 'impaciente.png', 'pensando.png'],
 
-    // API and external service constants
-    TRUCKERSMP_API_BASE_URL: 'https://api.truckersmp.com/v2',
-
     // VTC Aliases
     vtcAliases: {
         'ls': 78865,
