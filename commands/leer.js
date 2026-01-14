@@ -87,7 +87,13 @@ module.exports = {
                 }
 
                 if (licenseData.is_verified && licenseData.tmp_join_date) {
-                    fields.push({ name: t('commands.leer.license_fields.member_since'), value: DateTime.fromISO(licenseData.tmp_join_date).toFormat('dd/MM/yyyy'), inline: false });
+                    let joinDate = DateTime.fromISO(licenseData.tmp_join_date);
+                    if (!joinDate.isValid) {
+                        joinDate = DateTime.fromSQL(licenseData.tmp_join_date);
+                    }
+                    if (joinDate.isValid) {
+                        fields.push({ name: t('commands.leer.license_fields.member_since'), value: joinDate.toFormat('dd/MM/yyyy'), inline: false });
+                    }
                 }
 
                 fields.push({ name: t('commands.leer.license_fields.additional_info'), value: t('commands.leer.license_fields.additional_info_value'), inline: false });
