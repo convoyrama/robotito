@@ -76,13 +76,22 @@ module.exports = {
             let dmStatus = '✅ Enlaces enviados por DM.';
             
             try {
-                await interaction.user.send(`🏁 **Tu enlace de carrera:**\n${challengerUrl}`);
+                await interaction.user.send(
+                    `🏁 **Tu enlace de carrera:**\n${challengerUrl}\n\n` +
+                    `⚠️ **¡Atención!** Tienes **3 minutos** para completar la carrera.\n` +
+                    `Los resultados se publicarán cuando ambos terminen o se agote el tiempo.`
+                );
             } catch (e) {
                 dmStatus = '⚠️ No pude enviarte DM. ¿Tienes los privados abiertos?';
             }
 
             try {
-                await opponent.send(`🏁 **¡Has sido desafiado por ${interaction.user.username}!**\nTu enlace de carrera:\n${challengedUrl}`);
+                await opponent.send(
+                    `🏁 **¡Has sido desafiado por ${interaction.user.username}!**\n` +
+                    `Tu enlace de carrera:\n${challengedUrl}\n\n` +
+                    `⚠️ **¡Atención!** Tienes **3 minutos** para completar la carrera.\n` +
+                    `Los resultados se publicarán cuando ambos terminen o se agote el tiempo.`
+                );
             } catch (e) {
                 dmStatus += `\n⚠️ No pude enviar DM a ${opponent.username}.`;
             }
