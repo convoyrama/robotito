@@ -158,19 +158,23 @@ app.post(resultsPath, async (req, res) => {
     }
 });
 
-// Endpoint for Diesel Duel Results (Time Attack)
+// Endpoint for Diesel Duel Results (VS Mode)
 app.post('/api/diesel-result', async (req, res) => {
-    const { playerId, time, speed, channelId, gameId } = req.body;
+    const { type, winner, loser, channelId, gameId } = req.body;
 
-    if (!playerId || !time || !channelId) {
+    // Validate minimal payload
+    if (!type || !winner || !channelId) {
         return res.status(400).send('Missing parameters.');
     }
 
     try {
-        const user = await client.users.fetch(playerId);
         const channel = await client.channels.fetch(channelId);
         
-        // 1. Load Records
+        // Fetch User Objects (Discord API)
+        const winnerUser = await client.users.fetch(winner.id);
+        const loserUser = loser ? await client.users.fetch(loser.id) : null;
+
+        // 1. Load Records (Still track best times individually)
         const fs = require('fs');
         const path = require('path');
         const recordsPath = path.join(__dirname, 'diesel_records.json');
@@ -180,48 +184,71 @@ app.post('/api/diesel-result', async (req, res) => {
             records = JSON.parse(fs.readFileSync(recordsPath));
         }
 
-        // 2. Check for New Record
+        // Check Winner's Record
         const newRecord = {
-            username: user.username,
-            userId: user.id,
-            time: Number(time),
-            speed: Number(speed),
+            username: winnerUser.username,
+            userId: winnerUser.id,
+            time: Number(winner.time),
+            speed: Number(winner.speed),
             date: new Date().toISOString()
         };
 
-        // Add to list, Sort by Time (Ascending), Take Top 3
         const previousBest = records[0] ? records[0].time : Infinity;
-        
-        records.push(newRecord);
-        records.sort((a, b) => a.time - b.time); // Lower time is better
-        records = records.slice(0, 3);
-        
-        // Update Ranks
-        records = records.map((r, i) => ({ ...r, position: i + 1 }));
+        const isWorldRecord = newRecord.time < previousBest;
 
+        // Add to leaderboard logic
+        records.push(newRecord);
+        records.sort((a, b) => a.time - b.time);
+        records = records.slice(0, 3);
+        records = records.map((r, i) => ({ ...r, position: i + 1 }));
         fs.writeFileSync(recordsPath, JSON.stringify(records, null, 2));
 
-        // 3. Announce
-        const isWorldRecord = newRecord.time < previousBest;
-        const rankIndex = records.findIndex(r => r.time === newRecord.time && r.userId === newRecord.userId);
-        const madeItToTop = rankIndex !== -1;
-
+        // 2. Build the VS Embed
         const embed = new EmbedBuilder()
-            .setColor(isWorldRecord ? '#FFD700' : colors.primary)
-            .setTitle(isWorldRecord ? '🚨 NUEVO RÉCORD MUNDIAL 🚨' : '🏁 Carrera Finalizada')
-            .setAuthor({ name: user.username, iconURL: user.displayAvatarURL() })
-            .addFields(
-                { name: 'Tiempo', value: `⏱️ ${(time / 1000).toFixed(3)}s`, inline: true },
-                { name: 'Velocidad', value: `💨 ${speed} km/h`, inline: true }
-            );
+            .setTimestamp()
+            .setFooter({ text: `ID Carrera: ${gameId.substring(0, 8)}...` });
 
-        if (madeItToTop) {
-            embed.setDescription(`¡<@${user.id}> ha entrado al **Top ${rankIndex + 1}**!`);
-        } else {
-            embed.setDescription(`<@${user.id}> ha cruzado la meta.`);
+        if (type === 'vs') {
+            const timeDiff = (loser.time - winner.time) / 1000;
+            
+            embed.setColor(isWorldRecord ? '#FFD700' : colors.primary)
+                .setTitle(isWorldRecord ? '🚨 NUEVO RÉCORD MUNDIAL 🚨' : '🏁 Resultado del Duelo')
+                .setDescription(`¡<@${winnerUser.id}> ha vencido a <@${loserUser.id}>!`)
+                .addFields(
+                    { 
+                        name: '🏆 Ganador', 
+                        value: `**${winnerUser.username}**\n⏱️ ${(winner.time/1000).toFixed(3)}s\n💨 ${winner.speed} km/h`, 
+                        inline: true 
+                    },
+                    { 
+                        name: '🐢 Perdedor', 
+                        value: `**${loserUser.username}**\n⏱️ ${(loser.time/1000).toFixed(3)}s\n💨 ${loser.speed} km/h`, 
+                        inline: true 
+                    },
+                    { name: 'Diferencia', value: `+${timeDiff.toFixed(3)}s`, inline: false }
+                );
+                
+            if (isWorldRecord) {
+                embed.addFields({ name: '🌟 Récord', value: '¡Este tiempo es el más rápido registrado!' });
+            }
+
+        } else if (type === 'forfeit') {
+            embed.setColor(colors.warning)
+                .setTitle('⚠️ Victoria por Abandono')
+                .setDescription(`El oponente no terminó la carrera a tiempo.`)
+                .addFields(
+                    { 
+                        name: '🏆 Ganador', 
+                        value: `**${winnerUser.username}**\n⏱️ ${(winner.time/1000).toFixed(3)}s`, 
+                        inline: true 
+                    },
+                    { 
+                        name: '❌ Descalificado', 
+                        value: loserUser ? `**${loserUser.username}** (DNF)` : 'Oponente Desconocido', 
+                        inline: true 
+                    }
+                );
         }
-        
-        embed.setFooter({ text: `ID Carrera: ${gameId.substring(0, 8)}...` });
 
         if (channel) await channel.send({ embeds: [embed] });
 

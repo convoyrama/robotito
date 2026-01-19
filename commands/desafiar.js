@@ -1,69 +1,112 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
+const { DIESELDUEL_SERVER_URL, colors } = require('../config.js');
 const axios = require('axios');
-const { DIESELDUEL_SERVER_URL } = require('../config');
+
+// Cooldown Map: userId -> timestamp
+const cooldowns = new Map();
+const COOLDOWN_DURATION = 2 * 60 * 1000; // 2 Minutes
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('desafiar')
-        .setDescription('Desafía a otro jugador a un 1/4 de milla en Diesel Duel')
-        .addUserOption(option =>
-            option.setName('oponente')
-                .setDescription('El camionero al que quieres retar')
+        .setDescription('Desafía a otro usuario a una carrera de Drag Racing.')
+        .addUserOption(option => 
+            option.setName('usuario')
+                .setDescription('El usuario al que quieres desafiar')
                 .setRequired(true)),
+    
     async execute(interaction) {
-        const oponente = interaction.options.getUser('oponente');
-        const retador = interaction.user;
-
-        if (oponente.bot) {
-            return interaction.reply({ content: 'No puedes desafiar a un bot (todavía).', ephemeral: true });
+        // 1. Check Cooldown
+        const now = Date.now();
+        const userId = interaction.user.id;
+        
+        if (cooldowns.has(userId)) {
+            const expirationTime = cooldowns.get(userId) + COOLDOWN_DURATION;
+            if (now < expirationTime) {
+                const timeLeft = Math.round((expirationTime - now) / 1000);
+                return interaction.reply({ 
+                    content: `⏳ Debes esperar ${timeLeft} segundos antes de iniciar otro desafío.`, 
+                    flags: 64 
+                });
+            }
         }
 
-        // Permitimos auto-reto para pruebas (puedes comentarlo luego)
-        // if (oponente.id === retador.id) { ... }
+        const opponent = interaction.options.getUser('usuario');
 
-        await interaction.deferReply({ ephemeral: false }); // Público para que se vea el "beef"
+        if (opponent.id === interaction.user.id) {
+            return interaction.reply({ content: 'No puedes desafiarte a ti mismo.', flags: 64 });
+        }
+
+        if (opponent.bot) {
+            return interaction.reply({ content: 'No puedes desafiar a un bot.', flags: 64 });
+        }
+
+        await interaction.deferReply();
 
         try {
-            // Solicitamos la creación de la sala al servidor del juego
+            // 2. Request Game Creation
             const response = await axios.post(`${DIESELDUEL_SERVER_URL}/api/create-race`, {
-                challengerId: retador.id,
-                challengedId: oponente.id,
-                channelId: interaction.channel.id
+                challengerId: interaction.user.id,
+                challengedId: opponent.id,
+                channelId: interaction.channelId
             });
 
-            const { challengerUrl, challengedUrl } = response.data;
+            const { gameId, challengerUrl, challengedUrl } = response.data;
 
-            // Anuncio público
-            await interaction.editReply({
-                content: `🔥 **DIESEL DUEL** 🔥\n¡${retador} ha desafiado a ${oponente} a quemar llanta!`,
-            });
+            // 3. Set Cooldown on Success
+            cooldowns.set(userId, now);
+            setTimeout(() => cooldowns.delete(userId), COOLDOWN_DURATION);
 
-            // Envío de llaves (Links) por DM
-            let dmsSent = 0;
+            // 4. Send Links (Ephemeral to avoid leaks, or DM logic could be used)
+            // Strategy: Send a public embed announcing the duel, and buttons with links (Ephemeral)
+            // Since we can't send different ephemeral msgs to different users easily in one command,
+            // we will send the links via ephemeral FollowUp to the Challenger, 
+            // and tell the Opponent to click a button to get their link (which triggers a separate interaction handler or just DM).
+            
+            // SIMPLIFICATION FOR V1: Send links in the reply but hidden behind "Spoilers" or just direct DM?
+            // Sending public links allows stream sniping. 
+            // Better Approach: Send a generic "Challenge Started" embed publicly.
+            // Then send the links via interaction.followUp (only visible to challenger).
+            // But how does the opponent get it?
+            
+            // Revised Approach (Simple & Direct):
+            // Robotito sends the public embed.
+            // Robotito DMs the links to both users.
+            
+            let dmStatus = '✅ Enlaces enviados por DM.';
+            
             try {
-                await retador.send(`🔑 Tu llave de encendido contra ${oponente.username}: \n${challengerUrl}`);
-                dmsSent++;
+                await interaction.user.send(`🏁 **Tu enlace de carrera:**\n${challengerUrl}`);
             } catch (e) {
-                console.warn(`No se pudo enviar DM a ${retador.username}`);
+                dmStatus = '⚠️ No pude enviarte DM. ¿Tienes los privados abiertos?';
             }
 
             try {
-                await oponente.send(`🔑 ¡Has sido desafiado por ${retador.username}! Tu llave: \n${challengedUrl}`);
-                dmsSent++;
+                await opponent.send(`🏁 **¡Has sido desafiado por ${interaction.user.username}!**\nTu enlace de carrera:\n${challengedUrl}`);
             } catch (e) {
-                console.warn(`No se pudo enviar DM a ${oponente.username}`);
+                dmStatus += `\n⚠️ No pude enviar DM a ${opponent.username}.`;
             }
 
-            // Confirmación discreta
-            if (dmsSent < 2) {
-                await interaction.followUp({ content: '⚠️ No pude enviar el DM a uno de los dos. Verificad que tenéis los DMs abiertos.', ephemeral: true });
-            }
+            const embed = new EmbedBuilder()
+                .setColor(colors.warning)
+                .setTitle('🔥 ¡Desafío de Drag Racing Iniciado! 🔥')
+                .setDescription(`${interaction.user} ha retado a ${opponent} a un duelo de velocidad.`)
+                .addFields(
+                    { name: 'Estado', value: 'Esperando corredores...', inline: true },
+                    { name: 'Info', value: 'Revisen sus Mensajes Directos (DM) para entrar a la pista.', inline: false }
+                )
+                .setFooter({ text: dmStatus });
+
+            await interaction.editReply({ embeds: [embed] });
 
         } catch (error) {
-            console.error('Error al conectar con Diesel Duel Server:', error.message);
-            await interaction.editReply({
-                content: `❌ El motor no arranca. No pude conectar con el servidor de carreras.`,
-            });
+            console.error('Error creating race:', error);
+            
+            if (error.response && error.response.status === 503) {
+                return interaction.editReply('⛔ **Las pistas están llenas.**\nActualmente hay 3 carreras en curso. Por favor espera unos minutos e inténtalo de nuevo.');
+            }
+
+            await interaction.editReply('Hubo un error al conectar con el servidor de carreras.');
         }
     },
 };
