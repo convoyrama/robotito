@@ -16,13 +16,26 @@ module.exports = {
                 .setRequired(true)),
     
     async execute(interaction) {
-        // 1. Resolve User
+        // 1. Resolve User (Robust Method)
         const now = Date.now();
         const userId = interaction.user.id;
+        
         let opponent = interaction.options.getUser('usuario');
+        
+        // Si falla getUser, intentamos obtener el ID crudo y hacer fetch
+        if (!opponent) {
+            const opponentId = interaction.options.get('usuario')?.value;
+            if (opponentId) {
+                try {
+                    opponent = await interaction.client.users.fetch(opponentId);
+                } catch (e) {
+                    console.error('Error fetching user:', e);
+                }
+            }
+        }
 
         if (!opponent) {
-            return interaction.reply({ content: '❌ No pude encontrar al usuario.', flags: 64 });
+            return interaction.reply({ content: '❌ No pude encontrar al usuario. Intenta usar su ID si la mención falla.', flags: 64 });
         }
 
         const isSelfChallenge = opponent.id === userId;
