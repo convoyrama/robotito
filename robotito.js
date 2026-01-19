@@ -226,12 +226,12 @@ app.post('/api/diesel-result', async (req, res) => {
                 .addFields(
                     { 
                         name: '🏆 Ganador', 
-                        value: `**${winnerUser.username}**\n⏱️ ${(winner.time/1000).toFixed(3)}s\n💨 ${winner.speed} km/h`, 
+                        value: `**${winnerUser.username}**\n⏱️ ${(winner.time/1000).toFixed(3)}s\n💨 ${Number(winner.speed).toFixed(1)} km/h`, 
                         inline: true 
                     },
                     { 
                         name: '🐢 Perdedor', 
-                        value: `**${loserUser.username}**\n⏱️ ${(loser.time/1000).toFixed(3)}s\n💨 ${loser.speed} km/h`, 
+                        value: `**${loserUser.username}**\n⏱️ ${(loser.time/1000).toFixed(3)}s\n💨 ${Number(loser.speed).toFixed(1)} km/h`, 
                         inline: true 
                     },
                     { name: 'Diferencia', value: `+${timeDiff.toFixed(3)}s`, inline: false }

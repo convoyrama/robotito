@@ -35,7 +35,7 @@ module.exports = {
                 const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉';
                 embed.addFields({
                     name: `${medal} #${index + 1} - ${rec.username}`,
-                    value: `⏱️ **${(rec.time / 1000).toFixed(3)}s** | 💨 ${rec.speed} km/h`,
+                    value: `⏱️ **${(rec.time / 1000).toFixed(3)}s** | 💨 ${Number(rec.speed).toFixed(1)} km/h`,
                     inline: false
                 });
             });
