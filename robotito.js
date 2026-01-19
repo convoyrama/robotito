@@ -162,6 +162,11 @@ app.post(resultsPath, async (req, res) => {
 app.post('/api/diesel-result', async (req, res) => {
     const { type, winner, loser, channelId, gameId } = req.body;
 
+    console.log('--- DEBUG DIESEL RESULT ---');
+    console.log('Type:', type);
+    console.log('Winner Obj:', JSON.stringify(winner));
+    console.log('Loser Obj:', JSON.stringify(loser));
+
     // Validate minimal payload
     if (!type || !winner || !channelId) {
         return res.status(400).send('Missing parameters.');
