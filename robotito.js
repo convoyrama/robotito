@@ -170,9 +170,13 @@ app.post('/api/diesel-result', async (req, res) => {
     try {
         const channel = await client.channels.fetch(channelId);
         
+        // Clean IDs (remove _clone suffix from self-challenges)
+        const winnerId = winner.id.replace('_clone', '');
+        const loserId = loser ? loser.id.replace('_clone', '') : null;
+
         // Fetch User Objects (Discord API)
-        const winnerUser = await client.users.fetch(winner.id);
-        const loserUser = loser ? await client.users.fetch(loser.id) : null;
+        const winnerUser = await client.users.fetch(winnerId);
+        const loserUser = loserId ? await client.users.fetch(loserId) : null;
 
         // 1. Load Records (Still track best times individually)
         const fs = require('fs');
