@@ -158,6 +158,80 @@ app.post(resultsPath, async (req, res) => {
     }
 });
 
+// Endpoint for Diesel Duel Results (Time Attack)
+app.post('/api/diesel-result', async (req, res) => {
+    const { playerId, time, speed, channelId, gameId } = req.body;
+
+    if (!playerId || !time || !channelId) {
+        return res.status(400).send('Missing parameters.');
+    }
+
+    try {
+        const user = await client.users.fetch(playerId);
+        const channel = await client.channels.fetch(channelId);
+        
+        // 1. Load Records
+        const fs = require('fs');
+        const path = require('path');
+        const recordsPath = path.join(__dirname, 'diesel_records.json');
+        
+        let records = [];
+        if (fs.existsSync(recordsPath)) {
+            records = JSON.parse(fs.readFileSync(recordsPath));
+        }
+
+        // 2. Check for New Record
+        const newRecord = {
+            username: user.username,
+            userId: user.id,
+            time: Number(time),
+            speed: Number(speed),
+            date: new Date().toISOString()
+        };
+
+        // Add to list, Sort by Time (Ascending), Take Top 3
+        const previousBest = records[0] ? records[0].time : Infinity;
+        
+        records.push(newRecord);
+        records.sort((a, b) => a.time - b.time); // Lower time is better
+        records = records.slice(0, 3);
+        
+        // Update Ranks
+        records = records.map((r, i) => ({ ...r, position: i + 1 }));
+
+        fs.writeFileSync(recordsPath, JSON.stringify(records, null, 2));
+
+        // 3. Announce
+        const isWorldRecord = newRecord.time < previousBest;
+        const rankIndex = records.findIndex(r => r.time === newRecord.time && r.userId === newRecord.userId);
+        const madeItToTop = rankIndex !== -1;
+
+        const embed = new EmbedBuilder()
+            .setColor(isWorldRecord ? '#FFD700' : colors.primary)
+            .setTitle(isWorldRecord ? '🚨 NUEVO RÉCORD MUNDIAL 🚨' : '🏁 Carrera Finalizada')
+            .setAuthor({ name: user.username, iconURL: user.displayAvatarURL() })
+            .addFields(
+                { name: 'Tiempo', value: `⏱️ ${(time / 1000).toFixed(3)}s`, inline: true },
+                { name: 'Velocidad', value: `💨 ${speed} km/h`, inline: true }
+            );
+
+        if (madeItToTop) {
+            embed.setDescription(`¡<@${user.id}> ha entrado al **Top ${rankIndex + 1}**!`);
+        } else {
+            embed.setDescription(`<@${user.id}> ha cruzado la meta.`);
+        }
+        
+        embed.setFooter({ text: `ID Carrera: ${gameId.substring(0, 8)}...` });
+
+        if (channel) await channel.send({ embeds: [embed] });
+
+        res.status(200).send('Result processed.');
+    } catch (error) {
+        console.error('Error processing Diesel Duel result:', error);
+        res.status(500).send(error.message);
+    }
+});
+
 const PORT = process.env.PORT || 3000; // Use port 3000 as defined in the config memory
 app.listen(PORT, () => {
     console.log(`Express server for game results running on port ${PORT}`);

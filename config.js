@@ -66,6 +66,6 @@ module.exports = {
     usefulLinks: t('commands.link.useful_links'),
 
     // Game Integration Settings
-    TRUCKGIOH_SERVER_URL: process.env.TRUCKGIOH_SERVER_URL || 'http://localhost:3001',
+    DIESELDUEL_SERVER_URL: process.env.DIESELDUEL_SERVER_URL || 'http://localhost:3200',
     ROBOTITO_RESULTS_URL: process.env.ROBOTITO_RESULTS_URL || 'http://localhost:3000/game-result'
 };
