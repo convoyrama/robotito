@@ -16,11 +16,17 @@ module.exports = {
                 .setRequired(true)),
     
     async execute(interaction) {
+        // DEBUG: Ver qué llega realmente
+        console.log('--- DEBUG DESAFIAR ---');
+        console.log('User ID:', interaction.user.id);
+        console.log('Options Raw:', JSON.stringify(interaction.options.data));
+        
         // 1. Resolve User (Robust Method)
         const now = Date.now();
         const userId = interaction.user.id;
         
         let opponent = interaction.options.getUser('usuario');
+        console.log('getUser result:', opponent);
         
         // Si falla getUser, intentamos obtener el ID crudo y hacer fetch
         if (!opponent) {
