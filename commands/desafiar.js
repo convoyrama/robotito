@@ -16,21 +16,17 @@ module.exports = {
                 .setRequired(true)),
     
     async execute(interaction) {
-        // DEBUG: Ver qué llega realmente
-        console.log('--- DEBUG DESAFIAR ---');
-        console.log('User ID:', interaction.user.id);
-        console.log('Options Raw:', JSON.stringify(interaction.options.data));
-        
-        // 1. Resolve User (Robust Method)
+        // 1. Resolve User
         const now = Date.now();
         const userId = interaction.user.id;
         
-        let opponent = interaction.options.getUser('usuario');
-        console.log('getUser result:', opponent);
+        // Intentamos obtener el usuario buscando por ambos nombres posibles
+        let opponent = interaction.options.getUser('usuario') || interaction.options.getUser('oponente');
         
         // Si falla getUser, intentamos obtener el ID crudo y hacer fetch
         if (!opponent) {
-            const opponentId = interaction.options.get('usuario')?.value;
+            const rawOption = interaction.options.get('usuario') || interaction.options.get('oponente');
+            const opponentId = rawOption?.value;
             if (opponentId) {
                 try {
                     opponent = await interaction.client.users.fetch(opponentId);
