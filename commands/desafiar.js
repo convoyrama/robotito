@@ -16,11 +16,19 @@ module.exports = {
                 .setRequired(true)),
     
     async execute(interaction) {
-        // 1. Check Cooldown
+        // 1. Resolve User
         const now = Date.now();
         const userId = interaction.user.id;
-        
-        if (cooldowns.has(userId)) {
+        let opponent = interaction.options.getUser('usuario');
+
+        if (!opponent) {
+            return interaction.reply({ content: '❌ No pude encontrar al usuario.', flags: 64 });
+        }
+
+        const isSelfChallenge = opponent.id === userId;
+
+        // 2. Check Cooldown (Only if NOT self-challenging)
+        if (!isSelfChallenge && cooldowns.has(userId)) {
             const expirationTime = cooldowns.get(userId) + COOLDOWN_DURATION;
             if (now < expirationTime) {
                 const timeLeft = Math.round((expirationTime - now) / 1000);
@@ -31,12 +39,6 @@ module.exports = {
             }
         }
 
-        const opponent = interaction.options.getUser('usuario');
-
-        if (!opponent) {
-            return interaction.reply({ content: 'No pude encontrar a ese usuario. ¿Estás seguro de que está en este servidor?', flags: 64 });
-        }
-
         if (opponent.bot) {
             return interaction.reply({ content: 'No puedes desafiar a un bot.', flags: 64 });
         }
@@ -44,62 +46,61 @@ module.exports = {
         await interaction.deferReply();
 
         try {
-            // 2. Request Game Creation
+            // 3. Request Game Creation
             const response = await axios.post(`${DIESELDUEL_SERVER_URL}/api/create-race`, {
-                challengerId: interaction.user.id,
+                challengerId: userId,
                 challengedId: opponent.id,
                 channelId: interaction.channelId
             });
 
             const { gameId, challengerUrl, challengedUrl } = response.data;
 
-            // 3. Set Cooldown on Success
-            cooldowns.set(userId, now);
-            setTimeout(() => cooldowns.delete(userId), COOLDOWN_DURATION);
-
-            // 4. Send Links (Ephemeral to avoid leaks, or DM logic could be used)
-            // Strategy: Send a public embed announcing the duel, and buttons with links (Ephemeral)
-            // Since we can't send different ephemeral msgs to different users easily in one command,
-            // we will send the links via ephemeral FollowUp to the Challenger, 
-            // and tell the Opponent to click a button to get their link (which triggers a separate interaction handler or just DM).
-            
-            // SIMPLIFICATION FOR V1: Send links in the reply but hidden behind "Spoilers" or just direct DM?
-            // Sending public links allows stream sniping. 
-            // Better Approach: Send a generic "Challenge Started" embed publicly.
-            // Then send the links via interaction.followUp (only visible to challenger).
-            // But how does the opponent get it?
-            
-            // Revised Approach (Simple & Direct):
-            // Robotito sends the public embed.
-            // Robotito DMs the links to both users.
-            
-            let dmStatus = '✅ Enlaces enviados por DM.';
-            
-            try {
-                await interaction.user.send(
-                    `🏁 **Tu enlace de carrera:**\n${challengerUrl}\n\n` +
-                    `⚠️ **¡Atención!** Tienes **3 minutos** para completar la carrera.\n` +
-                    `Los resultados se publicarán cuando ambos terminen o se agote el tiempo.`
-                );
-            } catch (e) {
-                dmStatus = '⚠️ No pude enviarte DM. ¿Tienes los privados abiertos?';
+            // 4. Set Cooldown on Success (If not self)
+            if (!isSelfChallenge) {
+                cooldowns.set(userId, now);
+                setTimeout(() => cooldowns.delete(userId), COOLDOWN_DURATION);
             }
 
-            try {
-                await opponent.send(
-                    `🏁 **¡Has sido desafiado por ${interaction.user.username}!**\n` +
-                    `Tu enlace de carrera:\n${challengedUrl}\n\n` +
-                    `⚠️ **¡Atención!** Tienes **3 minutos** para completar la carrera.\n` +
-                    `Los resultados se publicarán cuando ambos terminen o se agote el tiempo.`
-                );
-            } catch (e) {
-                dmStatus += `\n⚠️ No pude enviar DM a ${opponent.username}.`;
+            let dmStatus = '✅ Enlaces enviados por DM.';
+            
+            if (isSelfChallenge) {
+                try {
+                    await interaction.user.send(
+                        `🏁 **MODO PRUEBA: Auto-Desafío**\n\n` +
+                        `👤 **Como Retador (P1):**\n${challengerUrl}\n\n` +
+                        `👤 **Como Retado (P2):**\n${challengedUrl}\n\n` +
+                        `⚠️ Tienes **3 minutos** para completar ambas carreras.`
+                    );
+                } catch (e) {
+                    dmStatus = '⚠️ No pude enviarte DM.';
+                }
+            } else {
+                try {
+                    await interaction.user.send(
+                        `🏁 **Tu enlace de carrera:**\n${challengerUrl}\n\n` +
+                        `⚠️ **¡Atención!** Tienes **3 minutos** para completar la carrera.`
+                    );
+                } catch (e) {
+                    dmStatus = '⚠️ No pude enviarte DM.';
+                }
+
+                try {
+                    await opponent.send(
+                        `🏁 **¡Has sido desafiado por ${interaction.user.username}!**\n` +
+                        `Tu enlace de carrera:\n${challengedUrl}\n\n` +
+                        `⚠️ **¡Atención!** Tienes **3 minutos** para completar la carrera.`
+                    );
+                } catch (e) {
+                    dmStatus += `\n⚠️ No pude enviar DM a ${opponent.username}.`;
+                }
             }
 
             const embed = new EmbedBuilder()
-                .setColor(colors.warning)
-                .setTitle('🔥 ¡Desafío de Drag Racing Iniciado! 🔥')
-                .setDescription(`${interaction.user} ha retado a ${opponent} a un duelo de velocidad.`)
+                .setColor(isSelfChallenge ? colors.info : colors.warning)
+                .setTitle(isSelfChallenge ? '🛠️ Prueba de Carrera (Auto-Duelo)' : '🔥 ¡Desafío de Drag Racing Iniciado! 🔥')
+                .setDescription(isSelfChallenge ? 
+                    `**${interaction.user.username}** está probando los motores solo.` : 
+                    `${interaction.user} ha retado a ${opponent} a un duelo de velocidad.`)
                 .addFields(
                     { name: 'Estado', value: 'Esperando corredores...', inline: true },
                     { name: 'Info', value: 'Revisen sus Mensajes Directos (DM) para entrar a la pista.', inline: false }
