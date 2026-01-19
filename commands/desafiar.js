@@ -33,6 +33,10 @@ module.exports = {
 
         const opponent = interaction.options.getUser('usuario');
 
+        if (!opponent) {
+            return interaction.reply({ content: 'No pude encontrar a ese usuario. ¿Estás seguro de que está en este servidor?', flags: 64 });
+        }
+
         if (opponent.id === interaction.user.id) {
             return interaction.reply({ content: 'No puedes desafiarte a ti mismo.', flags: 64 });
         }
