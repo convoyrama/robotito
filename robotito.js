@@ -208,7 +208,11 @@ app.post('/api/diesel-result', async (req, res) => {
         // Add to leaderboard logic
         records.push(newRecord);
         records.sort((a, b) => a.time - b.time);
-        records = records.slice(0, 3);
+        
+        // Keep unique best times per user (Optional: remove this if you want multiple entries per user)
+        // For now, we keep all records and just slice top 10
+        
+        records = records.slice(0, 10); // Changed from 3 to 10
         records = records.map((r, i) => ({ ...r, position: i + 1 }));
         fs.writeFileSync(recordsPath, JSON.stringify(records, null, 2));
 

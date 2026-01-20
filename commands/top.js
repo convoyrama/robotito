@@ -31,7 +31,8 @@ module.exports = {
         if (records.length === 0) {
             embed.addFields({ name: 'Sin registros', value: 'Aún nadie ha quemado llanta.' });
         } else {
-            records.forEach((rec, index) => {
+            // Top 3 Detailed
+            records.slice(0, 3).forEach((rec, index) => {
                 const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉';
                 embed.addFields({
                     name: `${medal} #${index + 1} - ${rec.username}`,
@@ -39,6 +40,16 @@ module.exports = {
                     inline: false
                 });
             });
+
+            // 4-10 Compact List
+            const rest = records.slice(3, 10);
+            if (rest.length > 0) {
+                const list = rest.map(r => 
+                    `**${r.position}.** ${r.username} — **${(r.time/1000).toFixed(3)}s**`
+                ).join('\n');
+                
+                embed.addFields({ name: 'Top 10', value: list, inline: false });
+            }
         }
 
         await interaction.reply({ embeds: [embed] });
