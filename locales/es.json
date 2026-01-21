@@ -60,8 +60,24 @@
         "despedida": "Envía un mensaje de despedida de convoy (propio o ajeno).",
         "spam": "Envía un mensaje aleatorio de la lista de textos predefinidos.",
         "evento": "Muestra los eventos (próximo, semana, mes).",
-        "vtc": "Muestra la lista de VTCs de la comunidad."
+        "vtc": "Muestra la lista de VTCs de la comunidad.",
+        "desafiar": "Desafía a otro usuario a una carrera de Drag Racing.",
+        "top": "Muestra el Top 10 de mejores tiempos en Diesel Duel."
       }
+    },
+    "desafiar": {
+      "name": "desafiar",
+      "description": "Desafía a otro usuario a una carrera de Drag Racing.",
+      "options": {
+        "usuario": {
+          "name": "usuario",
+          "description": "El usuario al que quieres desafiar"
+        }
+      }
+    },
+    "top": {
+      "name": "top",
+      "description": "Muestra el Top 10 de mejores tiempos en Diesel Duel."
     },
     "despedida": {
       "name": "despedida",

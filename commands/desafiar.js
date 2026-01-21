@@ -45,7 +45,12 @@ module.exports = {
         }
 
         if (opponent.bot) {
-            return interaction.reply({ content: 'No puedes desafiar a un bot.', flags: 64 });
+            // Permitir desafiar a Robotito (self challenge)
+            if (opponent.id === interaction.client.user.id) {
+                // Es un desafío contra el bot (Modo Robotito Tramposo)
+            } else {
+                return interaction.reply({ content: 'No puedes desafiar a un bot.', flags: 64 });
+            }
         }
 
         // 2. Check Cooldown
@@ -63,11 +68,14 @@ module.exports = {
         await interaction.deferReply();
 
         try {
+            const isBotChallenge = opponent.id === interaction.client.user.id;
+
             // 3. Request Game Creation
             const response = await axios.post(`${DIESELDUEL_SERVER_URL}/api/create-race`, {
                 challengerId: userId,
                 challengedId: opponent.id,
-                channelId: interaction.channelId
+                channelId: interaction.channelId,
+                isBotChallenge: isBotChallenge
             });
 
             const { gameId, challengerUrl, challengedUrl } = response.data;

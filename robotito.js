@@ -160,7 +160,7 @@ app.post(resultsPath, async (req, res) => {
 
 // Endpoint for Diesel Duel Results (VS Mode)
 app.post('/api/diesel-result', async (req, res) => {
-    const { type, winner, loser, channelId, gameId } = req.body;
+    const { type, winner, loser, channelId, gameId, skipLeaderboard } = req.body;
 
     console.log('--- DEBUG DIESEL RESULT ---');
     console.log('Type:', type);
@@ -184,37 +184,37 @@ app.post('/api/diesel-result', async (req, res) => {
         const loserUser = loserId ? await client.users.fetch(loserId) : null;
 
         // 1. Load Records (Still track best times individually)
-        const fs = require('fs');
-        const path = require('path');
-        const recordsPath = path.join(__dirname, 'diesel_records.json');
-        
-        let records = [];
-        if (fs.existsSync(recordsPath)) {
-            records = JSON.parse(fs.readFileSync(recordsPath));
+        let isWorldRecord = false;
+        if (!skipLeaderboard) {
+            const fs = require('fs');
+            const path = require('path');
+            const recordsPath = path.join(__dirname, 'diesel_records.json');
+            
+            let records = [];
+            if (fs.existsSync(recordsPath)) {
+                records = JSON.parse(fs.readFileSync(recordsPath));
+            }
+
+            // Check Winner's Record
+            const newRecord = {
+                username: winnerUser.username,
+                userId: winnerUser.id,
+                time: Number(winner.time),
+                speed: Number(winner.speed),
+                date: new Date().toISOString()
+            };
+
+            const previousBest = records[0] ? records[0].time : Infinity;
+            isWorldRecord = newRecord.time < previousBest;
+
+            // Add to leaderboard logic
+            records.push(newRecord);
+            records.sort((a, b) => a.time - b.time);
+            
+            records = records.slice(0, 10); // Changed from 3 to 10
+            records = records.map((r, i) => ({ ...r, position: i + 1 }));
+            fs.writeFileSync(recordsPath, JSON.stringify(records, null, 2));
         }
-
-        // Check Winner's Record
-        const newRecord = {
-            username: winnerUser.username,
-            userId: winnerUser.id,
-            time: Number(winner.time),
-            speed: Number(winner.speed),
-            date: new Date().toISOString()
-        };
-
-        const previousBest = records[0] ? records[0].time : Infinity;
-        const isWorldRecord = newRecord.time < previousBest;
-
-        // Add to leaderboard logic
-        records.push(newRecord);
-        records.sort((a, b) => a.time - b.time);
-        
-        // Keep unique best times per user (Optional: remove this if you want multiple entries per user)
-        // For now, we keep all records and just slice top 10
-        
-        records = records.slice(0, 10); // Changed from 3 to 10
-        records = records.map((r, i) => ({ ...r, position: i + 1 }));
-        fs.writeFileSync(recordsPath, JSON.stringify(records, null, 2));
 
         // 2. Build the VS Embed
         const embed = new EmbedBuilder()
@@ -226,7 +226,7 @@ app.post('/api/diesel-result', async (req, res) => {
             
             embed.setColor(isWorldRecord ? '#FFD700' : colors.primary)
                 .setTitle(isWorldRecord ? '🚨 NUEVO RÉCORD MUNDIAL 🚨' : '🏁 Resultado del Duelo')
-                .setDescription(`¡<@${winnerUser.id}> ha vencido a <@${loserUser.id}>!`)
+                .setDescription(`¡<@${winnerId}> ha vencido a <@${loserId}>!`)
                 .addFields(
                     { 
                         name: '🏆 Ganador', 
@@ -235,7 +235,7 @@ app.post('/api/diesel-result', async (req, res) => {
                     },
                     { 
                         name: '🐢 Perdedor', 
-                        value: `**${loserUser.username}**\n⏱️ ${(loser.time/1000).toFixed(3)}s\n💨 ${Number(loser.speed).toFixed(1)} km/h`, 
+                        value: `**${loserUser ? loserUser.username : 'Oponente'}**\n⏱️ ${(loser.time/1000).toFixed(3)}s\n💨 ${Number(loser.speed).toFixed(1)} km/h`, 
                         inline: true 
                     },
                     { name: 'Diferencia', value: `+${timeDiff.toFixed(3)}s`, inline: false }
@@ -263,7 +263,31 @@ app.post('/api/diesel-result', async (req, res) => {
                 );
         }
 
-        if (channel) await channel.send({ embeds: [embed] });
+        if (channel) {
+            await channel.send({ embeds: [embed] });
+
+            // --- BURLA DE ROBOTITO ---
+            // Si skipLeaderboard es true y el ganador es el bot (el ID es el mismo del cliente o detectado por flag), burlarse.
+            // Nota: winnerId ya está limpio, pero si es robotito, debería coincidir con client.user.id
+            if (skipLeaderboard && winnerId === client.user.id && loserId) {
+                const fs = require('fs');
+                const path = require('path');
+                const burlasPath = path.join(__dirname, 'burlas.json');
+                
+                if (fs.existsSync(burlasPath)) {
+                    try {
+                        const burlas = JSON.parse(fs.readFileSync(burlasPath));
+                        if (burlas.length > 0) {
+                            const randomBurla = burlas[Math.floor(Math.random() * burlas.length)];
+                            // Enviar mensaje mencionando al perdedor
+                            await channel.send(`${randomBurla} <@${loserId}>`);
+                        }
+                    } catch (err) {
+                        console.error('Error leyendo burlas:', err);
+                    }
+                }
+            }
+        }
 
         res.status(200).send('Result processed.');
     } catch (error) {
