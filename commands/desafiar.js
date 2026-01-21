@@ -84,7 +84,7 @@ module.exports = {
             cooldowns.set(userId, now);
             setTimeout(() => cooldowns.delete(userId), COOLDOWN_DURATION);
 
-            let dmStatus = '✅ Enlaces enviados por DM.';
+            let dmStatus = isBotChallenge ? '✅ Enlace enviado por DM.' : '✅ Enlaces enviados por DM.';
             
             try {
                 await interaction.user.send(
@@ -95,14 +95,18 @@ module.exports = {
                 dmStatus = '⚠️ No pude enviarte DM.';
             }
 
-            try {
-                await opponent.send(
-                    `🏁 **¡Has sido desafiado por ${interaction.user.username}!**\n` +
-                    `Tu enlace de carrera:\n${challengedUrl}\n\n` +
-                    `⚠️ **¡Atención!** Tienes **3 minutos** para completar la carrera.`
-                );
-            } catch (e) {
-                dmStatus += `\n⚠️ No pude enviar DM a ${opponent.username}.`;
+            if (isBotChallenge) {
+                dmStatus += '\n🤖 Robotito ya está en la grilla esperando para humillarte.';
+            } else {
+                try {
+                    await opponent.send(
+                        `🏁 **¡Has sido desafiado por ${interaction.user.username}!**\n` +
+                        `Tu enlace de carrera:\n${challengedUrl}\n\n` +
+                        `⚠️ **¡Atención!** Tienes **3 minutos** para completar la carrera.`
+                    );
+                } catch (e) {
+                    dmStatus += `\n⚠️ No pude enviar DM a ${opponent.username}.`;
+                }
             }
 
             const embed = new EmbedBuilder()
@@ -110,8 +114,8 @@ module.exports = {
                 .setTitle('🔥 ¡Desafío de Drag Racing Iniciado! 🔥')
                 .setDescription(`${interaction.user} ha retado a ${opponent} a un duelo de velocidad.`)
                 .addFields(
-                    { name: 'Estado', value: 'Esperando corredores...', inline: true },
-                    { name: 'Info', value: 'Revisen sus Mensajes Directos (DM) para entrar a la pista.', inline: false }
+                    { name: 'Estado', value: isBotChallenge ? '🚩 Robotito ya está en la pista.' : 'Esperando corredores...', inline: true },
+                    { name: 'Info', value: isBotChallenge ? 'Revisá tus DM y preparate para perder.' : 'Revisen sus Mensajes Directos (DM) para entrar a la pista.', inline: false }
                 )
                 .setFooter({ text: dmStatus });
 
