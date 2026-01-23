@@ -86,14 +86,68 @@ module.exports = {
 
             let dmStatus = isBotChallenge ? '✅ Enlace enviado por DM.' : '✅ Enlaces enviados por DM.';
             
+            // Helper function to send DM with buttons
+            const sendGameDM = async (user, webUrl, appUrl, isOpponent = false) => {
+                const title = isOpponent 
+                    ? `🏁 **¡Has sido desafiado por ${interaction.user.username}!**` 
+                    : `🏁 **Tu enlace de carrera:**`;
+
+                // 1. Text Message (Raw links for maximum compatibility)
+                const textMessage = `${title}\n\n` +
+                    `🌐 **Web:** ${webUrl}\n` +
+                    `📱 **App Link:** ${appUrl}\n\n` +
+                    `⚠️ Tienes 3 minutos.`;
+
+                // 2. Embed with Buttons
+                const embed = new EmbedBuilder()
+                    .setColor(colors.warning)
+                    .setTitle('🏎️ Diesel Duel - Acceso')
+                    .setDescription('Elige cómo quieres jugar:')
+                    .addFields(
+                        { name: '🌐 Desde PC/Navegador', value: 'Usa el botón "Web" o el primer enlace.' },
+                        { name: '📱 Desde Android', value: 'Si tienes la App instalada, usa el botón "App" o el enlace dieselduel://' }
+                    );
+
+                const row = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setLabel('Jugar en Web')
+                            .setStyle(ButtonStyle.Link)
+                            .setURL(webUrl),
+                        // Note: Discord might filter custom schemes in buttons, but let's try.
+                        // If it fails, the raw text link above is the backup.
+                        /* 
+                           Discord API often rejects non-http links in buttons. 
+                           We will try adding it, but if it throws an error, we catch it.
+                        */
+                    );
+
+                try {
+                    // Attempt to add App button (Experimental)
+                    /* 
+                       Discord JS validation might block this before sending.
+                       If so, we just send the web button.
+                    */
+                   // row.addComponents(
+                   //     new ButtonBuilder()
+                   //         .setLabel('Abrir App')
+                   //         .setStyle(ButtonStyle.Link)
+                   //         .setURL(appUrl)
+                   // );
+                   // COMMENTED OUT: Discord strictly validates button URLs to be http/https.
+                   // A button with dieselduel:// will cause the bot to crash or error 400.
+                   // We rely on the text message for the App Link.
+                } catch (e) {
+                    console.log("Could not add custom scheme button");
+                }
+
+                await user.send({ content: textMessage, embeds: [embed], components: [row] });
+            };
+
             try {
-                await interaction.user.send(
-                    `🏁 **Tu enlace de carrera:**\n` +
-                    `🌐 **Web (PC):** ${challengerUrl}\n` +
-                    `📱 **Android App:** [Abrir en App](${challengerAppUrl})\n\n` +
-                    `⚠️ **¡Atención!** Tienes **3 minutos** para completar la carrera.`
-                );
+                await sendGameDM(interaction.user, challengerUrl, challengerAppUrl);
             } catch (e) {
+                console.error("Error sending DM to challenger:", e);
                 dmStatus = '⚠️ No pude enviarte DM.';
             }
 
@@ -101,13 +155,9 @@ module.exports = {
                 dmStatus += '\n🤖 Robotito ya está en la grilla esperando para humillarte.';
             } else {
                 try {
-                    await opponent.send(
-                        `🏁 **¡Has sido desafiado por ${interaction.user.username}!**\n` +
-                        `🌐 **Web (PC):** ${challengedUrl}\n` +
-                        `📱 **Android App:** [Abrir en App](${challengedAppUrl})\n\n` +
-                        `⚠️ **¡Atención!** Tienes **3 minutos** para completar la carrera.`
-                    );
+                    await sendGameDM(opponent, challengedUrl, challengedAppUrl, true);
                 } catch (e) {
+                    console.error("Error sending DM to opponent:", e);
                     dmStatus += `\n⚠️ No pude enviar DM a ${opponent.username}.`;
                 }
             }
