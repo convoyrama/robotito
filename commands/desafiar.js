@@ -78,7 +78,7 @@ module.exports = {
                 isBotChallenge: isBotChallenge
             });
 
-            const { gameId, challengerUrl, challengedUrl } = response.data;
+            const { gameId, challengerUrl, challengedUrl, challengerAppUrl, challengedAppUrl } = response.data;
 
             // 4. Set Cooldown on Success
             cooldowns.set(userId, now);
@@ -88,7 +88,9 @@ module.exports = {
             
             try {
                 await interaction.user.send(
-                    `🏁 **Tu enlace de carrera:**\n${challengerUrl}\n\n` +
+                    `🏁 **Tu enlace de carrera:**\n` +
+                    `🌐 **Web (PC):** ${challengerUrl}\n` +
+                    `📱 **Android App:** [Abrir en App](${challengerAppUrl})\n\n` +
                     `⚠️ **¡Atención!** Tienes **3 minutos** para completar la carrera.`
                 );
             } catch (e) {
@@ -101,7 +103,8 @@ module.exports = {
                 try {
                     await opponent.send(
                         `🏁 **¡Has sido desafiado por ${interaction.user.username}!**\n` +
-                        `Tu enlace de carrera:\n${challengedUrl}\n\n` +
+                        `🌐 **Web (PC):** ${challengedUrl}\n` +
+                        `📱 **Android App:** [Abrir en App](${challengedAppUrl})\n\n` +
                         `⚠️ **¡Atención!** Tienes **3 minutos** para completar la carrera.`
                     );
                 } catch (e) {

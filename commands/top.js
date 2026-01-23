@@ -24,7 +24,7 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setColor(colors.warning) // Orange/Warning color fits Diesel theme
             .setTitle('🏆 Diesel Duel - Hall of Fame 🏆')
-            .setThumbnail('https://convoyrama.github.io/robotito/img/event/cup.png') // Placeholder or existing trophy icon
+            .setThumbnail('https://convoyrama.github.io/robotito/img/event/DDlogo.png') 
             .setDescription('Los camioneros más rápidos del asfalto.')
             .setTimestamp();
 
