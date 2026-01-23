@@ -89,24 +89,20 @@ module.exports = {
             // Helper function to send DM with buttons
             const sendGameDM = async (user, webUrl, appUrl, isOpponent = false) => {
                 const title = isOpponent 
-                    ? `🏁 **¡Has sido desafiado por ${interaction.user.username}!**` 
-                    : `🏁 **Tu enlace de carrera:**`;
+                    ? `🏁 **¡HAS SIDO DESAFIADO POR ${interaction.user.username.toUpperCase()}!**` 
+                    : `🏁 **TU DUELO ESTÁ LISTO**`;
 
-                // 1. Text Message (Raw links for maximum compatibility)
-                const textMessage = `${title}\n\n` +
-                    `🌐 **Web:** ${webUrl}\n` +
-                    `📱 **App Link:** ${appUrl}\n\n` +
-                    `⚠️ Tienes 3 minutos.`;
-
-                // 2. Embed with Buttons
+                // Embed with game details and choices
                 const embed = new EmbedBuilder()
                     .setColor(colors.warning)
-                    .setTitle('🏎️ Diesel Duel - Acceso')
-                    .setDescription('Elige cómo quieres jugar:')
+                    .setTitle(title)
+                    .setDescription('Selecciona una plataforma para entrar a la pista:')
                     .addFields(
-                        { name: '🌐 Desde PC/Navegador', value: 'Usa el botón "Web" o el primer enlace.' },
-                        { name: '📱 Desde Android', value: 'Si tienes la App instalada, usa el botón "App" o el enlace dieselduel://' }
-                    );
+                        { name: '🌐 PC / Navegador', value: 'Jugar directamente en el navegador.', inline: true },
+                        { name: '📱 Android App', value: 'Si tienes la App, ábrela aquí.', inline: true }
+                    )
+                    .setFooter({ text: '⚠️ Tienes 3 minutos para completar la carrera.' })
+                    .setTimestamp();
 
                 const row = new ActionRowBuilder()
                     .addComponents(
@@ -115,21 +111,17 @@ module.exports = {
                             .setStyle(ButtonStyle.Link)
                             .setURL(webUrl),
                         
-                        // APP BUTTON (Using Web Bridge)
-                        // This links to the website with ?launchApp=true
-                        // The website will then redirect to dieselduel://
                         new ButtonBuilder()
-                            .setLabel('Abrir App')
+                            .setLabel('Abrir en App')
                             .setStyle(ButtonStyle.Link)
                             .setURL(`${webUrl}&launchApp=true`) 
                     );
 
                 try {
-                    // Send message with both buttons
-                    await user.send({ content: textMessage, embeds: [embed], components: [row] });
+                    await user.send({ embeds: [embed], components: [row] });
                 } catch (e) {
-                    console.log("Error sending buttons, falling back to text", e);
-                    await user.send({ content: textMessage, embeds: [embed] });
+                    console.error("Error sending DM:", e);
+                    // Fallback to minimal text only if DM fails completely (e.g. privacy settings)
                 }
             };
 
