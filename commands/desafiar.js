@@ -78,7 +78,7 @@ module.exports = {
                 isBotChallenge: isBotChallenge
             });
 
-            const { gameId, challengerUrl, challengedUrl, challengerAppUrl, challengedAppUrl } = response.data;
+            const { gameId, challengerUrl, challengedUrl } = response.data;
 
             // 4. Set Cooldown on Success
             cooldowns.set(userId, now);
@@ -87,7 +87,7 @@ module.exports = {
             let dmStatus = isBotChallenge ? '✅ Enlace enviado por DM.' : '✅ Enlaces enviados por DM.';
             
             // Helper function to send DM with buttons
-            const sendGameDM = async (user, webUrl, appUrl, isOpponent = false) => {
+            const sendGameDM = async (user, webUrl, isOpponent = false) => {
                 const title = isOpponent 
                     ? `🏁 **¡HAS SIDO DESAFIADO POR ${interaction.user.username.toUpperCase()}!**` 
                     : `🏁 **TU DUELO ESTÁ LISTO**`;
@@ -96,10 +96,9 @@ module.exports = {
                 const embed = new EmbedBuilder()
                     .setColor(colors.warning)
                     .setTitle(title)
-                    .setDescription('Selecciona una plataforma para entrar a la pista:')
+                    .setDescription('Entra a la pista desde tu navegador:')
                     .addFields(
-                        { name: '🌐 PC / Navegador', value: 'Jugar directamente en el navegador.', inline: true },
-                        { name: '📱 Android App', value: 'Si tienes la App, ábrela aquí.', inline: true }
+                        { name: '🌐 PC / Móvil', value: 'Jugar directamente en el navegador.', inline: true }
                     )
                     .setFooter({ text: '⚠️ Tienes 3 minutos para completar la carrera.' })
                     .setTimestamp();
@@ -109,12 +108,7 @@ module.exports = {
                         new ButtonBuilder()
                             .setLabel('Jugar en Web')
                             .setStyle(ButtonStyle.Link)
-                            .setURL(webUrl),
-                        
-                        new ButtonBuilder()
-                            .setLabel('Abrir en App')
-                            .setStyle(ButtonStyle.Link)
-                            .setURL(`${webUrl}&launchApp=true`) 
+                            .setURL(webUrl)
                     );
 
                 try {
@@ -126,7 +120,7 @@ module.exports = {
             };
 
             try {
-                await sendGameDM(interaction.user, challengerUrl, challengerAppUrl);
+                await sendGameDM(interaction.user, challengerUrl);
             } catch (e) {
                 console.error("Error sending DM to challenger:", e);
                 dmStatus = '⚠️ No pude enviarte DM.';
@@ -136,7 +130,7 @@ module.exports = {
                 dmStatus += '\n🤖 Robotito ya está en la grilla esperando para humillarte.';
             } else {
                 try {
-                    await sendGameDM(opponent, challengedUrl, challengedAppUrl, true);
+                    await sendGameDM(opponent, challengedUrl, true);
                 } catch (e) {
                     console.error("Error sending DM to opponent:", e);
                     dmStatus += `\n⚠️ No pude enviar DM a ${opponent.username}.`;
