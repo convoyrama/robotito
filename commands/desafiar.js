@@ -114,34 +114,23 @@ module.exports = {
                             .setLabel('Jugar en Web')
                             .setStyle(ButtonStyle.Link)
                             .setURL(webUrl),
-                        // Note: Discord might filter custom schemes in buttons, but let's try.
-                        // If it fails, the raw text link above is the backup.
-                        /* 
-                           Discord API often rejects non-http links in buttons. 
-                           We will try adding it, but if it throws an error, we catch it.
-                        */
+                        
+                        // APP BUTTON (Using Web Bridge)
+                        // This links to the website with ?launchApp=true
+                        // The website will then redirect to dieselduel://
+                        new ButtonBuilder()
+                            .setLabel('Abrir App')
+                            .setStyle(ButtonStyle.Link)
+                            .setURL(`${webUrl}&launchApp=true`) 
                     );
 
                 try {
-                    // Attempt to add App button (Experimental)
-                    /* 
-                       Discord JS validation might block this before sending.
-                       If so, we just send the web button.
-                    */
-                   // row.addComponents(
-                   //     new ButtonBuilder()
-                   //         .setLabel('Abrir App')
-                   //         .setStyle(ButtonStyle.Link)
-                   //         .setURL(appUrl)
-                   // );
-                   // COMMENTED OUT: Discord strictly validates button URLs to be http/https.
-                   // A button with dieselduel:// will cause the bot to crash or error 400.
-                   // We rely on the text message for the App Link.
+                    // Send message with both buttons
+                    await user.send({ content: textMessage, embeds: [embed], components: [row] });
                 } catch (e) {
-                    console.log("Could not add custom scheme button");
+                    console.log("Error sending buttons, falling back to text", e);
+                    await user.send({ content: textMessage, embeds: [embed] });
                 }
-
-                await user.send({ content: textMessage, embeds: [embed], components: [row] });
             };
 
             try {
